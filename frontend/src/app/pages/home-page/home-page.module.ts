@@ -6,6 +6,7 @@ import { HomePageComponent } from './home-page-component';
 
 import { HomePageRoutingModule } from './home-page-routing.module';
 import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
+import { StackedCardComponentModule } from 'src/app/components/stacked-card/stacked-card.module';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { ExploreContainerComponentModule } from 'src/app/components/explore-cont
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
+    StackedCardComponentModule,
     HomePageRoutingModule
   ],
   declarations: [HomePageComponent]

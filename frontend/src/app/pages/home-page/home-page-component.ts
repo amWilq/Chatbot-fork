@@ -6,7 +6,32 @@ import { Component } from '@angular/core';
   styleUrls: ['home-page-component.scss']
 })
 export class HomePageComponent {
+  sampleCardData: any[] = [];
+  constructor() { }
 
-  constructor() {}
+  ngOnInit() {
+
+    this.sampleCardData = [
+      {
+        title: 'Angular',
+        src: '/assets/images/angular.png'
+      },
+      {
+        title: 'Ionic',
+        src: '/assets/images/ionic.svg'
+      },
+      {
+        title: 'Scss',
+        src: '/assets/images/scss.svg'
+      },
+      {
+        title: 'HTML',
+        src: '/assets/images/html.png'
+      }
+    ];
+
+
+
+  }
 
 }

@@ -1,0 +1,33 @@
+<div class="container">
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title style="padding-bottom: 20px;">Ulubione</ion-title>
+      <ion-buttons slot="end">
+        <ion-button expand="block" (click)="toggleCardVisibility()">
+          <ion-icon [name]="isCardVisible ? 'chevron-up-outline' : 'chevron-down-outline'" size="large"
+            fill="clear"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="card-container">
+    <ion-card *ngFor="let card of cardData; let i = index"
+      [ngClass]="{'highlight-card': selectedCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
+      (click)="showNewCard(card, i)" class="card">
+      <div class="card-image-container">
+        <img [src]="card.src" alt="Zdjęcie pojazdu" class="card-image">
+      </div>
+      <ion-card-content>
+        <div class="card-description">{{ card.title }}</div>
+      </ion-card-content>
+      <div class="center-button">
+        <ion-button expand="block" (click)="toggleCardVisibility()">
+          <ion-icon name="add" size="large" fill="clear"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-card>
+  </div>
+
+
+</div>
