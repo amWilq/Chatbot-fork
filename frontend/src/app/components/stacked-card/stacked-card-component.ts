@@ -31,9 +31,9 @@ export class StackedCardComponent {
     this.selectedCardIndex = (this.selectedCardIndex === index) ? null : index;
   }
 
-  handleCardClick() {
+  handleCardClick(e: Event) {
     this.isClicked = !this.isClicked;
-    this.newItemEvent.emit(this.isClicked);
+    this.newItemEvent.emit((this.isClicked, e)) ;
   }
 
   removeSchema(index: number) {

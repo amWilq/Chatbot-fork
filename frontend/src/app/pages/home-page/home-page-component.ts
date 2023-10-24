@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'home-page-component',
@@ -7,7 +8,9 @@ import { Component } from '@angular/core';
 })
 export class HomePageComponent {
   sampleCardData: any[] = [];
-  constructor() { }
+  isClicked: boolean = false;
+  selectedCategory!: string;
+  constructor(private router: Router) { }
 
   ngOnInit() {
     this.sampleCardData = JSON.parse(localStorage.getItem('favorites-category') || '[]');
@@ -40,8 +43,17 @@ export class HomePageComponent {
 
   }
 
-  handleNewCardEvent(data: boolean) {
-    console.log(data);
+  handleNewCardEvent(data: any,componentIdentifier: string) {
+    this.selectedCategory = componentIdentifier;
+    this.isClicked = data;
+
   }
 
+  goToCategoryView(e: Event) {
+    this.router.navigate(['tabs/tab2'], {
+      queryParams: {
+        selectedCategory: this.selectedCategory,
+      }
+    });
+  }
 }
