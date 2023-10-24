@@ -3,7 +3,7 @@
 
 
   <app-stacked-card [cardData]="sampleCardData" (newItemEvent)="handleNewCardEvent($event, 'model')"></app-stacked-card >
-  <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'Frontend'" [imageSrc]="'/assets/images/front.png'" (newItemEvent)="handleNewCardEvent($event, 'frontend')"></app-custom-mat-card>
+  <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'tetst'" [imageSrc]="'/assets/images/front.png'" (newItemEvent)="handleNewCardEvent($event, 'frontend')"></app-custom-mat-card>
   <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'Backend'" [imageSrc]="'/assets/images/back.png'" (newItemEvent)="handleNewCardEvent($event, 'backend')"></app-custom-mat-card>
   <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'CyberSecurity'" [imageSrc]="'/assets/images/cyber.png'" (newItemEvent)="handleNewCardEvent($event, 'cyberSecurity')"></app-custom-mat-card>
   <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'Others'" [imageSrc]="'/assets/images/others.png'" (newItemEvent)="handleNewCardEvent($event, 'others')"></app-custom-mat-card>
@@ -13,7 +13,7 @@
 <ion-footer>
   <div class="container-button">
     <ion-button  (click)="goToCategoryView($event)" [disabled]="!isClicked"  size="large" fill="clear" >
-      <ion-icon  style="scale: 5;"   name="chevron-forward-outline"></ion-icon>
+      <ion-icon  style="transform: scale(5);"   name="chevron-forward-outline"></ion-icon>
     </ion-button>
 
   </div>
