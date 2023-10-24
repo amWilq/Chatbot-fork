@@ -2,6 +2,10 @@
 <ion-content [fullscreen]="true" class="ion-padding">
 
 
-  <app-stacked-card [cardData]="sampleCardData"></app-stacked-card>
+  <app-stacked-card [cardData]="sampleCardData" (newItemEvent)="handleNewCardEvent($event)"></app-stacked-card>
+  <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'Frontend'" [imageSrc]="'/assets/images/front.png'" (newItemEvent)="handleNewCardEvent($event)"></app-custom-mat-card>
+  <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'Backend'" [imageSrc]="'/assets/images/back.png'" (newItemEvent)="handleNewCardEvent($event)"></app-custom-mat-card>
+  <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'CyberSecurity'" [imageSrc]="'/assets/images/cyber.png'" (newItemEvent)="handleNewCardEvent($event)"></app-custom-mat-card>
+  <app-custom-mat-card [navigateTo]="'tab2'" [placeholder]="'Others'" [imageSrc]="'/assets/images/others.png'" (newItemEvent)="handleNewCardEvent($event)"></app-custom-mat-card>
 
 </ion-content>

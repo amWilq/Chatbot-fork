@@ -1,0 +1,9 @@
+<ion-card class="rounded-card ion-card-spacing"
+[ngClass]="{'highlight-card': isClicked }"
+  (click)="handleCardClick()">
+  <ion-card-content class="ion-card-content-spacing">
+    <span  class="span-test" >{{placeholder}}</span>
+    <img  src="{{imageSrc}}" alt="placeholder" class="card-image">
+    <!-- <ion-icon class="arrow-button" (click)="handleArrowIconClick(navigateTo)" name="arrow-forward"></ion-icon> -->
+  </ion-card-content>
+</ion-card>
