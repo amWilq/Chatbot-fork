@@ -16,6 +16,6 @@ export class CategoryComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.selectedCategory = params['selectedCategory'];
     });
-    console.log (this.selectedCategory);
+    console.log(this.selectedCategory);
   }
 }
