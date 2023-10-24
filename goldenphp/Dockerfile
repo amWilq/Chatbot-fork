@@ -1,13 +1,18 @@
 # Use the official PHP 8.2 image as the base image
 FROM phpswoole/swoole:php8.2
 
+ARG APP_ENV
+ARG APP_DEBUG
+ARG SWOOLE_VERSION
+ARG XDEBUG_VERSION
+
 # Set environment variables for configuration
-ENV APP_ENV=dev \
-    APP_DEBUG=1 \
+ENV APP_ENV=${APP_ENV} \
+    APP_DEBUG=${APP_DEBUG} \
     SWOOLE_RUNTIME=1 \
     COMPOSER_ALLOW_SUPERUSER=1 \
-    SWOOLE_VERSION=5.1.0 \
-    XDEBUG_VERSION=3.2.2
+    SWOOLE_VERSION=${SWOOLE_VERSION} \
+    XDEBUG_VERSION=${XDEBUG_VERSION}
 
 # Install dev dependencies
 RUN apt-get update && apt-get install -y \
@@ -59,21 +64,14 @@ RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | b
 RUN apt-get update && apt-get install -y symfony-cli
 
 # Supervisor
-#RUN apt-get update && apt-get install -y supervisor
-#RUN echo "[supervisord]\npidfile=/run/supervisord.pid\nuser=root\n" >  /etc/supervisord.conf
-#RUN echo "[supervisorctl]\n" >> /etc/supervisord.conf
-#RUN echo "[include]\nfiles = /etc/supervisor.d/*.conf\n" >> /etc/supervisord.conf
 COPY supervisor.d /etc/supervisor/service.d
+
+# Start the application
+RUN enable-supervisord-program.sh app-swoole
 
 # Set the working directory
 WORKDIR /var/www
 
-# Entrypoint
-#COPY start-container /usr/local/bin/start-container
-
 # Expose the necessary ports
 EXPOSE 80
 
-#RUN chmod +x /usr/local/bin/start-container
-
-#ENTRYPOINT ["start-container"]

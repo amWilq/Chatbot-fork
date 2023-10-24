@@ -1,7 +1,19 @@
 version: '3'
 services:
+  goldenphp:
+    image: chatbot-goldenphp:latest
+    build:
+      context: ./goldenphp
+      dockerfile: Dockerfile
+      args:
+        - "APP_ENV=dev"
+        - "APP_DEBUG=1"
+        - "SWOOLE_VERSION=5.1.0"
+        - "XDEBUG_VERSION=3.2.2"
   backend:
-    build: ./backend/.docker
+    build:
+      context: ./backend
+      dockerfile: .docker/Dockerfile
     environment:
       AUTORELOAD_PROGRAMS: "app-swoole"
       AUTORELOAD_ANY_FILES: 0
@@ -10,3 +22,5 @@ services:
       - "80:80"
     volumes:
       - ./backend:/var/www/html
+    depends_on:
+      - goldenphp
