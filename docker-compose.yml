@@ -22,5 +22,11 @@ services:
       - "80:80"
     volumes:
       - ./backend:/var/www/html
-    depends_on:
-      - goldenphp
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: .docker/Dockerfile
+    ports:
+        - "4200:4200"
+    volumes:
+        - ./frontend:/app
