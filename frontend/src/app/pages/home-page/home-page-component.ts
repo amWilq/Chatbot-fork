@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { StackedCardComponent } from './../../components/stacked-card/stacked-card-component';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,7 +10,13 @@ import { Router } from '@angular/router';
 export class HomePageComponent {
   sampleCardData: any[] = [];
   isClicked: boolean = false;
-  selectedCategory!: string;
+  selectedCategory!: any;
+  selectedCard: any = null; // Initialize selectedCard as null
+  isCardVisible = true;
+  placeholder!: string;
+  imageSrc!: string;
+  selectedCardIndex: number | null = null;
+
   constructor(private router: Router) { }
 
 
@@ -41,11 +48,36 @@ export class HomePageComponent {
     console.log(this.sampleCardData);
   }
 
-  handleNewCardEvent(data: any,componentIdentifier: string) {
-    this.selectedCategory = componentIdentifier;
-    this.isClicked = data;
+  handleNewCardEvent(index: any) {
+    if (this.selectedCardIndex === index) {
+      this.selectedCardIndex = -1;
+    } else {
+      this.selectedCardIndex = index;
+    }
 
+    this.isClicked = this.selectedCardIndex !== -1;
+    this.selectedCategory = this.isClicked ? this.sampleCardData[index] : null;
+
+    if (this.selectedCategory) {
+      console.log('Zawartość klikniętej karty:', this.selectedCategory, index);
+    }
   }
+
+
+  toggleCardVisibility() {
+    this.isCardVisible = !this.isCardVisible;
+  }
+
+  handleArrowIconClick(navigateTo: string) {
+    this.router.navigate(['/tabs/' + navigateTo]);
+  }
+
+
+
+  isCardSelected(): boolean {
+    return this.selectedCard === this.placeholder;
+  }
+
 
   goToCategoryView(e: Event) {
     this.router.navigate(['tabs/tab2'], {

@@ -14,7 +14,7 @@
   <div class="card-container">
     <ion-card *ngFor="let card of cardData; let i = index"
       [ngClass]="{'highlight-card': selectedCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
-      (click)="showNewCard(i)"  (click)="handleCardClick($event)" class="card">
+      (click)="showNewCard(i)"   class="card">
       <ion-icon *ngIf="selectedCardIndex === i" name="close-outline" size="large" fill="clear" class="add-icon"></ion-icon>
       <div class="card-image-container">
         <img [src]="card.src" alt="fav category" class="card-image">

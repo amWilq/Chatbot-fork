@@ -10,6 +10,7 @@ export class CustomMatCardComponent {
   @Input() placeholder!: string;
   @Input() navigateTo!: string;
   @Input() imageSrc!: string;
+  @Input() selectedCard: any; // Add a new input to track the selected card
   @Output() newItemEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
   public isClicked: boolean = false;
 
@@ -20,7 +21,11 @@ export class CustomMatCardComponent {
   }
 
   handleCardClick() {
-    this.isClicked = !this.isClicked;
-    this.newItemEvent.emit(this.isClicked);
+    this.selectedCard = this.selectedCard === this.placeholder ? null : this.placeholder;
+    this.newItemEvent.emit(this.selectedCard);
+  }
+
+  isCardSelected(): boolean {
+    return this.selectedCard === this.placeholder;
   }
 }

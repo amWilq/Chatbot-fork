@@ -31,10 +31,10 @@ export class StackedCardComponent {
     this.selectedCardIndex = (this.selectedCardIndex === index) ? null : index;
   }
 
-  handleCardClick(e: Event) {
-    this.isClicked = !this.isClicked;
-    this.newItemEvent.emit((this.isClicked, e)) ;
-  }
+  // handleCardClick(e: Event) {
+  //   this.isClicked = !this.isClicked;
+  //   this.newItemEvent.emit((this.isClicked, e)) ;
+  // }
 
   removeSchema(index: number) {
     if (index >= 0 && index < this.cardData.length) {
