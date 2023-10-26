@@ -26,12 +26,13 @@ export class CategoryComponent implements OnInit {
     this.selectedItemId = itemName;
   }
 
-  searchItems(event: any) {
-    const searchText = event.detail.value;
+
+  searchItems(event: Event) {
+    const searchText = (event.target as HTMLInputElement).value.toLowerCase();
     if (!searchText) {
       this.filteredItems = this.items;
     } else {
-      this.filteredItems = this.items.filter(item => item.includes(searchText));
+      this.filteredItems = this.items.filter(item => item.toLowerCase().includes(searchText));
     }
   }
 }

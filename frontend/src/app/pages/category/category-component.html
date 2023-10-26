@@ -1,24 +1,24 @@
 <ion-content [fullscreen]="true">
-  <ion-card>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-back-button defaultHref="/tabs/tab1" ></ion-back-button>
-      </ion-buttons>
-      <ion-title>Wybierz podkategorię</ion-title>
-    </ion-toolbar>
+    <ion-card class="container">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/tabs/tab1" ></ion-back-button>
+        </ion-buttons>
+        <ion-title>Wybierz podkategorię</ion-title>
+      </ion-toolbar>
 
-    <ion-card-content>
-      <ion-searchbar (ionInput)="searchItems($event)" placeholder="Wyszukaj"></ion-searchbar>
-      <ion-list>
-        <ion-item *ngFor="let item of filteredItems" (click)="itemClicked(item)" [class.selected]="selectedItemId === item">
-          <ion-thumbnail slot="start">
-            <div class="circle">
-              {{ item.charAt(0) }}
-            </div>
-          </ion-thumbnail>
-          <ion-label>{{ item }}</ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
+      <ion-card-content>
+        <ion-searchbar (ionInput)="searchItems($event)" placeholder="Wyszukaj"></ion-searchbar>
+        <ion-list>
+          <ion-item *ngFor="let item of filteredItems" (click)="itemClicked(item)" [class.selected]="selectedItemId === item">
+            <ion-thumbnail slot="start">
+              <div class="circle">
+                {{ item.charAt(0) }}
+              </div>
+            </ion-thumbnail>
+            <ion-label>{{ item }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
 </ion-content>
