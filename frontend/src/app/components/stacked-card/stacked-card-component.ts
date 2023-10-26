@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ToastController } from '@ionic/angular';
 
 
@@ -7,53 +7,49 @@ import { ToastController } from '@ionic/angular';
   templateUrl: 'stacked-card-component.html',
   styleUrls: ['stacked-card-component.scss']
 })
-export class StackedCardComponent implements OnInit {
+export class StackedCardComponent {
   @Input() cardData!: any[];
   @Input() description!: string;
   @Input() src!: string;
+  @Output() newItemEvent: EventEmitter<any> = new EventEmitter<any>();
 
   isCardVisible = true;
   selectedCardIndex: number | null = null;
-  showDescription: boolean[] = [];
-  show = false;
   selectedOption!: string;
-
-  data: any[] = [];
+  isClicked: boolean = false;
 
   constructor( private toastController: ToastController) {
 
   }
 
-  ngOnInit() {
-    console.log(localStorage);
-    this.loadMotoSchemas();
-    this.showDescription = this.cardData.map(() => false);
-  }
 
   toggleCardVisibility() {
     this.isCardVisible = !this.isCardVisible;
   }
 
-  showNewCard(card: any, i: number) {
-    this.selectedCardIndex = (this.selectedCardIndex === i) ? null : i;
-    this.selectedOption = card.title;
+  showNewCard(index: number) {
+    this.selectedCardIndex = (this.selectedCardIndex === index) ? null : index;
   }
 
-  loadMotoSchemas() {
-    this.data = JSON.parse(localStorage.getItem('favorites-schema') || '[]');
-    if (this.data.length === 0) {
-      return;
-    }
-  }
-
+  // handleCardClick(e: Event) {
+  //   this.isClicked = !this.isClicked;
+  //   this.newItemEvent.emit((this.isClicked, e)) ;
+  // }
 
   removeSchema(index: number) {
-    if (index >= 0 && index < this.data.length) {
-      this.data.splice(index, 1);
-      localStorage.setItem('favorites-schema', JSON.stringify(this.data));
+    if (index >= 0 && index < this.cardData.length) {
+      this.cardData.splice(index, 1);
+      localStorage.setItem('favorites-schema', JSON.stringify(this.cardData));
       this.presentToast('Usunięto z ulubionych!');
     }
   }
+
+  test(card: any, index: number) {
+    console.log('test', card, index);
+  }
+
+
+
 
   async presentToast(text: string ) {
     const toast = await this.toastController.create({

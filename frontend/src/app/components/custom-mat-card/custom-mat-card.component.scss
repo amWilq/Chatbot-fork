@@ -1,0 +1,27 @@
+.rounded-card {
+  border-radius: 20px;
+  background-color: var(--ion-card-background);
+  padding: 15px;
+  margin: 16px 0 0 0;
+  .ion-card-content-spacing {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.arrow-button {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.highlight-card {
+  border: 2px solid var(--ion-color-primary);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+.card-image {
+height: 50px;
+}
+span {
+  display: flex;
+  align-items: center;
+}

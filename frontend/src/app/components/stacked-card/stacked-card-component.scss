@@ -1,14 +1,13 @@
 .card-image-container {
   height: 0;
   padding-top: 75%;
-  // position: relative;
-  // overflow: hidden;
-  scale: 0.75;
+  transform: scale(0.75);
   border-radius: 20px 20px 0 0;
 }
 
 .card-image {
   position: absolute;
+  padding-top: 10px;
   top: 0;
   left: 0;
 }
@@ -21,7 +20,7 @@
 }
 
 .card {
-  height: 150px;
+  // height: 150px;
   flex: 0 0 30%;
   margin: 0 5px;
   scroll-snap-align: start;
@@ -30,12 +29,13 @@
   background-color: var(--md-card-content-background);
 }
 
+
 .card-container {
   display: flex;
   overflow-x: scroll;
   flex-wrap: nowrap;
-  // scrollbar-width: thin;
-  // scrollbar-color: transparent transparent;
+  padding-bottom: 1rem;
+  // transform: translateY(-30px);
 }
 
 
@@ -43,13 +43,13 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
 
-.center-button {
+}
+.add-icon {
+  right: 0;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+  position: absolute;
+  color: red;
 }
 
 .card-animating {
@@ -62,6 +62,9 @@
   max-height: 0;
   margin: 0 5px;
 }
+.card-title{
+  padding-bottom: 20px;
+}
 
 .header-md {
   -webkit-box-shadow: none;
@@ -73,47 +76,6 @@
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
-.fav {
-  display: flex !important;
-  overflow-x: scroll !important;
-  flex-wrap: wrap;
-  overflow-y: auto;
-  max-height: 300px;
-  scrollbar-width: thin;
-}
-
-.schema{
-  display: flex !important;
-  overflow-x: scroll !important;
-  flex-wrap: wrap;
-  overflow-y: auto;
-  max-height: 300px;
-  scrollbar-width: thin;
-  justify-content: space-around;
-}
-
-.parent {
-  display: grid;
-  grid-template-columns: 8fr 1fr;
-  grid-template-rows: 1fr repeat(2, 0.5fr);
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
-}
-
-
-.div1 {
-  grid-area: 1 / 2 / 2 / 3;
-  display: flex;
-}
-
-.div2 {
-  grid-area: 2 / 1 / 3 / 3;
-}
-
-.div3 {
-  grid-area: 3 / 1 / 4 / 3;
-}
-
 ion-card-header{
   padding-top: 0px !important;
 }
@@ -122,10 +84,3 @@ ion-toolbar {
   --background: transparent;
 }
 
-
-.remove-button {
-  position: absolute;
-  top: -12%;
-  right: -20%;
-  z-index: 1;
-}

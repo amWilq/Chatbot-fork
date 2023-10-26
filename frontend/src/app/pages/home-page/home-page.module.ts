@@ -7,6 +7,7 @@ import { HomePageComponent } from './home-page-component';
 import { HomePageRoutingModule } from './home-page-routing.module';
 import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
 import { StackedCardComponentModule } from 'src/app/components/stacked-card/stacked-card.module';
+import { CustomMatCardComponentModule } from 'src/app/components/custom-mat-card/custom-mat-card.module';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { StackedCardComponentModule } from 'src/app/components/stacked-card/stac
     FormsModule,
     ExploreContainerComponentModule,
     StackedCardComponentModule,
+    CustomMatCardComponentModule,
     HomePageRoutingModule
   ],
   declarations: [HomePageComponent]

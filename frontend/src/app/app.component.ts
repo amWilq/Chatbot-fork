@@ -6,5 +6,10 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor() {}
+  constructor() {
+  }
+
+  ngOnInit() {
+    document.body.classList.toggle('dark', true);
+  }
 }
