@@ -2,6 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TabsPage } from './tabs.page';
+import { RouterModule } from '@angular/router';
 
 describe('TabsPage', () => {
   let component: TabsPage;
@@ -11,6 +12,7 @@ describe('TabsPage', () => {
     await TestBed.configureTestingModule({
       declarations: [TabsPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [RouterModule.forRoot([])]
     }).compileComponents();
   });
 
