@@ -14,11 +14,11 @@
     </ion-header>
 
     <div class="card-container">
-      <ion-card *ngFor="let card of sampleCardData; let i = index"
-        [ngClass]="{'highlight-card': selectedCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
-        (click)="handleNewCardEvent(i)" class="card">
-        <ion-icon *ngIf="selectedCardIndex === i" name="close-outline" size="large" fill="clear"
-          class="add-icon"></ion-icon>
+      <ion-card *ngFor="let card of sampleFavData; let i = index"
+        [ngClass]="{'highlight-card': selectedFavCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
+        (click)="handleNewCardEvent(card, i, true)" class="card">
+        <ion-icon (click)="deleteCard(card)" *ngIf="selectedFavCardIndex === i" name="close-outline" size="large" fill="clear"
+          class="close-icon"></ion-icon>
         <div class="card-image-container">
           <img [src]="card.src" alt="fav category" class="card-image">
         </div>
@@ -30,22 +30,24 @@
 
   </div>
 
-  <ion-card *ngFor="let card of sampleCardData; let i = index" [ngClass]="{'highlight-card': selectedCardIndex === i }"
-    (click)="handleNewCardEvent(i)" class="rounded-card ion-card-spacing">
+  <ion-card *ngFor="let card of sampleCategoryData; let i = index"
+    [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }" class="rounded-card ion-card-spacing">
     <ion-card-content class="ion-card-content-spacing">
-      <span class="span-test">{{ card.title }}</span>
       <img [src]="card.src" alt="placeholder" class="card-image-content">
+      <span class="span-test">{{ card.title }}</span>
+      <div style="display: flex; align-self: center;">
+        <ion-icon (click)="handleArrowIconClick('tab2')" class="span-test" size="large"
+          name="chevron-forward-outline"></ion-icon>
+      </div>
     </ion-card-content>
   </ion-card>
 
-
 </ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="selectedFavCardIndex">
   <div class="container-button">
-    <ion-button (click)="goToCategoryView($event)" [disabled]="!isClicked" size="large" fill="clear">
-      <ion-icon style="transform: scale(5);" name="chevron-forward-outline"></ion-icon>
+    <ion-button (click)="goToCategoryView($event)" size="large" fill="clear">
+      <ion-icon class="chevron-forward" name="chevron-forward-outline"></ion-icon>
     </ion-button>
-
   </div>
 </ion-footer>
