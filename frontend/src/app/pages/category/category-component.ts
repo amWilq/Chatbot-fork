@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'category-component',
@@ -13,7 +13,8 @@ export class CategoryComponent implements OnInit {
   , 'Item 8', 'Item 9', 'Item 10', 'Item 11', 'Item 12', 'Item 13', 'Item 14', 'Item 15'];
   filteredItems: string[] = this.items;
   constructor(
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -34,5 +35,14 @@ export class CategoryComponent implements OnInit {
     } else {
       this.filteredItems = this.items.filter(item => item.toLowerCase().includes(searchText));
     }
+  }
+
+  startQuiz(e: Event) {
+    this.router.navigate(['tabs/tab3'], {
+      queryParams: {
+        selectedCategory: this.selectedCategory,
+        disabled: true
+      }
+    });
   }
 }

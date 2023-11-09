@@ -2,10 +2,12 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { QuizComponent } from './quiz-component.';
+import { QuizComponent } from './quiz-component';
 
 import { QuizComponentPageRoutingModule } from './quiz-routing.module';
 import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
+import { PickAnswerQuizComponentModule } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.module';
+import { QuizSummaryComponentModule } from 'src/app/components/pick-answer-quiz/quiz-summary/quiz-summary.module';
 
 @NgModule({
   imports: [
@@ -13,7 +15,9 @@ import { ExploreContainerComponentModule } from 'src/app/components/explore-cont
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    QuizComponentPageRoutingModule
+    QuizComponentPageRoutingModule,
+    PickAnswerQuizComponentModule,
+    QuizSummaryComponentModule
   ],
   declarations: [QuizComponent]
 })

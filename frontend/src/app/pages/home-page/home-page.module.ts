@@ -8,6 +8,7 @@ import { HomePageRoutingModule } from './home-page-routing.module';
 import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
 import { StackedCardComponentModule } from 'src/app/components/stacked-card/stacked-card.module';
 import { CustomMatCardComponentModule } from 'src/app/components/custom-mat-card/custom-mat-card.module';
+import { PickAnswerQuizComponentModule } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { CustomMatCardComponentModule } from 'src/app/components/custom-mat-card
     ExploreContainerComponentModule,
     StackedCardComponentModule,
     CustomMatCardComponentModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    PickAnswerQuizComponentModule
   ],
   declarations: [HomePageComponent]
 })

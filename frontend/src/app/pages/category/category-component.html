@@ -22,3 +22,11 @@
       </ion-card-content>
     </ion-card>
 </ion-content>
+<ion-footer *ngIf="selectedItemId">
+  <div class="container-button">
+    <ion-button (click)="startQuiz($event)" size="large" fill="clear">
+      <ion-icon class="chevron-forward" name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+  </div>
+</ion-footer>
+

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 
-import { QuizComponent } from './quiz-component.';
+import { QuizComponent } from './quiz-component';
 import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
 
 describe('Tab3Page', () => {

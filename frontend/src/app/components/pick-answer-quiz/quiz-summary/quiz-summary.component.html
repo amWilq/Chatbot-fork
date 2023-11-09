@@ -1,0 +1,24 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Quiz Summary</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <p>You scored {{ calculateScore() }} out of {{ questions.length }}.</p>
+    <ion-list>
+      <ion-item *ngFor="let question of questions; let i = index">
+        <ion-label>
+          Q{{ i + 1 }}: {{ question.question }}
+          <p>Selected Answer: {{ answers[i] }}</p>
+          <p>Correct Answer: {{ question.correctAnswer }}</p>
+          <ion-icon name="checkmark-circle" *ngIf="question.correctAnswer === answers[i]" color="success"></ion-icon>
+          <ion-icon name="close-circle" *ngIf="question.correctAnswer !== answers[i]" color="danger"></ion-icon>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>
+<ion-footer>
+  <ion-button (click)="onReplayQuiz()">Play Again</ion-button>
+  <ion-button (click)="onReturnToMenu()">Return to Main Menu</ion-button>
+
+</ion-footer>
