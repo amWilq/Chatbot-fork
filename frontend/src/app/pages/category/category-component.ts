@@ -1,48 +1,79 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
+import { Assessment } from 'src/app/entities/assessments.model';
+import { Language } from 'src/app/entities/languages.model';
+import { AssessmentsService } from 'src/app/services/assessments.service';
+import { LanguagesService } from 'src/app/services/languages.service';
 
 @Component({
-  selector: 'category-component',
-  templateUrl: 'category-component.html',
-  styleUrls: ['category-component.scss']
+  selector: 'app-category',
+  templateUrl: './category-component.html',
+  styleUrls: ['./category-component.scss']
 })
 export class CategoryComponent implements OnInit {
   selectedCategory: string | null = null;
-  selectedItemId: string | null = null;
-  items: string[] = ['Angular 1', 'test 2', 'srest 3', 'dupa 4', 'Item 5', 'Item 6', 'Item 7'
-  , 'Item 8', 'Item 9', 'Item 10', 'Item 11', 'Item 12', 'Item 13', 'Item 14', 'Item 15'];
-  filteredItems: string[] = this.items;
+  selectedItemId: Language | null = null;
+  filteredItems: Language[] = [];
+  originalItems: Language[] = [];
+  showAssessmentComponent: boolean = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private languagesService: LanguagesService,
+    private assessmentsService: AssessmentsService,
+    private alertController: AlertController
+
   ) { }
 
-  ngOnInit() {
-    this.activatedRoute.queryParams.subscribe((params) => {
-      this.selectedCategory = params['selectedCategory'];
+  ngOnInit(): void {
+    this.subscribeToQueryParams();
+  }
+
+  private subscribeToQueryParams(): void {
+    this.activatedRoute.queryParams.subscribe({
+      next: (params) => {
+        this.selectedCategory = params['selectedCategory'];
+        this.loadLanguages();
+      },
+      error: (err) => console.error('Error reading query parameters:', err)
     });
   }
 
-  itemClicked(itemName: string) {
-    this.selectedItemId = itemName;
+  private loadLanguages(): void {
+    if (!this.selectedCategory) return;
+
+    this.languagesService.getAllLanguagesForCategory(this.selectedCategory).subscribe({
+      next: (res: any) => {
+        this.originalItems = res.body.items ?? [];
+        this.filteredItems = [...this.originalItems];
+      },
+      error: (err) => console.error('Error fetching languages:', err)
+    });
   }
 
+  onItemSelect(item: Language): void {
+    this.selectedItemId = item;
+  }
 
-  searchItems(event: Event) {
+  onSearch(event: Event): void {
     const searchText = (event.target as HTMLInputElement).value.toLowerCase();
-    if (!searchText) {
-      this.filteredItems = this.items;
-    } else {
-      this.filteredItems = this.items.filter(item => item.toLowerCase().includes(searchText));
-    }
+    this.filteredItems = searchText ? this.filterItems(searchText) : [...this.originalItems];
   }
 
-  startQuiz(e: Event) {
-    this.router.navigate(['tabs/tab3'], {
-      queryParams: {
-        selectedCategory: this.selectedCategory,
-        disabled: true
-      }
-    });
+  private filterItems(searchText: string): Language[] {
+    return this.originalItems.filter((item) => item.name?.toLowerCase().includes(searchText));
   }
+
+  onStartQuiz() {
+    this.showAssessmentComponent = true;
+    // this.router.navigate(['tabs/tab3'], {
+    //   queryParams: {
+    //     selectedCategory: this.selectedCategory,
+    //     disabled: true
+    //   }
+    // });
+  }
+
 }

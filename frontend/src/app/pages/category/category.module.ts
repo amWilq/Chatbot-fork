@@ -6,6 +6,7 @@ import { CategoryComponent } from './category-component';
 
 import { CategoryComponentRoutingModule } from './category-routing.module';
 import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
+import { AssessmentsModule } from '../assessments/assessments.module';
 
 @NgModule({
   imports: [
@@ -13,8 +14,9 @@ import { ExploreContainerComponentModule } from 'src/app/components/explore-cont
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    CategoryComponentRoutingModule
+    CategoryComponentRoutingModule,
+    AssessmentsModule
   ],
-  declarations: [CategoryComponent]
+  declarations: [CategoryComponent],
 })
 export class CategoryModule {}

@@ -1,3 +1,4 @@
+<ng-container *ngIf="!showAssessmentComponent">
 <ion-content [fullscreen]="true">
     <ion-card class="container">
       <ion-toolbar>
@@ -8,15 +9,15 @@
       </ion-toolbar>
 
       <ion-card-content>
-        <ion-searchbar (ionInput)="searchItems($event)" placeholder="Wyszukaj"></ion-searchbar>
+        <ion-searchbar (ionInput)="onSearch($event)" placeholder="Wyszukaj"></ion-searchbar>
         <ion-list>
-          <ion-item *ngFor="let item of filteredItems" (click)="itemClicked(item)" [class.selected]="selectedItemId === item">
+          <ion-item *ngFor="let item of filteredItems" (click)="onItemSelect(item)" [class.selected]="selectedItemId === item">
             <ion-thumbnail slot="start">
               <div class="circle">
-                {{ item.charAt(0) }}
+                {{ item.name!.charAt(0) }}
               </div>
             </ion-thumbnail>
-            <ion-label>{{ item }}</ion-label>
+            <ion-label>{{ item.name }}</ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -24,9 +25,11 @@
 </ion-content>
 <ion-footer *ngIf="selectedItemId">
   <div class="container-button">
-    <ion-button (click)="startQuiz($event)" size="large" fill="clear">
+    <ion-button (click)="onStartQuiz()" size="large" fill="clear">
       <ion-icon class="chevron-forward" name="chevron-forward-outline"></ion-icon>
     </ion-button>
   </div>
 </ion-footer>
+</ng-container>
 
+<assessment-component *ngIf="showAssessmentComponent"></assessment-component>
