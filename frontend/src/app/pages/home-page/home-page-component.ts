@@ -1,10 +1,13 @@
+import { HttpResponse } from '@angular/common/http';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { Category } from 'src/app/entities/category.model';
+import { CategoryService } from 'src/app/services/category.service';
 
-interface Category {
-  title: string;
-  src: string;
-}
+// interface Category {
+//   title: string;
+//   src: string;
+// }
 
 @Component({
   selector: 'home-page-component',
@@ -27,48 +30,47 @@ export class HomePageComponent {
 
   selectedFavCardIndex: number | null = null;
   selectedCategoryCardIndex: number | null = null;
+  categorys: Category[] = [];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private categoryService: CategoryService,
+
+  ) { }
 
   ngOnInit() {
     this.loadSimpleData();
   }
 
   loadSimpleData() {
+
+    this.categoryService.getAllCategories().subscribe(
+      (res: HttpResponse<any>) => {
+        this.categorys = res.body.items ?? [];
+        console.log(this.categorys);
+      },
+      error => {
+        console.error('Error fetching categories:', error);
+      }
+    );
+
+
     const sampleFavData: Category[] = [
       {
-        title: 'Angular',
-        src: '/assets/images/angular.png'
+        name: 'Angular',
+        // src: '/assets/images/angular.png'
       },
       {
-        title: 'Ionic',
-        src: '/assets/images/ionic.svg'
+        name: 'Ionic',
+        // src: '/assets/images/ionic.svg'
       },
       {
-        title: 'Scss',
-        src: '/assets/images/scss.svg'
+        name: 'Scss',
+        // src: '/assets/images/scss.svg'
       },
       {
-        title: 'HTML',
-        src: '/assets/images/html.png'
-      }
-    ];
-    const sampleCategoryData: Category[] = [
-      {
-        title: 'Frontend',
-        src: '/assets/images/angular.png'
-      },
-      {
-        title: 'Backend',
-        src: '/assets/images/ionic.svg'
-      },
-      {
-        title: 'Cybersecurity',
-        src: '/assets/images/scss.svg'
-      },
-      {
-        title: 'Other',
-        src: '/assets/images/html.png'
+        name: 'HTML',
+        // src: '/assets/images/html.png'
       }
     ];
 
@@ -78,11 +80,6 @@ export class HomePageComponent {
       return;
     }
 
-    localStorage.setItem('category-data', JSON.stringify(sampleCategoryData));
-    this.sampleCategoryData = JSON.parse(localStorage.getItem('category-data') || '[]');
-    if (this.sampleCategoryData.length === 0) {
-      return;
-    }
   }
 
 
@@ -133,16 +130,23 @@ export class HomePageComponent {
     this.isCardVisible = !this.isCardVisible;
   }
 
-  handleArrowIconClick(navigateTo: string) {
-    this.router.navigate(['/tabs/' + navigateTo], { queryParams: { disabled: true } });
+  handleArrowIconClick(navigateTo: string, card: Category) {
+    this.router.navigate(['/tabs/' + navigateTo],
+      {
+        queryParams: {
+          disabled: true,
+          selectedCategory: card.categoryId
+        }
+      });
   }
 
   isCardSelected(): boolean {
-    return this.selectedCard !== null && this.selectedCard.title === this.placeholder;
+    return this.selectedCard !== null && this.selectedCard.name === this.placeholder;
   }
 
 
   goToCategoryView(e: Event) {
+    console.log('goToCategoryView', this.selectedCategory);
     this.router.navigate(['tabs/tab2'], {
       queryParams: {
         selectedCategory: this.selectedCategory,

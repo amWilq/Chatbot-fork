@@ -1,0 +1,21 @@
+.square-card {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: solid 1px gray;
+  border-radius: 20px;
+}
+
+ion-segment-button.md {
+  --indicator-height: none;
+
+}
+.highlight-card {
+  border: 2px solid var(--ion-color-primary);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}

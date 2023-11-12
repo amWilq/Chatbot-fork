@@ -1,0 +1,31 @@
+<ion-content [fullscreen]="true">
+  <ion-card class="container">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/tabs/tab1" ></ion-back-button>
+      </ion-buttons>
+      <ion-title>Wybierz tryb i poziom!</ion-title>
+    </ion-toolbar>
+
+    <ion-card-content>
+      <ion-card *ngFor="let format of assessments" class="square-card"
+          [ngClass]="{'highlight-card': selectedCard === format}"
+          (click)="onCardClick(format)">
+        <ion-card-header>
+          <ion-card-title>{{ format.name }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{ format.format }}
+          <ion-segment [disabled]="selectedCard !== format" (ionChange)="onDifficultyChange($event)">
+            <ion-segment-button *ngFor="let difficulty of format.difficulties" value="{{difficulty}}">
+              <ion-icon [name]="getIconForDifficulty(difficulty)"></ion-icon>
+            </ion-segment-button>
+          </ion-segment>
+        </ion-card-content>
+      </ion-card>
+    </ion-card-content>
+  </ion-card>
+
+
+
+</ion-content>

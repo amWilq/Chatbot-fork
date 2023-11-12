@@ -20,23 +20,23 @@
         <ion-icon (click)="deleteCard(card)" *ngIf="selectedFavCardIndex === i" name="close-outline" size="large" fill="clear"
           class="close-icon"></ion-icon>
         <div class="card-image-container">
-          <img [src]="card.src" alt="fav category" class="card-image">
+          <!-- <img [src]="card.src" alt="fav category" class="card-image"> -->
         </div>
         <ion-card-content>
-          <div class="card-description">{{ card.title }}</div>
+          <div class="card-description">{{ card.name }}</div>
         </ion-card-content>
       </ion-card>
     </div>
 
   </div>
 
-  <ion-card *ngFor="let card of sampleCategoryData; let i = index"
+  <ion-card *ngFor="let card of categorys; let i = index"
     [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }" class="rounded-card ion-card-spacing">
     <ion-card-content class="ion-card-content-spacing">
-      <img [src]="card.src" alt="placeholder" class="card-image-content">
-      <span class="span-test">{{ card.title }}</span>
+      <!-- <img [src]="card.src" alt="placeholder" class="card-image-content"> -->
+      <span class="span-test">{{ card.name }}</span>
       <div style="display: flex; align-self: center;">
-        <ion-icon (click)="handleArrowIconClick('tab2')" class="span-test" size="large"
+        <ion-icon (click)="handleArrowIconClick('tab2', card)" class="span-test" size="large"
           name="chevron-forward-outline"></ion-icon>
       </div>
     </ion-card-content>
