@@ -41,6 +41,6 @@ export class QuizComponent {
   }
 
   onReturnToMenu() {
-
+    console.log("onReturnToMenu");
   }
 }

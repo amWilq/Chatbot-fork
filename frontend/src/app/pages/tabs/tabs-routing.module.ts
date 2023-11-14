@@ -18,7 +18,7 @@ const routes: Routes = [
       },
       {
         path: 'tab3',
-        loadChildren: () => import('../quiz/quiz.module').then(m => m.QuizModule)
+        loadChildren: () => import('../quiz/quiz/quiz.module').then(m => m.QuizModule)
       },
       {
         path: '',
