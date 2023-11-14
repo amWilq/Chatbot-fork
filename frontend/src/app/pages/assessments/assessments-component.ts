@@ -10,6 +10,8 @@ import { AssessmentsService } from 'src/app/services/assessments.service';
 export class AssessmentsComponent {
   assessments: Assessment[] = [];
   selectedCard! : any;
+  loading: boolean = false;
+  selectedDifficulty: string = '';
 
   constructor(
     private assessmentsService: AssessmentsService,
@@ -33,7 +35,8 @@ export class AssessmentsComponent {
   }
 
   onDifficultyChange(event: any) {
-    console.log('Selected difficulty:', event.detail.value);
+    this.selectedDifficulty = event.detail.value;
+    console.log('Selected difficulty:', this.selectedDifficulty);
   }
 
   getIconForDifficulty(difficulty: string): string {
@@ -51,12 +54,16 @@ export class AssessmentsComponent {
 
   onCardClick(format: any): void {
     this.selectedCard = format;
-    console.log('Clicked format:', format);
+    console.error('Selected card:', this.selectedCard);
   }
 
   onBackButtonClicked() {
     window.location.reload();
   }
 
+  onStartQuizClicked() {
+    this.loading = true;
+    console.log('Start quiz clicked!', this.selectedDifficulty, this.selectedCard);
+  }
 
 }
