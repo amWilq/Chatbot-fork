@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController } from '@ionic/angular';
-import { Assessment } from 'src/app/entities/assessments.model';
+import { ActivatedRoute } from '@angular/router';
 import { Language } from 'src/app/entities/languages.model';
-import { AssessmentsService } from 'src/app/services/assessments.service';
 import { LanguagesService } from 'src/app/services/languages.service';
 
 @Component({
@@ -20,11 +17,7 @@ export class CategoryComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private router: Router,
     private languagesService: LanguagesService,
-    private assessmentsService: AssessmentsService,
-    private alertController: AlertController
-
   ) { }
 
   ngOnInit(): void {
@@ -68,12 +61,6 @@ export class CategoryComponent implements OnInit {
 
   onStartQuiz() {
     this.showAssessmentComponent = true;
-    // this.router.navigate(['tabs/tab3'], {
-    //   queryParams: {
-    //     selectedCategory: this.selectedCategory,
-    //     disabled: true
-    //   }
-    // });
   }
 
 }

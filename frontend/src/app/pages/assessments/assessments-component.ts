@@ -8,7 +8,6 @@ import { AssessmentsService } from 'src/app/services/assessments.service';
   styleUrls: ['assessments-component.scss']
 })
 export class AssessmentsComponent {
-
   assessments: Assessment[] = [];
   selectedCard! : any;
 
@@ -26,12 +25,13 @@ export class AssessmentsComponent {
       next: (res: any) => {
         this.assessments = res.body.items ?? [];
         if (this.assessments.length > 0) {
-          this.selectedCard = this.assessments[0]; // Select the first assessment
+          this.selectedCard = this.assessments[0];
         }
       },
       error: (err) => console.error('Error fetching assessments:', err)
     });
   }
+
   onDifficultyChange(event: any) {
     console.log('Selected difficulty:', event.detail.value);
   }
@@ -54,7 +54,9 @@ export class AssessmentsComponent {
     console.log('Clicked format:', format);
   }
 
-
+  onBackButtonClicked() {
+    window.location.reload();
+  }
 
 
 }
