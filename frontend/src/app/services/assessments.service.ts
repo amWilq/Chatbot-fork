@@ -13,6 +13,8 @@ export class AssessmentsService {
 
   private ASSESSMENTS_LIST_URL = SERVER_API_URL + '/assessments/types';
 
+  //  new url = /assessments/{assessmentTypeName}/start
+
   constructor(
     private http: HttpClient
   ){}
@@ -21,5 +23,14 @@ export class AssessmentsService {
     return this.http.get<Assessment[]>(`${this.ASSESSMENTS_LIST_URL}`, { observe: 'response' });
   }
 
+  startAssessment(assessmentTypeName: string, body: any): Observable<HttpResponse<any>> {
+    const startUrl = `${SERVER_API_URL}/assessments/${assessmentTypeName}/start`;
+    return this.http.post<any>(startUrl, body, { observe: 'response' });
+  }
+
+  startAssessmentGenerate(assessmentTypeName: string,assessmentId: string, body: any): Observable<HttpResponse<any>> {
+    const startUrl = `${SERVER_API_URL}/assessments/${assessmentTypeName}/${assessmentId}`;
+    return this.http.post<any>(startUrl, body, { observe: 'response' });
+  }
 
 }

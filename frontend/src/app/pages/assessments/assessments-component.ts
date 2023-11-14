@@ -54,7 +54,7 @@ export class AssessmentsComponent {
 
   onCardClick(format: any): void {
     this.selectedCard = format;
-    console.error('Selected card:', this.selectedCard);
+    console.warn('Selected card:', this.selectedCard);
   }
 
   onBackButtonClicked() {
@@ -64,6 +64,38 @@ export class AssessmentsComponent {
   onStartQuizClicked() {
     this.loading = true;
     console.log('Start quiz clicked!', this.selectedDifficulty, this.selectedCard);
+    const requestBody = {
+      "assessmentTypeId": this.selectedCard.assessmentTypeId.toString(),
+      "duration": 5,
+      "startTime": new Date().toISOString(),
+      "userId": "1"
+    };
+    const requestBody2 ={
+      "assessmentTypeId": "1",
+      "assessmentId": "1",
+      "userId": "1",
+      "requestType": "question",
+      "languageId": "1",
+      "data": {
+        "format": "multi-choice",
+        "difficulty": "beginner"
+      }
+    }
+    this.assessmentsService.startAssessment(this.selectedCard.name, requestBody).subscribe(response => {
+      // Handle the response as needed
+      console.log(response);
+      this.assessmentsService.startAssessmentGenerate(this.selectedCard.name, response.body.assessmentId, requestBody2).subscribe(response => {
+        // Handle the response as needed
+        console.log(response);
+        this.loading = false;
+      }, error => {
+        // Handle errors
+        console.error(error);
+      });
+    }, error => {
+      // Handle errors
+      console.error(error);
+    });
   }
 
 }
