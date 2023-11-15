@@ -11,7 +11,6 @@ import { AssessmentsService } from 'src/app/services/assessments.service';
   styleUrls: ['assessments-component.scss']
 })
 export class AssessmentsComponent {
-  @ViewChild(PickAnswerQuizComponent) private pickAnswerQuizComponent!: PickAnswerQuizComponent;
   @Input() languageId!: any ;
   assessments: Assessment[] = [];
   selectedCard!: any;
@@ -100,11 +99,8 @@ export class AssessmentsComponent {
   private handleQuizQuestionsResponse(response: any): void {
     this.questions = response.body.quiz.question;
     console.log(this.questions);
-    // this.showPickAnswerQuiz = true;
     this.loading = false;
     this.cdr.detectChanges();
-    this.subscribeToQuizCompletion();
-    console.log(this.questions);
     if (this.questions) {
       this.router.navigate(['/tabs/tab3'], {
         queryParams: {
@@ -134,33 +130,6 @@ export class AssessmentsComponent {
   private logErrorAndStopLoading(error: any): void {
     this.loading = false;
     console.error(error);
-  }
-
-  private subscribeToQuizCompletion() {
-    const requestBody = {
-        "assessmentTypeId": this.selectedCard.assessmentTypeId.toString(),
-        "endTime": new Date().toISOString(),
-        "userId": "1"
-    }
-
-    if (this.pickAnswerQuizComponent) {
-      this.pickAnswerQuizComponent.quizCompleted.subscribe(() => {
-        this.assessmentsService.completeAssessment(this.selectedCard.name,this.assessmentId, requestBody).subscribe(response => {
-          this.summaryData = response.body.quiz;
-          console.warn( response.body.quiz);
-          this.showSummary = true;
-        },
-        error => {
-          this.loading = false;
-          console.error(error);
-        }
-        );
-      });
-    } else {
-      setTimeout(() => {
-        this.subscribeToQuizCompletion();
-      }, 100);
-    }
   }
 
   private logError(message: string, error: any): void {

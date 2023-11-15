@@ -36,27 +36,25 @@ export class QuizComponent {
       error: (err) => console.error('Error reading query parameters:', err)
     });
     this.subscribeToQuizCompletion();
-
   }
 
   private subscribeToQuizCompletion() {
     const requestBody = {
-        "assessmentTypeId": this.assessmentTypeId,
-        "endTime": new Date().toISOString(),
-        "userId": "1"
+      "assessmentTypeId": this.assessmentTypeId,
+      "endTime": new Date().toISOString(),
+      "userId": "1"
     }
 
     if (this.pickAnswerQuizComponent) {
       this.pickAnswerQuizComponent.quizCompleted.subscribe(() => {
-        this.assessmentsService.completeAssessment( this.assessmentName,this.assessmentId, requestBody).subscribe(response => {
+        this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).subscribe(response => {
           this.summaryData = response.body.quiz;
-          console.warn( response.body.quiz);
           this.showSummary = true;
         },
-        error => {
-          this.loading = false;
-          console.error(error);
-        }
+          error => {
+            this.loading = false;
+            console.error(error);
+          }
         );
       });
     } else {

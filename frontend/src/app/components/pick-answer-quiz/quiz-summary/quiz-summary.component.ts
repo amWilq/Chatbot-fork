@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { QuizModel } from 'src/app/entities/quiz-question.model';
 
 @Component({
   selector: 'app-quiz-summary',
@@ -8,7 +7,8 @@ import { QuizModel } from 'src/app/entities/quiz-question.model';
 })
 export class QuizSummaryComponent implements OnInit {
   @Input() quizResponse!: any ;
-  @Output() replayQuiz = new EventEmitter<void>();
+
+  @Output() replayQuiz: EventEmitter<void> = new EventEmitter<void>();
   @Output() returnToMenu = new EventEmitter<void>();
 
   ngOnInit(): void {
