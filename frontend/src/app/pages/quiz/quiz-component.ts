@@ -18,6 +18,7 @@ export class QuizComponent {
   assessmentId: any;
   assessmentName: any;
   showSummary: boolean = false;
+  duration: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -28,6 +29,7 @@ export class QuizComponent {
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe({
       next: (params) => {
+        this.duration = params['duration'];
         this.assessmentName = params['assessmentName'];
         this.assessmentId = params['assessmentId'];
         this.assessmentTypeId = params['assessmentTypeId'];
@@ -39,14 +41,13 @@ export class QuizComponent {
   }
 
   private subscribeToQuizCompletion() {
-    const requestBody = {
-      "assessmentTypeId": this.assessmentTypeId,
-      "endTime": new Date().toISOString(),
-      "userId": "1"
-    }
-
     if (this.pickAnswerQuizComponent) {
       this.pickAnswerQuizComponent.quizCompleted.subscribe(() => {
+        const requestBody = {
+          "assessmentTypeId": this.assessmentTypeId,
+          "endTime": new Date().toISOString(),
+          "userId": localStorage.getItem('username')
+        }
         this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).subscribe(response => {
           this.summaryData = response.body.quiz;
           this.showSummary = true;

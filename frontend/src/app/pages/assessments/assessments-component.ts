@@ -22,6 +22,7 @@ export class AssessmentsComponent {
   assessmentId = '';
   showSummary: boolean = false;
   summaryData!: QuizModel;
+  duration = 10;
 
   constructor(
     private assessmentsService: AssessmentsService,
@@ -80,16 +81,15 @@ export class AssessmentsComponent {
   private createStartAssessmentRequest(): any {
     return {
       "assessmentTypeId": this.selectedCard.assessmentTypeId.toString(),
-      "duration": 5,
+      "duration": this.duration,
       "startTime": new Date().toISOString(),
-      "userId": "1"
+      "userId": localStorage.getItem('username')
     };
   }
 
   private handleStartAssessmentResponse(response: any): void {
     this.assessmentId = response.body.assessmentId;
     const requestBody2 = this.createSecondAssessmentRequest(response.body.assessmentId);
-    console.log(this.selectedCard.name, this.assessmentId, requestBody2)
     this.assessmentsService.startAssessmentGenerate(this.selectedCard.name, this.assessmentId, requestBody2).subscribe({
       next: (response) => this.handleQuizQuestionsResponse(response),
       error: (error) => this.logErrorAndStopLoading(error)
@@ -104,6 +104,7 @@ export class AssessmentsComponent {
     if (this.questions) {
       this.router.navigate(['/tabs/tab3'], {
         queryParams: {
+          duration: this.duration,
           assessmentName: this.selectedCard.name,
           assessmentId: this.assessmentId,
           assessmentTypeId: this.selectedCard.assessmentTypeId.toString(),
@@ -117,7 +118,7 @@ export class AssessmentsComponent {
     return {
       "assessmentTypeId": this.selectedCard.assessmentTypeId.toString(),
       "assessmentId": assessmentId,
-      "userId": "1",
+      "userId": localStorage.getItem('username'),
       "requestType": "question",
       "languageId": this.languageId,
       "data": {
