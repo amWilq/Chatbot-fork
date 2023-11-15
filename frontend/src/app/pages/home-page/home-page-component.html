@@ -27,8 +27,8 @@
 
   </div>
 
-  <ion-card *ngFor="let card of categorys; let i = index" [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }"
-    class="rounded-card ion-card-spacing">
+  <ion-card *ngFor="let card of categorys; let i = index"
+    [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }" class="rounded-card ion-card-spacing">
     <ion-card-content class="ion-card-content-spacing">
       <span class="span-test">{{ card.name }}</span>
       <div style="display: flex; align-self: center;">
@@ -41,5 +41,6 @@
 </ion-content>
 
 <ion-footer>
-  <ion-button [disabled]="selectedFavCard.length === 0" class="custom-button" (click)="goToCategoryView()">Next</ion-button>
+  <ion-button [disabled]="selectedFavCard.length === 0" class="custom-button"
+    (click)="goToCategoryView()">Next</ion-button>
 </ion-footer>

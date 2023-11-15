@@ -19,6 +19,8 @@ export class HomePageComponent implements OnInit {
   selectedFavCardIndex: number | null = null;
   selectedCategoryCardIndex: number | null = null;
   categorys: Category[] = [];
+  username: string | null = null;
+  usernameInput: string = '';
 
   constructor(private router: Router, private categoryService: CategoryService) { }
 
