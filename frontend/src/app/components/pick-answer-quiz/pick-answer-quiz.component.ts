@@ -8,6 +8,7 @@ import { QuizQuestion } from 'src/app/entities/quiz-question.model';
 })
 export class PickAnswerQuizComponent {
   @Input() questions: any
+  @Input() duration: number = 5;
   @Output() quizCompleted: EventEmitter<void> = new EventEmitter<void>();
   selectedAnswer: string | null = null;
   progress: number = 0;
@@ -21,8 +22,17 @@ export class PickAnswerQuizComponent {
     this.startTimer();
   }
 
-  startTimer() {
-    let time = 300; // Start from 300 seconds (5 minutes)
+  nextQuestion() {
+    console.log('Next question');
+    this.quizCompleted.emit();
+  }
+
+  onSelectedAnswer(answer: string) {
+    this.selectedAnswer = answer;
+  }
+
+  private startTimer() {
+    let time = 60 * this.duration;
     this.displayTime = this.formatTime(time);
     this.timer = setInterval(() => {
       time--;
@@ -34,15 +44,10 @@ export class PickAnswerQuizComponent {
     }, 1000);
   }
 
-  formatTime(time: number): string {
+  private formatTime(time: number): string {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
     return `Pozostało ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-  }
-
-  nextQuestion() {
-    console.log('Next question');
-    this.quizCompleted.emit();
   }
 
   get currentQuestion(): QuizQuestion {

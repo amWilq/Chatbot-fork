@@ -1,64 +1,25 @@
-.quiz-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.quiz-card {
-  display: flex;
-  flex-direction: column;
-}
 .gradient {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
   color: white;
 }
+
 .quiz-card:first-of-type {
-  // flex: 2;
   ion-card-content {
     justify-content: flex-start;
+
     ion-img {
       width: 25%;
-      // transform: scale(1.5);
       max-height: 100%;
-      // object-fit: contain;
     }
   }
 }
 
 .quiz-card:last-of-type {
-  flex: 1;
-  ion-card-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    flex-grow: 1;
-  }
-
-  ion-grid {
-    // display: flex;
-    width: 100%;
-    // justify-content: center;
-  }
-
-  ion-row {
-    justify-content: center;
-  }
-
-  ion-col {
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   ion-button {
     height: 4rem;
     width: 100%;
-
   }
 }
 
@@ -69,16 +30,22 @@
 .highlight {
   background-color: yellow;
   color: black;
-
 }
+
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
+}
+
+.disabled {
+  color: #b2b0ff;
 }
