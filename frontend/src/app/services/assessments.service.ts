@@ -33,4 +33,9 @@ export class AssessmentsService {
     return this.http.post<any>(startUrl, body, { observe: 'response' });
   }
 
+  completeAssessment(assessmentTypeName: string,assessmentId: string, body: any): Observable<HttpResponse<any>> {
+    const startUrl = `${SERVER_API_URL}/assessments/${assessmentTypeName}/${assessmentId}/complete`;
+    return this.http.post<any>(startUrl, body, { observe: 'response' });
+  }
+
 }
