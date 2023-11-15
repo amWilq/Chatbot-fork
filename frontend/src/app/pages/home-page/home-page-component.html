@@ -1,11 +1,10 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-
   <div class="container">
     <ion-header [translucent]="true">
       <ion-toolbar>
         <ion-title class="card-title">Ulubione</ion-title>
         <ion-buttons slot="end">
-          <ion-button expand="block" (click)="toggleCardVisibility()">
+          <ion-button expand="block" (click)="onToggleCardVisibility()">
             <ion-icon [name]="isCardVisible ? 'chevron-up-outline' : 'chevron-down-outline'" size="large"
               fill="clear"></ion-icon>
           </ion-button>
@@ -16,12 +15,10 @@
     <div class="card-container">
       <ion-card *ngFor="let card of sampleFavData; let i = index"
         [ngClass]="{'highlight-card': selectedFavCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
-        (click)="handleNewCardEvent(card, i, true)" class="card">
-        <ion-icon (click)="deleteCard(card)" *ngIf="selectedFavCardIndex === i" name="close-outline" size="large" fill="clear"
-          class="close-icon"></ion-icon>
-        <div class="card-image-container">
-          <!-- <img [src]="card.src" alt="fav category" class="card-image"> -->
-        </div>
+        (click)="onFavoriteCardClick(card, i, true)" class="card">
+        <ion-icon (click)="onDeleteCard(card)" *ngIf="selectedFavCardIndex === i" name="close-outline" size="large"
+          fill="clear" class="close-icon"></ion-icon>
+        <div class="card-image-container"></div>
         <ion-card-content>
           <div class="card-description">{{ card.name }}</div>
         </ion-card-content>
@@ -30,13 +27,12 @@
 
   </div>
 
-  <ion-card *ngFor="let card of categorys; let i = index"
-    [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }" class="rounded-card ion-card-spacing">
+  <ion-card *ngFor="let card of categorys; let i = index" [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }"
+    class="rounded-card ion-card-spacing">
     <ion-card-content class="ion-card-content-spacing">
-      <!-- <img [src]="card.src" alt="placeholder" class="card-image-content"> -->
       <span class="span-test">{{ card.name }}</span>
       <div style="display: flex; align-self: center;">
-        <ion-icon (click)="handleArrowIconClick('tab2', card)" class="span-test" size="large"
+        <ion-icon (click)="onHandleArrowIconClick('tab2', card)" class="span-test" size="large"
           name="chevron-forward-outline"></ion-icon>
       </div>
     </ion-card-content>
@@ -44,10 +40,6 @@
 
 </ion-content>
 
-<ion-footer *ngIf="selectedFavCardIndex">
-  <div class="container-button">
-    <ion-button (click)="goToCategoryView($event)" size="large" fill="clear">
-      <ion-icon class="chevron-forward" name="chevron-forward-outline"></ion-icon>
-    </ion-button>
-  </div>
+<ion-footer>
+  <ion-button [disabled]="selectedFavCard.length === 0" class="custom-button" (click)="goToCategoryView()">Next</ion-button>
 </ion-footer>
