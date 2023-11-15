@@ -14,6 +14,8 @@ export class CategoryComponent implements OnInit {
   filteredItems: Language[] = [];
   originalItems: Language[] = [];
   showAssessmentComponent: boolean = false;
+  savedState: { [languageId: string]: { categoryId: string, item: Language } } = {};
+  selectedFavCategory: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -22,13 +24,25 @@ export class CategoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscribeToQueryParams();
+    this.loadLocalStorageState();
+  }
+
+  private loadLocalStorageState(): void {
+    const localStorageState = JSON.parse(localStorage.getItem('savedState') || '{}');
+    this.savedState = localStorageState;
   }
 
   private subscribeToQueryParams(): void {
     this.activatedRoute.queryParams.subscribe({
       next: (params) => {
         this.selectedCategory = params['selectedCategory'];
-        this.loadLanguages();
+        if ( params['selectedFavCategory']){
+          this.selectedFavCategory = params['selectedFavCategory'];
+          this.showAssessmentComponent = true;
+          console.log(this.selectedFavCategory);
+        } else {
+          this.loadLanguages();
+        }
       },
       error: (err) => console.error('Error reading query parameters:', err)
     });
@@ -48,6 +62,7 @@ export class CategoryComponent implements OnInit {
 
   onItemSelect(item: Language): void {
     this.selectedItemId = item;
+    console.log(this.selectedItemId);
   }
 
   onSearch(event: Event): void {
@@ -61,6 +76,24 @@ export class CategoryComponent implements OnInit {
 
   onStartQuiz() {
     this.showAssessmentComponent = true;
+  }
+
+  private saveLocalStorageState(): void {
+    localStorage.setItem('savedState', JSON.stringify(this.savedState));
+  }
+
+  toggleHeart(item: Language, categoryId: string): void {
+    const languageId = this.selectedCategory;
+    console.error('categoryId', item);
+    if (this.savedState[languageId!] === undefined) {
+      this.savedState[languageId!] = { categoryId, item };
+    }
+
+    const currentState = this.savedState[languageId!];
+    currentState.categoryId = categoryId;
+    currentState.item = item;
+
+    this.saveLocalStorageState();
   }
 
 }

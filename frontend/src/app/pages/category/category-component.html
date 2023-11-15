@@ -1,9 +1,9 @@
 <ng-container *ngIf="!showAssessmentComponent">
-<ion-content [fullscreen]="true">
+  <ion-content [fullscreen]="true">
     <ion-card class="container">
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/tab1" ></ion-back-button>
+          <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
         </ion-buttons>
         <ion-title>Wybierz podkategorię</ion-title>
       </ion-toolbar>
@@ -11,25 +11,33 @@
       <ion-card-content>
         <ion-searchbar (ionInput)="onSearch($event)" placeholder="Wyszukaj"></ion-searchbar>
         <ion-list>
-          <ion-item *ngFor="let item of filteredItems" (click)="onItemSelect(item)" [class.selected]="selectedItemId === item">
+          <ion-item *ngFor="let item of filteredItems" (click)="onItemSelect(item)"
+            [class.selected]="selectedItemId === item">
             <ion-thumbnail slot="start">
               <div class="circle">
                 {{ item.name!.charAt(0) }}
               </div>
             </ion-thumbnail>
+            <ion-thumbnail slot="end">
+              <ion-icon
+                size="large"
+                [name]="savedState[item.languageId!] ? 'heart' : 'heart-outline'"
+                (click)="toggleHeart(item, selectedCategory!)"
+                [color]="savedState[item.languageId!] ? 'danger' : 'medium'"
+              ></ion-icon>
+            </ion-thumbnail>
             <ion-label>{{ item.name }}</ion-label>
           </ion-item>
         </ion-list>
+
       </ion-card-content>
     </ion-card>
-</ion-content>
-<ion-footer *ngIf="selectedItemId">
-  <div class="container-button">
-    <ion-button (click)="onStartQuiz()" size="large" fill="clear">
-      <ion-icon class="chevron-forward" name="chevron-forward-outline"></ion-icon>
-    </ion-button>
-  </div>
-</ion-footer>
+  </ion-content>
+
+  <ion-footer>
+    <ion-button class="custom-button" [disabled]="!selectedItemId" id="open-loading"
+      (click)="onStartQuiz()">Next</ion-button>
+  </ion-footer>
 </ng-container>
 
-<assessment-component *ngIf="showAssessmentComponent"></assessment-component>
+<assessment-component style="display: contents;" [languageId]="selectedItemId?.languageId" *ngIf="showAssessmentComponent"></assessment-component>
