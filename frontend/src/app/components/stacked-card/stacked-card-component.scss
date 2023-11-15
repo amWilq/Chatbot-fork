@@ -45,6 +45,7 @@
   white-space: nowrap;
 
 }
+
 .add-icon {
   right: 0;
   display: flex;
@@ -62,7 +63,8 @@
   max-height: 0;
   margin: 0 5px;
 }
-.card-title{
+
+.card-title {
   padding-bottom: 20px;
 }
 
@@ -76,11 +78,10 @@
   box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
 }
 
-ion-card-header{
+ion-card-header {
   padding-top: 0px !important;
 }
 
 ion-toolbar {
   --background: transparent;
 }
-
