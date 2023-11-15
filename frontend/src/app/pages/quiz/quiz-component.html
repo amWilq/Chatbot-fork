@@ -1,11 +1,3 @@
-<div *ngIf="showSummary; else quizTemplate">
-  <!-- <app-quiz-summary [questions]="quizQuestions" [answers]="selectedAnswers" *ngIf="showSummary"
-    (replayQuiz)="onReplayQuiz()" (returnToMenu)="onReturnToMenu()">
-  </app-quiz-summary> -->
-</div>
+<pick-answer-quiz *ngIf="!showSummary" style="display: contents;" [questions]="questions"></pick-answer-quiz>
 
-<ng-template #quizTemplate>
-  <!-- <pick-answer-quiz style="display: contents;" [questions]="quizQuestions"
-    (answerSelected)="handleAnswerSelected($event)">
-  </pick-answer-quiz> -->
-</ng-template>
+<app-quiz-summary style="display: contents;" *ngIf="showSummary" [quizResponse]="summaryData" ></app-quiz-summary>

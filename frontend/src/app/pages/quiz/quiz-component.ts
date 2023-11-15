@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
-import { QuizQuestion } from 'src/app/entities/quiz-question.model';
+import { Component, Input, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
+import { QuizModel, QuizQuestion } from 'src/app/entities/quiz-question.model';
+import { AssessmentsService } from 'src/app/services/assessments.service';
 
 @Component({
   selector: 'quiz-component',
@@ -7,36 +10,63 @@ import { QuizQuestion } from 'src/app/entities/quiz-question.model';
   styleUrls: ['quiz-component.scss']
 })
 export class QuizComponent {
-
-  selectedAnswers: string[] = [];
+  @ViewChild(PickAnswerQuizComponent) private pickAnswerQuizComponent!: PickAnswerQuizComponent;
+  @Input() questions: QuizQuestion[] = [];
+  loading = false;
+  summaryData!: QuizModel;
+  assessmentTypeId: any;
+  assessmentId: any;
+  assessmentName: any;
   showSummary: boolean = false;
-  // quizQuestions: QuizQuestion[] = [
-  //   {
-  //     question: "What is the capital of France?",
-  //     answers: ["Paris", "London", "Berlin", "Rome"],
-  //     correctAnswer: "Paris"
-  //   },
-  //   {
-  //     question: "Which element's chemical symbol is O?",
-  //     answers: ["Oxygen", "Gold", "Silver", "Iron"],
-  //     correctAnswer: "Oxygen"
-  //   },
-  //   {
-  //     question: "What is the largest planet in our Solar System?",
-  //     answers: ["Jupiter", "Mars", "Earth", "Venus"],
-  //     correctAnswer: "Jupiter"
-  //   }
-  // ];
 
-  handleAnswerSelected(event: { selected: string; correct: boolean }): void {
-    // this.selectedAnswers.push(event.selected);
-    // if (this.selectedAnswers.length === this.quizQuestions.length) {
-    //   this.showSummary = true;
-    // }
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private assessmentsService: AssessmentsService,
+  ) { }
+
+
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe({
+      next: (params) => {
+        this.assessmentName = params['assessmentName'];
+        this.assessmentId = params['assessmentId'];
+        this.assessmentTypeId = params['assessmentTypeId'];
+        this.questions = JSON.parse(params['questions']);
+      },
+      error: (err) => console.error('Error reading query parameters:', err)
+    });
+    this.subscribeToQuizCompletion();
+
+  }
+
+  private subscribeToQuizCompletion() {
+    const requestBody = {
+        "assessmentTypeId": this.assessmentTypeId,
+        "endTime": new Date().toISOString(),
+        "userId": "1"
+    }
+
+    if (this.pickAnswerQuizComponent) {
+      this.pickAnswerQuizComponent.quizCompleted.subscribe(() => {
+        this.assessmentsService.completeAssessment( this.assessmentName,this.assessmentId, requestBody).subscribe(response => {
+          this.summaryData = response.body.quiz;
+          console.warn( response.body.quiz);
+          this.showSummary = true;
+        },
+        error => {
+          this.loading = false;
+          console.error(error);
+        }
+        );
+      });
+    } else {
+      setTimeout(() => {
+        this.subscribeToQuizCompletion();
+      }, 100);
+    }
   }
 
   onReplayQuiz() {
-    this.selectedAnswers = [];
     this.showSummary = false;
   }
 

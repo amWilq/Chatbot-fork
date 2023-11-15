@@ -40,9 +40,3 @@
 
 <!-- Loading Indicator -->
 <ion-loading class="custom-loading" [isOpen]="loading" message="AI generuje pytania quizu, proszę czekać..."></ion-loading>
-
-<!-- Quiz Component Display -->
-<pick-answer-quiz *ngIf="showPickAnswerQuiz && !showSummary" style="display: contents;" [questions]="questions"></pick-answer-quiz>
-
-<!-- Quiz Summary Component Display -->
-<app-quiz-summary style="display: contents;" *ngIf="showSummary" [quizResponse]="summaryData" ></app-quiz-summary>

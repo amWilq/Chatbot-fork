@@ -1,4 +1,5 @@
 import { Component, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
 import { Assessment } from 'src/app/entities/assessments.model';
 import { QuizQuestion, QuizModel } from 'src/app/entities/quiz-question.model';
@@ -25,7 +26,9 @@ export class AssessmentsComponent {
 
   constructor(
     private assessmentsService: AssessmentsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
+
   ) {}
 
   ngOnInit(): void {
@@ -97,10 +100,21 @@ export class AssessmentsComponent {
   private handleQuizQuestionsResponse(response: any): void {
     this.questions = response.body.quiz.question;
     console.log(this.questions);
-    this.showPickAnswerQuiz = true;
+    // this.showPickAnswerQuiz = true;
     this.loading = false;
     this.cdr.detectChanges();
     this.subscribeToQuizCompletion();
+    console.log(this.questions);
+    if (this.questions) {
+      this.router.navigate(['/tabs/tab3'], {
+        queryParams: {
+          assessmentName: this.selectedCard.name,
+          assessmentId: this.assessmentId,
+          assessmentTypeId: this.selectedCard.assessmentTypeId.toString(),
+          questions: JSON.stringify(this.questions)
+        }
+      });
+    }
   }
 
   private createSecondAssessmentRequest(assessmentId: string): any {

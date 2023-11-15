@@ -67,7 +67,6 @@ export class HomePageComponent implements OnInit {
     const selectedIndex = isFavData ? this.selectedFavCardIndex : this.selectedCategoryCardIndex;
     this.updateSelectedCardIndex(selectedIndex, index, isFavData);
     this.selectedFavCard = card;
-    console.error('onFavoriteCardClick', this.selectedFavCard);
   }
 
   onDeleteCard(card: Category) {
