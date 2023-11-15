@@ -11,7 +11,7 @@ export class TabsPage {
 
   constructor(private route: ActivatedRoute) {
     this.route.queryParams.subscribe(params => {
-      this.passedVariable = params['disabled'];
+      this.passedVariable = params['questions'];
     });
   }
 

@@ -1,3 +1,24 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <div style="margin: auto;" *ngIf="!username; else loginPage">
+    <ion-card class="username-card">
+      <ion-card-header>
+        <ion-card-title style="text-align: center;">Podaj pseudonim</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-input (ionInput)="onInput($event)" [(ngModel)]="usernameInput"></ion-input>
+        </ion-item>
+      </ion-card-content>
+      <ion-button  fill="clear"expand="full" (click)="saveUsername()" [disabled]="!isValidUsername()">
+        <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-card>
+  </div>
+
+
+
+
+  <ng-template #loginPage>
+    <router-outlet></router-outlet>>
+  </ng-template>
 </ion-app>
