@@ -1,24 +1,48 @@
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>Quiz Summary</ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <p>You scored {{ calculateScore() }} out of {{ questions.length }}.</p>
-    <ion-list>
-      <ion-item *ngFor="let question of questions; let i = index">
-        <ion-label>
-          Q{{ i + 1 }}: {{ question.question }}
-          <p>Selected Answer: {{ answers[i] }}</p>
-          <p>Correct Answer: {{ question.correctAnswer }}</p>
-          <ion-icon name="checkmark-circle" *ngIf="question.correctAnswer === answers[i]" color="success"></ion-icon>
-          <ion-icon name="close-circle" *ngIf="question.correctAnswer !== answers[i]" color="danger"></ion-icon>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-card-content>
-</ion-card>
-<ion-footer>
-  <ion-button (click)="onReplayQuiz()">Play Again</ion-button>
-  <ion-button (click)="onReturnToMenu()">Return to Main Menu</ion-button>
+<!-- quiz-summary.component.html -->
 
-</ion-footer>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Quiz Summary
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngFor="let response of quizResponse">
+    <!-- Your existing content for each response -->
+    <ion-card-content>
+      <ion-item>
+        <ion-label><strong>Question:</strong> {{ response.questions[0].content }}</ion-label>
+      </ion-item>
+      <!-- Other items for each response -->
+    </ion-card-content>
+  </ion-card>
+
+
+  <ion-card class="quiz-summary-footer">
+    <ion-card-content>
+      <ion-item>
+        <ion-label><strong>Total Questions Answered:</strong> {{ quizResponse.answeredQuestions }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>Correct Answers:</strong> {{ quizResponse.correctAnswers }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>Start Difficulty:</strong> {{ quizResponse.startDifficulty }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>End Difficulty:</strong> {{ quizResponse.endDifficulty }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>Duration:</strong> {{ quizResponse.duration }} seconds</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>{{ quizResponse.feedback }}</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button (click)="onReplayQuiz()" expand="full" color="primary">Replay Quiz</ion-button>
+  <ion-button (click)="onReturnToMenu()" expand="full" color="secondary">Return to Menu</ion-button>
+</ion-content>
