@@ -38,3 +38,10 @@
   font-family: "RobotoMono-Medium";
   src: url("assets/fonts/RobotoMono-Medium.ttf") format("truetype");
 }
+
+.custom-button{
+  display: flex;
+  padding: 0 10px;
+  justify-content: center;
+  flex-direction: column;
+}
