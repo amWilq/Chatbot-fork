@@ -1,16 +1,18 @@
 <ion-content>
   <div class="quiz-container">
     <!-- Question Card -->
-    <ion-card class="quiz-card">
+
+    <ion-card class="quiz-card gradient">
       <ion-card-header>
-        <ion-card-title>Quiz</ion-card-title>
+        <ion-title class="ion-text-center" style="color: white;">{{displayTime}}</ion-title>
+        <ion-progress-bar [value]="progress"></ion-progress-bar>
       </ion-card-header>
       <ion-card-content class="ion-text-center">
-        <ion-img src="/assets/images/angular.png"></ion-img>
+        <ion-img src="/assets/images/angular.png" style="display: block; margin: auto;"></ion-img>
         <p>
-          {{ currentQuestion.question!.split('...')[0] }}
+          {{ currentQuestion.content!.split('...')[0] }}
           <span *ngIf="selectedAnswer" class="highlight">{{ selectedAnswer }}</span>
-          {{ currentQuestion.question!.split('...')[1] }}
+          {{ currentQuestion.content!.split('...')[1] }}
         </p>
       </ion-card-content>
     </ion-card>
@@ -19,11 +21,9 @@
     <ion-card class="quiz-card">
       <ion-card-content>
         <ion-grid>
-          <ion-row>
-            <!-- Iterate over the answers of the current question -->
-            <ion-col size="6" *ngFor="let answer of currentQuestion?.answers">
-              <ion-button expand="block" (click)="selectAnswer(answer)"
-                          [ngClass]="{'highlight-card': selectedAnswer === answer}">
+          <ion-row *ngFor="let answer of currentQuestion?.answers">
+            <ion-col>
+              <ion-button expand="block" [ngClass]="{'highlight-card': selectedAnswer === answer}" style="white-space: normal; text-overflow: initial;">
                 {{ answer }}
               </ion-button>
             </ion-col>
@@ -37,3 +37,14 @@
 <ion-button *ngIf="selectedAnswer" (click)="nextQuestion()">
   Next Question
 </ion-button>
+
+
+
+<ion-footer style="display: flex;
+padding: 0 10px;
+justify-content: center;
+flex-direction: column;">
+  <ion-button (click)="nextQuestion()">
+    Next Question
+  </ion-button>
+</ion-footer>
