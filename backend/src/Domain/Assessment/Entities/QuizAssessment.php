@@ -3,6 +3,7 @@
 namespace App\Domain\Assessment\Entities;
 
 use App\Domain\Assessment\Enums\DifficultiesEnum;
+use App\Domain\Assessment\ValueObjects\Question;
 
 class QuizAssessment extends AssessmentType
 {

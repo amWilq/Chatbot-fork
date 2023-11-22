@@ -22,6 +22,21 @@ services:
       - "80:80"
     volumes:
       - ./backend:/var/www/html
+    networks:
+      - default
+  database:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: chatbot
+      MYSQL_USER: chatbot
+      MYSQL_PASSWORD: chatbot
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - default
   frontend:
     build:
       context: ./frontend
@@ -30,3 +45,7 @@ services:
         - "4200:4200"
     volumes:
         - ./frontend:/app
+
+networks:
+    default:
+        name: chatbot
