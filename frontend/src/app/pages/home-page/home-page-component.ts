@@ -4,6 +4,15 @@ import { Router } from '@angular/router';
 import { Category } from 'src/app/entities/category.model';
 import { CategoryService } from 'src/app/services/category.service';
 
+interface SelectedFavCard {
+  item: {
+    languageId: number;
+    name: string;
+    categoriesId: number[];
+  };
+  categoryId: string;
+}
+
 @Component({
   selector: 'home-page-component',
   templateUrl: 'home-page-component.html',
@@ -14,18 +23,23 @@ export class HomePageComponent implements OnInit {
 
   isClicked = false;
   isCardVisible = true;
-  selectedFavCard: any[] = [];
+  selectedFavCard: SelectedFavCard[] = [];
   sampleFavData: Category[] = [];
   selectedFavCardIndex: number | null = null;
   selectedCategoryCardIndex: number | null = null;
   categorys: Category[] = [];
   username: string | null = null;
   usernameInput: string = '';
+  showAssessmentComponent: boolean = false;
+  selectedFavCardLanguageId: number | null = null;
 
   constructor(private router: Router, private categoryService: CategoryService) { }
-
-  ngOnInit() {
+ngOnInit() {
     this.loadAllCategories();
+    this.loadFavDataFromLocalStorage();
+  }
+
+  ngAfterViewChecked(){
     this.loadFavDataFromLocalStorage();
   }
 
@@ -42,10 +56,14 @@ export class HomePageComponent implements OnInit {
 
   private loadFavDataFromLocalStorage() {
     const localStorageState = JSON.parse(localStorage.getItem('savedState') || '{}');
+    try {
     this.sampleFavData = Object.values(localStorageState).map((entry: any) => ({
       item: entry.item,
       categoryId: entry.categoryId
     }));
+  } catch (e) {
+    console.error('Error parsing local storage data:', e);
+  }
   }
 
   private updateSelectedCardIndex(selectedIndex: number | null, currentIndex: number, isFavData: boolean) {
@@ -68,7 +86,10 @@ export class HomePageComponent implements OnInit {
     this.selectedFavCard = [];
     const selectedIndex = isFavData ? this.selectedFavCardIndex : this.selectedCategoryCardIndex;
     this.updateSelectedCardIndex(selectedIndex, index, isFavData);
-    this.selectedFavCard = card;
+    if (isFavData) {
+      this.selectedFavCard.push(card);
+    }
+    this.selectedFavCardLanguageId = this.selectedFavCard[0].item.languageId
   }
 
   onDeleteCard(card: Category) {
@@ -93,10 +114,12 @@ export class HomePageComponent implements OnInit {
   }
 
   goToCategoryView() {
-    this.router.navigate(['tabs/tab2'], {
-      queryParams: {
-        // selectedFavCategory: (JSON.stringify(this.selectedFavCard)),
-      }
-    });
+    if (this.selectedFavCardLanguageId ) {
+      this.router.navigate(['/tabs/tab2'], {
+        queryParams: {
+          selectedFavCategory: this.selectedFavCardLanguageId
+        }
+      });
+    }
   }
 }

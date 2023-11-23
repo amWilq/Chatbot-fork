@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Language } from 'src/app/entities/languages.model';
 import { LanguagesService } from 'src/app/services/languages.service';
 
@@ -27,6 +27,10 @@ export class CategoryComponent implements OnInit {
     this.loadLocalStorageState();
   }
 
+  ngDoCheck(){
+    this.loadLocalStorageState();
+  }
+
   private loadLocalStorageState(): void {
     const localStorageState = JSON.parse(localStorage.getItem('savedState') || '{}');
     this.savedState = localStorageState;
@@ -39,7 +43,6 @@ export class CategoryComponent implements OnInit {
         if ( params['selectedFavCategory']){
           this.selectedFavCategory = params['selectedFavCategory'];
           this.showAssessmentComponent = true;
-          console.log(this.selectedFavCategory);
         } else {
           this.loadLanguages();
         }
@@ -62,7 +65,6 @@ export class CategoryComponent implements OnInit {
 
   onItemSelect(item: Language): void {
     this.selectedItemId = item;
-    console.log(this.selectedItemId);
   }
 
   onSearch(event: Event): void {
@@ -83,16 +85,12 @@ export class CategoryComponent implements OnInit {
   }
 
   toggleHeart(item: Language, categoryId: string): void {
-    const languageId = this.selectedCategory;
-    console.error('categoryId', item);
+    const languageId = item.languageId;
     if (this.savedState[languageId!] === undefined) {
       this.savedState[languageId!] = { categoryId, item };
+    } else {
+      delete this.savedState[languageId!];
     }
-
-    const currentState = this.savedState[languageId!];
-    currentState.categoryId = categoryId;
-    currentState.item = item;
-
     this.saveLocalStorageState();
   }
 

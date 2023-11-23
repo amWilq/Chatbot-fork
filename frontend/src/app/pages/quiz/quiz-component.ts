@@ -1,5 +1,7 @@
+import { QuizService } from './../../services/quiz.service';
 import { Component, Input, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
 import { QuizModel, QuizQuestion } from 'src/app/entities/quiz-question.model';
 import { AssessmentsService } from 'src/app/services/assessments.service';
@@ -19,15 +21,21 @@ export class QuizComponent {
   assessmentName: any;
   showSummary: boolean = false;
   duration: any;
+  private queryParamsSubscription!: Subscription;
+  private quizCompletedSubscription!: Subscription;
+  private completeAssessmentSubscription!: Subscription;
+  quizCompleted: boolean = false;
 
   constructor(
+    private router: Router,
     private activatedRoute: ActivatedRoute,
     private assessmentsService: AssessmentsService,
+    private quizService: QuizService,
   ) { }
 
 
   ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe({
+    this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe({
       next: (params) => {
         this.duration = params['duration'];
         this.assessmentName = params['assessmentName'];
@@ -38,19 +46,21 @@ export class QuizComponent {
       error: (err) => console.error('Error reading query parameters:', err)
     });
     this.subscribeToQuizCompletion();
+    this.loadQuizStatus();
   }
 
   private subscribeToQuizCompletion() {
-    if (this.pickAnswerQuizComponent) {
-      this.pickAnswerQuizComponent.quizCompleted.subscribe(() => {
+    if (this.pickAnswerQuizComponent && !this.quizCompleted) {
+      this.quizCompletedSubscription = this.pickAnswerQuizComponent.quizCompleted.subscribe(() => {
         const requestBody = {
           "assessmentTypeId": this.assessmentTypeId,
           "endTime": new Date().toISOString(),
           "userId": localStorage.getItem('username')
         }
-        this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).subscribe(response => {
+        this.completeAssessmentSubscription =  this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).subscribe(response => {
+          this.quizService.setQuizsStatus(true);
+          this.quizService.setTimeStatus('');
           this.summaryData = response.body.quiz;
-          this.showSummary = true;
         },
           error => {
             this.loading = false;
@@ -65,11 +75,29 @@ export class QuizComponent {
     }
   }
 
+
+  private loadQuizStatus() {
+    this.quizService.getQuizsStatus().subscribe((e) => {
+      this.quizCompleted = e;
+      this.showSummary = e;
+    });
+  }
+
   onReplayQuiz() {
     this.showSummary = false;
+    window.location.reload();
   }
 
   onReturnToMenu() {
+    this.questions = [];
+    // Przejdź na stronę główną
+    this.router.navigate(['/tabs/tab1']).then(() => {
+      setTimeout(() => {
+        window.location.reload();
+      });
+    });
+    // Zresetuj stan komponentu
+    this.showSummary = false;
     console.log("onReturnToMenu");
   }
 }

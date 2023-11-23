@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { QuizService } from './services/quiz.service';
 
 @Component({
   selector: 'app-root',
@@ -9,11 +11,12 @@ export class AppComponent {
   username: string | null = null;
   usernameInput: string = '';
 
-  constructor() {}
+  constructor(private router: Router, private quizService: QuizService) {}
 
   ngOnInit() {
     document.body.classList.toggle('dark', true);
     this.loadUsername();
+    this.loadQuizStatus();
   }
 
   private loadUsername() {
@@ -32,6 +35,11 @@ export class AppComponent {
     } else {
       console.log('Nieprawidłowy pseudonim!');
     }
+  }
+
+  private loadQuizStatus() {
+    this.quizService.getQuizsStatus().subscribe((e) => {
+    });
   }
 
   isValidUsername(): boolean {

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { QuizQuestion } from 'src/app/entities/quiz-question.model';
+import { QuizService } from 'src/app/services/quiz.service';
 
 @Component({
   selector: 'pick-answer-quiz',
@@ -15,7 +16,7 @@ export class PickAnswerQuizComponent {
   displayTime: string | undefined;
   timer: any | null = null;
 
-  constructor() {
+  constructor(private quizService: QuizService) {
   }
 
   ngOnInit() {
@@ -47,6 +48,7 @@ export class PickAnswerQuizComponent {
   private formatTime(time: number): string {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
+    this.quizService.setTimeStatus(`${minutes}:${seconds < 10 ? '0' + seconds : seconds}`);
     return `Pozostało ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   }
 

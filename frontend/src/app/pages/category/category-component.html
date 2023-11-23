@@ -26,6 +26,7 @@
                 [color]="savedState[item.languageId!] ? 'danger' : 'medium'"
               ></ion-icon>
             </ion-thumbnail>
+
             <ion-label>{{ item.name }}</ion-label>
           </ion-item>
         </ion-list>
@@ -40,4 +41,4 @@
   </ion-footer>
 </ng-container>
 
-<assessment-component style="display: contents;" [languageId]="selectedItemId?.languageId" *ngIf="showAssessmentComponent"></assessment-component>
+<assessment-component style="display: contents;" [languageId]="selectedItemId?.languageId || selectedFavCategory" *ngIf="showAssessmentComponent"></assessment-component>
