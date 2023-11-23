@@ -6,15 +6,20 @@ use App\Shared\Models\ValueObject;
 
 class AssessmentTypeId extends ValueObject
 {
-    private string $id;
+    /**
+     * AssessmentTypeId constructor.
+     */
+    private function __construct(
+        private readonly string $id,
+    ) {
+    }
+
+    /**
+     * Get id as string.
+     */
     public function getId(): string
     {
         return $this->id;
-    }
-
-    public function __construct(string $id)
-    {
-        $this->id = $id;
     }
 
     /**
@@ -26,5 +31,15 @@ class AssessmentTypeId extends ValueObject
             return false;
         }
         return $this->id === $object->id;
+    }
+
+    /**
+     * Create a new instance of the current object
+     */
+    public static function create($id): self
+    {
+        return new self(
+            id: $id
+        );
     }
 }

@@ -2,18 +2,10 @@
 
 namespace App\Shared\Models;
 
-abstract class AggregateRoot
+abstract class AggregateRoot implements EntityToArrayInterface
 {
 
     protected ValueObject $id;
-
-    /**
-     * AggregateRoot constructor.
-     */
-    public function __construct(ValueObject $id)
-    {
-        $this->id = $id;
-    }
 
     /**
      * Returns the ID of the aggregate root.
@@ -29,5 +21,13 @@ abstract class AggregateRoot
     public function equals(AggregateRoot $other): bool
     {
         return $this->getId()->equals($other->getId());
+    }
+
+    /**
+     * Generate random 8 characters unique ID.
+     */
+    public static function generateId(): string
+    {
+        return bin2hex(random_bytes(4));
     }
 }

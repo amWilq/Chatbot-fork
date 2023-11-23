@@ -5,15 +5,16 @@ namespace App\Domain\Assessment\Entities;
 use App\Domain\Assessment\Enums\DifficultiesEnum;
 use App\Domain\Assessment\ValueObjects\Question;
 
-class QuizAssessment extends AssessmentType
+final class QuizAssessment
 {
-    protected int $questionCount;
-    protected int $correctAnswerCount;
-    protected DifficultiesEnum $startDifficulty;
-    protected DifficultiesEnum $endDifficulty;
-    protected string $duration;
+    private function __construct(
+        protected int $questionCount,
+        protected int $correctAnswerCount,
+        protected DifficultiesEnum $startDifficulty,
+        protected DifficultiesEnum $endDifficulty,
+        protected string $duration,
+        protected array $questions
+    ) {
 
-    /** @var Question[] $questions  */
-    protected array $questions;
-
+    }
 }
