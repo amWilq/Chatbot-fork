@@ -2,7 +2,7 @@
 
 namespace App\Shared\Models;
 
-abstract class ValueObject
+abstract readonly class ValueObject
 {
     /**
      * Check if the current object is equal to the given object

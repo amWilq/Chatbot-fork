@@ -4,13 +4,13 @@ namespace App\Domain\Assessment\ValueObjects;
 
 use App\Shared\Models\ValueObject;
 
-class AssessmentId extends ValueObject
+readonly class AssessmentId extends ValueObject
 {
     /**
      * AssessmentId constructor.
      */
     private function __construct(
-        private readonly string $id
+        private string $id
     ) {
     }
 
@@ -23,7 +23,7 @@ class AssessmentId extends ValueObject
     }
 
     /**
-     * Check if the current object is equal to the given object
+     * @inheritDoc
      */
     public function equals(ValueObject $object): bool
     {

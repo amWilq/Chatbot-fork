@@ -6,15 +6,15 @@ use App\Domain\Assessment\Enums\FormatEnum;
 use App\Shared\Models\EntityToArrayInterface;
 use App\Shared\Models\ValueObject;
 
-class Format extends ValueObject implements EntityToArrayInterface
+readonly class Format extends ValueObject implements EntityToArrayInterface
 {
     /**
      * Format constructor.
      */
     private function __construct(
-        private readonly FormatEnum $name,
-        private readonly string $description,
-        private readonly array $difficulties,
+        private FormatEnum $name,
+        private string $description,
+        private array $difficulties,
     ) {
     }
 

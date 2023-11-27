@@ -4,17 +4,36 @@ namespace App\Domain\Category\ValueObjects;
 
 use App\Shared\Models\ValueObject;
 
-class CategoryId extends ValueObject
+readonly class CategoryId extends ValueObject
 {
-    private string $id;
-
-    public function __construct(string $id)
-    {
-        $this->id = $id;
+    /**
+     * CategoryId constructor.
+     */
+    private function __construct(
+        private string $id,
+    ) {
     }
 
     /**
-     * Check if the current object is equal to the given object
+     * Create a new instance of the current object
+     */
+    public static function create(string $categoryId): self
+    {
+        return new self(
+            id: $categoryId,
+        );
+    }
+
+    /**
+     * Get id as string.
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function equals(ValueObject $object): bool
     {

@@ -5,7 +5,7 @@ namespace App\Domain\Assessment\ValueObjects;
 use App\Shared\Models\ValueObject;
 use App\Shared\Traits\HelperTrait;
 
-class Question extends ValueObject
+readonly class Question extends ValueObject
 {
     use HelperTrait;
 
