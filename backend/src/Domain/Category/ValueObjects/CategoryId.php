@@ -2,9 +2,10 @@
 
 namespace App\Domain\Category\ValueObjects;
 
+use App\Shared\Models\EntityToStringInterface;
 use App\Shared\Models\ValueObject;
 
-readonly class CategoryId extends ValueObject
+readonly class CategoryId extends ValueObject implements EntityToStringInterface
 {
     /**
      * CategoryId constructor.
@@ -27,7 +28,7 @@ readonly class CategoryId extends ValueObject
     /**
      * Get id as string.
      */
-    public function getId(): string
+    public function toString(): string
     {
         return $this->id;
     }

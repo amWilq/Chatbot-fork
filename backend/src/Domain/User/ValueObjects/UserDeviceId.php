@@ -2,9 +2,10 @@
 
 namespace App\Domain\User\ValueObjects;
 
+use App\Shared\Models\EntityToStringInterface;
 use App\Shared\Models\ValueObject;
 
-readonly class UserDeviceId extends ValueObject
+readonly class UserDeviceId extends ValueObject implements EntityToStringInterface
 {
 
     /**
@@ -18,7 +19,7 @@ readonly class UserDeviceId extends ValueObject
     /**
      * Get id as string.
      */
-    public function getId(): string
+    public function toString(): string
     {
         return $this->id;
     }

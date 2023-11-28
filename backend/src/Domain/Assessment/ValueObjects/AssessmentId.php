@@ -17,7 +17,7 @@ readonly class AssessmentId extends ValueObject
     /**
      * Get id as string.
      */
-    public function getId(): string
+    public function toString(): string
     {
         return $this->id;
     }

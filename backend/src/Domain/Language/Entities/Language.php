@@ -4,24 +4,50 @@ namespace App\Domain\Language\Entities;
 
 use App\Domain\Language\ValueObjects\LanguageId;
 use App\Shared\Models\AggregateRoot;
+use JetBrains\PhpStorm\ArrayShape;
 
 class Language extends AggregateRoot
 {
-    protected string $name;
-
-    /** @var \App\Domain\Category\ValueObjects\CategoryId[] */
-    protected array $categoryIds;
+    /**
+     * Language constructor.
+     */
+    private function __construct(
+        protected string $name,
+        protected string $iconUrl,
+        protected array $categoryIds,
+    ) {
+        $this->id = LanguageId::create(AggregateRoot::generateId());
+    }
 
     /**
-     * @param \App\Domain\Language\ValueObjects\LanguageId $id
-     * @param string $name
-     * @param \App\Domain\Category\ValueObjects\CategoryId[] $categoryIds
+     * Create a new instance of the current object.
      */
-    public function __construct(LanguageId $id, string $name, array $categoryIds)
+    public static function create(string $name, string $iconUrl, array $categoryIds): self
     {
-        parent::__construct($id);
-        $this->name = $name;
-        $this->categoryIds = $categoryIds;
+        return new self(
+            name: $name,
+            iconUrl: $iconUrl,
+            categoryIds: $categoryIds
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    #[ArrayShape([
+        'id' => "string",
+        'name' => "string",
+        'iconUrl' => "string",
+        'categoryIds' => "array"
+    ])]
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId()->toString(),
+            'name' => $this->name,
+            'iconUrl' => $this->iconUrl,
+            'categoryIds' => $this->categoryIds
+        ];
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Domain\Assessment\ValueObjects;
 use App\Domain\Assessment\Enums\FormatEnum;
 use App\Shared\Models\EntityToArrayInterface;
 use App\Shared\Models\ValueObject;
+use JetBrains\PhpStorm\ArrayShape;
 
 readonly class Format extends ValueObject implements EntityToArrayInterface
 {
@@ -69,6 +70,11 @@ readonly class Format extends ValueObject implements EntityToArrayInterface
     /**
      * @inheritDoc
      */
+    #[ArrayShape([
+        'name' => "string",
+        'description' => "string",
+        'difficulties' => "array"
+    ])]
     public function toArray(): array
     {
         return [

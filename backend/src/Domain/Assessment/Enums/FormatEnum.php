@@ -14,8 +14,10 @@ enum FormatEnum: string
         return match ($this) {
             self::QUIZ => 'A quick and informal assessment of student knowledge.',
             self::FREE_TEXT => 'An open-ended question that is also known as essay, free format, or comments',
-            self::MULTIPLE_CHOICE => 'An assessment item consisting of a stem, which poses the question or problem, followed by a list of possible responses',
-            self::CODE_SNIPPET => 'Small blocks of code will be presented with purpose to find errors or to complete the code.',
+            self::MULTIPLE_CHOICE => 'An assessment item consisting of a stem,
+            which poses the question or problem, followed by a list of possible responses',
+            self::CODE_SNIPPET => 'Small blocks of code will be presented with
+            purpose to find errors or to complete the code.',
         };
     }
 

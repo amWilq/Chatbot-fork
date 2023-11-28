@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Domain\Assessment\ValueObjects;
+namespace App\Domain\User\ValueObjects;
 
+use App\Shared\Models\EntityToStringInterface;
 use App\Shared\Models\ValueObject;
 
-readonly class AssessmentTypeId extends ValueObject
+readonly class UserId extends ValueObject implements EntityToStringInterface
 {
     /**
-     * AssessmentTypeId constructor.
+     * UserId constructor.
      */
     private function __construct(
-        private string $id,
+        protected string $id,
     ) {
     }
 
@@ -20,6 +21,16 @@ readonly class AssessmentTypeId extends ValueObject
     public function toString(): string
     {
         return $this->id;
+    }
+
+    /**
+     * Create a new instance of the current object
+     */
+    public static function create(string $id): self
+    {
+        return new self(
+            id: $id
+        );
     }
 
     /**
@@ -33,13 +44,4 @@ readonly class AssessmentTypeId extends ValueObject
         return $this->id === $object->id;
     }
 
-    /**
-     * Create a new instance of the current object
-     */
-    public static function create($id): self
-    {
-        return new self(
-            id: $id
-        );
-    }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Domain\Language\ValueObjects;
 
+use App\Shared\Models\EntityToStringInterface;
 use App\Shared\Models\ValueObject;
 
-readonly class LanguageId extends ValueObject
+readonly class LanguageId extends ValueObject implements EntityToStringInterface
 {
     /**
      * LanguageId constructor.
@@ -27,7 +28,7 @@ readonly class LanguageId extends ValueObject
     /**
      * Get id as string.
      */
-    public function getId(): string
+    public function toString(): string
     {
         return $this->id;
     }

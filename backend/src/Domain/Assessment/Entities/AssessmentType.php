@@ -7,6 +7,7 @@ use App\Domain\Assessment\ValueObjects\AssessmentTypeId;
 use App\Domain\Assessment\ValueObjects\Format;
 use App\Shared\Models\AggregateRoot;
 use App\Shared\Models\ValueObject;
+use JetBrains\PhpStorm\ArrayShape;
 
 class AssessmentType extends AggregateRoot
 {
@@ -57,6 +58,12 @@ class AssessmentType extends AggregateRoot
     /**
      * @inheritDoc
      */
+    #[ArrayShape([
+      'id' => "string",
+      'name' => "string",
+      'description' => "string",
+      'difficulties' => "array"
+    ])]
     public function toArray(): array
     {
         return [
