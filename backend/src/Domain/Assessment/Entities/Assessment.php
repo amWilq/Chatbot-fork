@@ -10,7 +10,6 @@ use App\Domain\Language\ValueObjects\LanguageId;
 use App\Domain\User\ValueObjects\UserDeviceId;
 use App\Shared\Models\AggregateRoot;
 use DateTime;
-use JetBrains\PhpStorm\ArrayShape;
 
 final class Assessment extends AggregateRoot
 {

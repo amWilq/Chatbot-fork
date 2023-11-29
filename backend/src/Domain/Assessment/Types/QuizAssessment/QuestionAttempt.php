@@ -6,7 +6,7 @@ use App\Domain\Assessment\ValueObjects\Question;
 
 class QuestionAttempt
 {
-    private string $userAnswer;
+    private int $userAnswer;
     private int $takenTime;
     private bool $isCorrect;
 
@@ -22,13 +22,13 @@ class QuestionAttempt
         );
     }
 
-    public function setAnswer(string $answer, int $takenTime): void
+    public function setAnswer(int $answerIndex, int $takenTime): void
     {
-        $this->userAnswer = $answer;
+        $this->userAnswer = $answerIndex;
         $this->takenTime = $takenTime;
     }
 
-    public function getAnswer(): string
+    public function getAnswer(): int
     {
         return $this->userAnswer;
     }

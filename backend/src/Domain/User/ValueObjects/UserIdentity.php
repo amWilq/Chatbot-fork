@@ -19,7 +19,7 @@ readonly class UserIdentity extends ValueObject implements EntityToStringInterfa
      */
     public static function create(string $id): self
     {
-        return new self(
+        return new static(
             id: $id
         );
     }

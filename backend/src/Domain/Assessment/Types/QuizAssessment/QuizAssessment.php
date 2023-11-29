@@ -7,11 +7,11 @@ use App\Domain\Assessment\Enums\FormatEnum;
 
 final class QuizAssessment extends AssessmentType
 {
-    protected int $questionCount;
-    protected int $correctAnswerCount;
+    protected int $questionCount = 0;
+    protected int $correctAnswerCount = 0;
 
     /** @var QuestionAttempt[] */
-    protected array $questionsAttempts;
+    protected array $questionsAttempts = [];
     /**
      * Class constructor.
      */
@@ -27,7 +27,7 @@ final class QuizAssessment extends AssessmentType
             durationInSeconds: $durationInSeconds,
         );
     }
-    public function getDuration(): string
+    public function getDuration(): int
     {
         return $this->durationInSeconds;
     }
@@ -46,6 +46,10 @@ final class QuizAssessment extends AssessmentType
     public function setQuestionsAttempts(QuestionAttempt $questionAttempt):void
     {
         $this->questionsAttempts[] = $questionAttempt;
+        $this->questionCount++;
+        if ($questionAttempt->isCorrect()) {
+                $this->correctAnswerCount++;
+            }
     }
 
 }
