@@ -2,38 +2,29 @@
 
 namespace App\Domain\Assessment\ValueObjects;
 
-use App\Shared\Models\EntityToArrayInterface;
 use App\Shared\Models\ValueObject;
 use App\Shared\Traits\HelperTrait;
 
-readonly class Question extends ValueObject implements EntityToArrayInterface
+readonly class Question extends ValueObject
 {
-
     use HelperTrait;
 
-    protected string $content;
-
-    /** @var string[] $options */
-    protected array $options;
-
-    protected string $correctAnswer;
-
-    protected string $explanation;
-
-    protected string $userAnswer;
-
-    protected bool $isCorrect;
-
-    protected string $takenTime;
-
-    public function __construct(
-      string $content,
-      array $options,
-      string $correctAnswer
+    private function __construct(
+        private string $content,
+        private array $options,
+        private string $correctAnswer,
+        private string $explanation,
     ) {
-        $this->content = $content;
-        $this->options = $options;
-        $this->correctAnswer = $correctAnswer;
+    }
+
+    public static function create(string $content, array $options, string $correctAnswer, string $explanation): self
+    {
+        return new self(
+            content: $content,
+            options: $options,
+            correctAnswer: $correctAnswer,
+            explanation: $explanation
+        );
     }
 
     public function getContent(): string
@@ -56,19 +47,9 @@ readonly class Question extends ValueObject implements EntityToArrayInterface
         return $this->explanation;
     }
 
-    public function getUserAnswer(): string
+    public function isAnswerCorrect(string $userAnswer): bool
     {
-        return $this->userAnswer;
-    }
-
-    public function isCorrect(): bool
-    {
-        return $this->isCorrect;
-    }
-
-    public function getTakenTime(): string
-    {
-        return $this->takenTime;
+        return $this->correctAnswer === $userAnswer;
     }
 
     /**
@@ -82,16 +63,7 @@ readonly class Question extends ValueObject implements EntityToArrayInterface
 
         return $this->content === $object->content
           && $this->correctAnswer === $object->correctAnswer
+          && $this->explanation === $object->explanation
           && $this->arraysAreEqual($this->options, $object->options);
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function toArray(): array
-    {
-        return [];
-        //TODO: Implement toArray() method.
-    }
-
 }

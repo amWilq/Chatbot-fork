@@ -25,22 +25,14 @@ class Category extends AggregateRoot
             iconUrl: $iconUrl
         );
     }
-
-    /**
-     * @inheritDoc
-     */
-    #[ArrayShape([
-        'id' => "string",
-        'name' => "string",
-        'iconUrl' => "string"
-    ])]
-    public function toArray(): array
+    public function getName(): string
     {
-        return [
-            'id' => $this->getId()->toString(),
-            'name' => $this->name,
-            'iconUrl' => $this->iconUrl
-        ];
+        return $this->name;
     }
+    public function getIconUrl(): string
+    {
+        return $this->iconUrl;
+    }
+
 
 }

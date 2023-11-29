@@ -30,24 +30,16 @@ class Language extends AggregateRoot
             categoryIds: $categoryIds
         );
     }
-
-    /**
-     * @inheritDoc
-     */
-    #[ArrayShape([
-        'id' => "string",
-        'name' => "string",
-        'iconUrl' => "string",
-        'categoryIds' => "array"
-    ])]
-    public function toArray(): array
+    public function getName(): string
     {
-        return [
-            'id' => $this->getId()->toString(),
-            'name' => $this->name,
-            'iconUrl' => $this->iconUrl,
-            'categoryIds' => $this->categoryIds
-        ];
+        return $this->name;
     }
-
+    public function getIconUrl(): string
+    {
+        return $this->iconUrl;
+    }
+    public function getCategoryIds(): array
+    {
+        return $this->categoryIds;
+    }
 }

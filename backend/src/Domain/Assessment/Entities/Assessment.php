@@ -18,6 +18,7 @@ final class Assessment extends AggregateRoot
     protected DateTime $startTime;
     protected ?DateTime $endTime = null;
     protected ?DifficultiesEnum $difficultyAtEnd = null;
+    protected ?DifficultiesEnum $currentDifficulty = null;
     protected ?string $feedback = null;
     private function __construct(
         protected UserDeviceId $userDeviceId,
@@ -29,6 +30,7 @@ final class Assessment extends AggregateRoot
         $this->id = AssessmentId::create(AggregateRoot::generateId());
         $this->status = AssessmentStatusEnum::ASSESSMENT_START_SUCCESS;
         $this->startTime = new DateTime();
+        $this->currentDifficulty = $this->difficultyAtStart;
     }
     public static function create(
         UserDeviceId $userDeviceId,
@@ -74,9 +76,17 @@ final class Assessment extends AggregateRoot
     {
         return $this->difficultyAtEnd;
     }
-    public function setDifficultyAtEnd(string $difficultyAtEnd): void
+    public function setDifficultyAtEnd(): void
     {
-        $this->difficultyAtEnd = DifficultiesEnum::tryFrom($difficultyAtEnd);
+        $this->difficultyAtEnd = $this->currentDifficulty;
+    }
+    public function getCurrentDifficulty(): DifficultiesEnum
+    {
+        return $this->currentDifficulty;
+    }
+    public function setCurrentDifficulty(string $currentDifficulty): void
+    {
+        $this->currentDifficulty = DifficultiesEnum::tryFrom($currentDifficulty);
     }
     public function getFeedback(): string
     {
@@ -86,54 +96,20 @@ final class Assessment extends AggregateRoot
     {
         $this->feedback = $feedback;
     }
-    public function getUserDeviceId(): string
+    public function getUserDeviceId(): UserDeviceId
     {
-        return $this->userDeviceId->toString();
+        return $this->userDeviceId;
     }
-    public function getCategoryId(): string
+    public function getCategoryId(): CategoryId
     {
-        return $this->categoryId->toString();
+        return $this->categoryId;
     }
-    public function getLanguageId(): string
+    public function getLanguageId(): LanguageId
     {
-        return $this->languageId->toString();
+        return $this->languageId;
     }
-    public function getAssessmentType(): array
+    public function getAssessmentType(): AssessmentType
     {
-        return $this->assessmentType->toArray();
+        return $this->assessmentType;
     }
-
-    /**
-     * @inheritDoc
-     */
-    #[ArrayShape([
-      'assessmentId' => "string",
-      'assessmentStatus' => "string",
-      'UserDeviceId' => "string",
-      'categoryId' => "string",
-      'languageId' => "string",
-      'difficultyAtStart' => "string",
-      'difficultyAtEnd' => "string",
-      'startTime' => "string",
-      'endTime' => "string",
-      'feedback' => "string",
-      'assessmentDetails' => "array"
-    ])]
-    public function toArray(): array
-    {
-        return [
-            'assessmentId' => $this->getId()->toString(),
-            'assessmentStatus' => $this->status->name,
-            'UserDeviceId' => $this->getUserDeviceId(),
-            'categoryId' => $this->getCategoryId(),
-            'languageId' => $this->getLanguageId(),
-            'difficultyAtStart' => $this->getDifficultyAtStart(),
-            'difficultyAtEnd' => $this->getDifficultyAtEnd(),
-            'startTime' => $this->getStartTime(),
-            'endTime' => $this->getEndTime(),
-            'feedback' => $this->getFeedback(),
-            'assessmentDetails' => $this->getAssessmentType(),
-        ];
-    }
-
 }

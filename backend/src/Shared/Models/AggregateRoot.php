@@ -2,7 +2,7 @@
 
 namespace App\Shared\Models;
 
-abstract class AggregateRoot implements EntityToArrayInterface
+abstract class AggregateRoot
 {
 
     protected ValueObject $id;

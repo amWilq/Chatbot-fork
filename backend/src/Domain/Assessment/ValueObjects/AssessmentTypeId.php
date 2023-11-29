@@ -2,9 +2,10 @@
 
 namespace App\Domain\Assessment\ValueObjects;
 
+use App\Shared\Models\EntityToStringInterface;
 use App\Shared\Models\ValueObject;
 
-readonly class AssessmentTypeId extends ValueObject
+readonly class AssessmentTypeId extends ValueObject implements EntityToStringInterface
 {
     /**
      * AssessmentTypeId constructor.

@@ -1,20 +1,28 @@
 <?php
 
-namespace App\Domain\Assessment\ValueObjects;
+namespace App\Domain\User\ValueObjects;
 
 use App\Shared\Models\EntityToStringInterface;
 use App\Shared\Models\ValueObject;
 
-readonly class AssessmentId extends ValueObject implements EntityToStringInterface
+readonly class UserIdentity extends ValueObject implements EntityToStringInterface
 {
     /**
-     * AssessmentId constructor.
+     * UserId constructor.
      */
     private function __construct(
-        private string $id
+        protected string $id,
     ) {
     }
-
+    /**
+     * Create a new instance of the current object
+     */
+    public static function create(string $id): self
+    {
+        return new self(
+            id: $id
+        );
+    }
     /**
      * Get id as string.
      */
@@ -22,7 +30,6 @@ readonly class AssessmentId extends ValueObject implements EntityToStringInterfa
     {
         return $this->id;
     }
-
     /**
      * @inheritDoc
      */
@@ -32,15 +39,5 @@ readonly class AssessmentId extends ValueObject implements EntityToStringInterfa
             return false;
         }
         return $this->id === $object->id;
-    }
-
-    /**
-     * Create a new instance of the current object
-     */
-    public static function create($id): self
-    {
-        return new self(
-            id: $id
-        );
     }
 }

@@ -3,15 +3,12 @@
 namespace App\Domain\User\Entities;
 
 use App\Domain\User\ValueObjects\UserDeviceId;
-use App\Shared\Models\ValueObject;
 use App\Shared\Models\AggregateRoot;
 use App\Domain\User\Enums\UserAccountStatusEnum;
 use App\Domain\User\ValueObjects\UserId;
-use JetBrains\PhpStorm\ArrayShape;
 
 class User extends AggregateRoot
 {
-
     protected UserAccountStatusEnum $status;
     protected \DateTime $createdAt;
     /**
@@ -25,28 +22,6 @@ class User extends AggregateRoot
         $this->status = UserAccountStatusEnum::ACTIVE;
         $this->createdAt = new \DateTime();
     }
-    public function getDeviceId(): string
-    {
-        return $this->deviceId->toString();
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-    public function getStatus(): string
-    {
-        return $this->status->value;
-    }
-    public function setStatus(string $status): void
-    {
-        $this->status = UserAccountStatusEnum::tryFrom($status);
-    }
-    public function getCreatedAt(): string
-    {
-        return $this->createdAt->format(DATE_ATOM);
-    }
-
     /**
      * Create a new instance of the current object
      */
@@ -57,26 +32,24 @@ class User extends AggregateRoot
             name: $name
         );
     }
-
-    /**
-     * @inheritDoc
-     */
-    #[ArrayShape([
-        'id' => "string",
-        'deviceId' => "string",
-        'name' => "string",
-        'status' => "string",
-        'createdAt' => "string",
-    ])]
-    public function toArray(): array
+    public function getDeviceId(): UserDeviceId
     {
-        return [
-            'id' => $this->getId()->toString(),
-            'deviceId' => $this->getDeviceId(),
-            'name' => $this->name,
-            'status' => $this->getStatus(),
-            'createdAt' => $this->getCreatedAt(),
-        ];
+        return $this->deviceId;
     }
-
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    public function getStatus(): UserAccountStatusEnum
+    {
+        return $this->status;
+    }
+    public function setStatus(string $status): void
+    {
+        $this->status = UserAccountStatusEnum::tryFrom($status);
+    }
+    public function getCreatedAt(): string
+    {
+        return $this->createdAt->format(DATE_ATOM);
+    }
 }
