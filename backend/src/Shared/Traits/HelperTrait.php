@@ -13,4 +13,23 @@ trait HelperTrait
         return count($array) === count($array2) && array_diff($array, $array2) === array_diff($array2, $array);
 
     }
+
+    public function _convertNameToClassName(string $name, string $classSuffix): string
+    {
+        // replace underscores or dashes with spaces
+        $name = str_replace(['_', '-'], ' ', $name);
+
+        // convert to PascalCase
+        $name = ucwords($name);
+
+        // remove spaces
+        $name = str_replace(' ', '', $name);
+
+        return $name.$classSuffix;
+    }
+
+    public static function convertNameToClassName(string $name, string $classSuffix): string
+    {
+        return (new static())->_convertNameToClassName($name, $classSuffix);
+    }
 }

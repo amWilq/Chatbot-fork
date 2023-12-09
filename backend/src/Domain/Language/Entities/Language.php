@@ -2,6 +2,7 @@
 
 namespace App\Domain\Language\Entities;
 
+use App\Domain\Category\Entities\Category;
 use App\Domain\Language\ValueObjects\LanguageId;
 use App\Shared\Models\AggregateRoot;
 use JetBrains\PhpStorm\ArrayShape;
@@ -38,6 +39,10 @@ class Language extends AggregateRoot
     {
         return $this->iconUrl;
     }
+
+    /**
+     * @return Category[]
+     */
     public function getCategories(): array
     {
         return $this->categories;

@@ -46,4 +46,12 @@ class AssessmentType extends AggregateRoot
     {
         return $this->format->getDifficulties();
     }
+
+    /**
+     * Get parent instance.
+     */
+    public function getParent(): self
+    {
+        return $this;
+    }
 }

@@ -51,5 +51,9 @@ final class QuizAssessment extends AssessmentType
             $this->correctAnswerCount++;
         }
     }
+    public function getAssessmentType(): AssessmentType
+    {
+        return $this->getParent();
+    }
 
 }

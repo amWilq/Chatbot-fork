@@ -56,17 +56,17 @@ final class Assessment extends AggregateRoot
         $this->status = $status;
     }
 
-    public function getStartTime(): string
+    public function getStartTime(): DateTime
     {
-        return $this->startTime->format(DATE_ISO8601_EXPANDED);
+        return $this->startTime;
     }
-    public function getEndTime(): string
+    public function getEndTime(): DateTime
     {
-        return $this->endTime->format(DATE_ISO8601_EXPANDED);
+        return $this->endTime;
     }
-    public function setEndTime(int $timestamp):void
+    public function setEndTime(DateTime $endTime):void
     {
-        $this->endTime->setTimestamp($timestamp);
+        $this->endTime = $endTime;
     }
     public function getDifficultyAtStart(): DifficultiesEnum
     {
