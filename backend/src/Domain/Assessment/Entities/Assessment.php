@@ -5,8 +5,9 @@ namespace App\Domain\Assessment\Entities;
 use App\Domain\Assessment\Enums\AssessmentStatusEnum;
 use App\Domain\Assessment\Enums\DifficultiesEnum;
 use App\Domain\Assessment\ValueObjects\AssessmentId;
-use App\Domain\Category\ValueObjects\CategoryId;
-use App\Domain\Language\ValueObjects\LanguageId;
+use App\Domain\Category\Entities\Category;
+use App\Domain\Language\Entities\Language;
+use App\Domain\User\Entities\User;
 use App\Domain\User\ValueObjects\UserDeviceId;
 use App\Shared\Models\AggregateRoot;
 use DateTime;
@@ -20,9 +21,9 @@ final class Assessment extends AggregateRoot
     protected ?DifficultiesEnum $currentDifficulty = null;
     protected ?string $feedback = null;
     private function __construct(
-        protected UserDeviceId $userDeviceId,
-        protected CategoryId $categoryId,
-        protected LanguageId $languageId,
+        protected User $user,
+        protected Category $category,
+        protected Language $language,
         protected DifficultiesEnum $difficultyAtStart,
         protected AssessmentType $assessmentType,
     ) {
@@ -32,16 +33,16 @@ final class Assessment extends AggregateRoot
         $this->currentDifficulty = $this->difficultyAtStart;
     }
     public static function create(
-        UserDeviceId $userDeviceId,
-        CategoryId $categoryId,
-        LanguageId $languageId,
+        User $user,
+        Category $category,
+        Language $language,
         string $difficulty,
         AssessmentType $assessmentType
     ): self {
         return new self(
-            userDeviceId: $userDeviceId,
-            categoryId: $categoryId,
-            languageId: $languageId,
+            user: $user,
+            category: $category,
+            language: $language,
             difficultyAtStart: DifficultiesEnum::tryFrom($difficulty),
             assessmentType: $assessmentType
         );
@@ -95,17 +96,17 @@ final class Assessment extends AggregateRoot
     {
         $this->feedback = $feedback;
     }
-    public function getUserDeviceId(): UserDeviceId
+    public function getUser(): User
     {
-        return $this->userDeviceId;
+        return $this->user;
     }
-    public function getCategoryId(): CategoryId
+    public function getCategory(): Category
     {
-        return $this->categoryId;
+        return $this->category;
     }
-    public function getLanguageId(): LanguageId
+    public function getLanguage(): Language
     {
-        return $this->languageId;
+        return $this->language;
     }
     public function getAssessmentType(): AssessmentType
     {

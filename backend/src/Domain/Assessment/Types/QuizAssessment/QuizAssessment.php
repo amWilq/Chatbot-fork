@@ -48,8 +48,8 @@ final class QuizAssessment extends AssessmentType
         $this->questionsAttempts[] = $questionAttempt;
         $this->questionCount++;
         if ($questionAttempt->isCorrect()) {
-                $this->correctAnswerCount++;
-            }
+            $this->correctAnswerCount++;
+        }
     }
 
 }

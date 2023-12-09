@@ -48,8 +48,8 @@ class User extends AggregateRoot
     {
         $this->status = UserAccountStatusEnum::tryFrom($status);
     }
-    public function getCreatedAt(): string
+    public function getCreatedAt(): \DateTime
     {
-        return $this->createdAt->format(DATE_ATOM);
+        return $this->createdAt;
     }
 }

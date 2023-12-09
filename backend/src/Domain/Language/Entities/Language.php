@@ -14,7 +14,7 @@ class Language extends AggregateRoot
     private function __construct(
         protected string $name,
         protected string $iconUrl,
-        protected array $categoryIds,
+        protected array $categories,
     ) {
         $this->id = LanguageId::create(AggregateRoot::generateId());
     }
@@ -22,12 +22,12 @@ class Language extends AggregateRoot
     /**
      * Create a new instance of the current object.
      */
-    public static function create(string $name, string $iconUrl, array $categoryIds): self
+    public static function create(string $name, string $iconUrl, array $categories): self
     {
         return new self(
             name: $name,
             iconUrl: $iconUrl,
-            categoryIds: $categoryIds
+            categories: $categories
         );
     }
     public function getName(): string
@@ -38,8 +38,8 @@ class Language extends AggregateRoot
     {
         return $this->iconUrl;
     }
-    public function getCategoryIds(): array
+    public function getCategories(): array
     {
-        return $this->categoryIds;
+        return $this->categories;
     }
 }

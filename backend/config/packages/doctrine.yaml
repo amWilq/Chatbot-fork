@@ -1,0 +1,19 @@
+doctrine:
+  dbal:
+    default_connection: default
+    connections:
+      default:
+        dbname: '%app.db_name%'
+        user: '%app.db_user%'
+        password: '%env(DB_PASSWORD)%'
+        host: '%app.db_host%'
+        server_version: '%app.db_version%'
+        port: '%app.db_port%'
+  orm:
+    mappings:
+      App:
+        is_bundle: false
+        type: attribute
+        dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Entities'
+        prefix: 'App\Infrastructure\Persistence\Entities'
+        alias: App

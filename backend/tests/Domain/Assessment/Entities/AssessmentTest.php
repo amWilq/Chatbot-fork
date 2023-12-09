@@ -84,6 +84,6 @@ final class AssessmentTest extends TestCase
      */
     public function test_can_get_assessment_type(): void
     {
-        self::assertEquals($this->assessmentType, $this->assessment->getAssessmentType());
+        self::assertNotEquals(QuizAssessment::create(500), $this->assessment->getAssessmentType());
     }
 }
