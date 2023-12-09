@@ -24,8 +24,7 @@ class LanguageEntity
     private string $iconUrl;
 
     #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'category_id')]
-    #[ORM\InverseJoinColumn(name: 'category_id', referencedColumnName: 'category_id')]
-    #[ORM\ManyToMany(targetEntity: CategoryEntity::class)]
+    #[ORM\ManyToOne(targetEntity: CategoryEntity::class)]
     private Collection $categories;
 
     public function getId(): string

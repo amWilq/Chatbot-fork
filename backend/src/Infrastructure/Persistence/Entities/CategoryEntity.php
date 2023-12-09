@@ -13,7 +13,7 @@ class CategoryEntity
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     #[ORM\Column(name: 'category_id', type: Types::STRING)]
-    private readonly string $id;
+    private string $id;
 
     #[ORM\Column(name: 'name', type: Types::STRING)]
     private string $name;

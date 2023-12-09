@@ -17,7 +17,7 @@ class AssessmentEntity
     private string $id;
 
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
-    #[ORM\OneToMany(targetEntity: UserEntity::class)]
+    #[ORM\ManyToOne(targetEntity: UserEntity::class)]
     private UserEntity $user;
 
     #[ORM\JoinColumn(name: 'language_id', referencedColumnName: 'language_id')]

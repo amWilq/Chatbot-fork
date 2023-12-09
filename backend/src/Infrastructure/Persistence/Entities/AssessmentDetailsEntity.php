@@ -10,13 +10,13 @@ class AssessmentDetailsEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(name: 'assessment_details_id',type: 'integer')]
     private int $id;
     #[ORM\JoinColumn(name: 'assessment_id', referencedColumnName: 'assessment_id')]
     #[ORM\OneToOne(targetEntity: AssessmentEntity::class)]
     private AssessmentEntity $assessment;
     #[ORM\JoinColumn(name: 'assessment_type_id', referencedColumnName: 'assessment_type_id')]
-    #[ORM\OneToMany(targetEntity: AssessmentTypeEntity::class)]
+    #[ORM\ManyToOne(targetEntity: AssessmentTypeEntity::class)]
     private AssessmentTypeEntity $assessmentType;
     #[ORM\Column(type: 'json')]
     private array $assessmentDetails;
