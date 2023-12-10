@@ -7,9 +7,9 @@ use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Table(name: 'assessment')]
 #[ORM\Entity(repositoryClass: AssessmentEntityRepository::class)]
-class AssessmentEntity
+#[ORM\Table(name: 'assessment')]
+class AssessmentEntity implements PersistenceEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]

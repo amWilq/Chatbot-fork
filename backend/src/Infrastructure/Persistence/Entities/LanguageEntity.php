@@ -3,14 +3,15 @@
 namespace App\Infrastructure\Persistence\Entities;
 
 use App\Domain\Language\Entities\Language;
+use App\Infrastructure\Persistence\Repository\LanguageEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: LanguageEntityRepository::class)]
 #[ORM\Table(name: 'languages')]
-class LanguageEntity
+class LanguageEntity implements PersistenceEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]

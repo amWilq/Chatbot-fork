@@ -11,15 +11,21 @@ use JetBrains\PhpStorm\ArrayShape;
 
 class AssessmentType extends AggregateRoot
 {
+
     protected ValueObject $id;
+
     protected Format $format;
+
     /**
      * AssessmentType constructor.
      */
-    protected function __construct(
-        string $formatName,
+    public function __construct(
+      string $id,
+      string $formatName,
     ) {
-        $this->id = AssessmentTypeId::create(AggregateRoot::generateId());
+        $this->id = AssessmentTypeId::create($id) ?? AssessmentTypeId::create(
+          AggregateRoot::generateId()
+        );
         $this->format = Format::create(FormatEnum::tryFrom($formatName));
     }
 
@@ -54,4 +60,5 @@ class AssessmentType extends AggregateRoot
     {
         return $this;
     }
+
 }

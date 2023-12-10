@@ -6,9 +6,6 @@
 parameters:
 
 services:
-  app.repository.assessment_entity_repository:
-    class: App\Infrastructure\Persistence\Repository\AssessmentEntityRepository
-
   # default configuration for services in *this* file
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.

@@ -3,10 +3,11 @@
 namespace App\Infrastructure\Persistence\Entities;
 
 use App\Domain\Category\Entities\Category;
+use App\Infrastructure\Persistence\Repository\CategoryEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: CategoryEntityRepository::class)]
 #[ORM\Table(name: 'categories')]
 class CategoryEntity
 {

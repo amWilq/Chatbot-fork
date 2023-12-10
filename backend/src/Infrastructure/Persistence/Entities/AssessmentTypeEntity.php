@@ -3,10 +3,11 @@
 namespace App\Infrastructure\Persistence\Entities;
 
 use App\Domain\Assessment\Entities\AssessmentType;
+use App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AssessmentTypeEntityRepository::class)]
 #[ORM\Table(name: 'assessment_types')]
 class AssessmentTypeEntity
 {

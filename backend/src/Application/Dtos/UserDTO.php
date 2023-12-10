@@ -14,6 +14,7 @@ readonly class UserDTO implements EntityToArrayInterface
     private function __construct(
       private string $id,
       private string $deviceId,
+      private string $name,
       private string $status,
       private string $createdAt
     ) {}
@@ -26,6 +27,11 @@ readonly class UserDTO implements EntityToArrayInterface
     protected function getDeviceId(): string
     {
         return $this->deviceId;
+    }
+
+    protected function getName(): string
+    {
+        return $this->name;
     }
 
     protected function getStatus(): string
@@ -43,6 +49,7 @@ readonly class UserDTO implements EntityToArrayInterface
         return new self(
           id: $user->getId()->toString(),
           deviceId: $user->getDeviceId()->toString(),
+          name: $user->getName(),
           status: $user->getStatus()->value,
           createdAt: $user->getCreatedAt()->format(DATE_ATOM)
         );
@@ -51,6 +58,7 @@ readonly class UserDTO implements EntityToArrayInterface
     #[ArrayShape([
       'userId' => 'string',
       'userDeviceId' => 'string',
+      'name' => 'string',
       'status' => 'string',
       'createdAt' => 'string',
     ])]
@@ -59,6 +67,7 @@ readonly class UserDTO implements EntityToArrayInterface
         return [
           'userId' => $this->getId(),
           'userDeviceId' => $this->getDeviceId(),
+          'name' => $this->getName(),
           'status' => $this->getStatus(),
           'createdAt' => $this->getCreatedAt(),
         ];

@@ -8,31 +8,36 @@ use JetBrains\PhpStorm\ArrayShape;
 
 class Category extends AggregateRoot
 {
+
     private function __construct(
-        protected string $name,
-        protected string $iconUrl,
+      string $id,
+      protected string $name,
+      protected string $iconUrl,
     ) {
-        $this->id = CategoryId::create(AggregateRoot::generateId());
+        $this->id = CategoryId::create($id) ??
+          CategoryId::create(AggregateRoot::generateId());
     }
 
     /**
      * Create a new instance of the current object.
      */
-    public static function create(string $name, string $iconUrl): self
+    public static function create(string $name, string $iconUrl, string $id = null): self
     {
         return new self(
-            name: $name,
-            iconUrl: $iconUrl
+          id: $id,
+          name: $name,
+          iconUrl: $iconUrl,
         );
     }
+
     public function getName(): string
     {
         return $this->name;
     }
+
     public function getIconUrl(): string
     {
         return $this->iconUrl;
     }
-
 
 }

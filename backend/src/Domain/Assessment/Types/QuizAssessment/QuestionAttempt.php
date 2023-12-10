@@ -6,19 +6,35 @@ use App\Domain\Assessment\ValueObjects\Question;
 
 class QuestionAttempt
 {
-    private int $userAnswer;
+
+    private string $userAnswer;
+
     private int $takenTime;
+
     private bool $isCorrect;
 
     private function __construct(
-        private readonly Question $question
+      string $userAnswer,
+      int $takenTime,
+      bool $isCorrect,
+      private readonly Question $question
     ) {
+        $this->userAnswer = $userAnswer;
+        $this->takenTime = $takenTime;
+        $this->isCorrect = $isCorrect;
     }
 
-    public static function create(Question $question): self
-    {
+    public static function create(
+      Question $question,
+      string $userAnswer = null,
+      int $takenTime = null,
+      bool $isCorrect = null
+    ): self {
         return new self(
-            question: $question
+          userAnswer: $userAnswer,
+          takenTime: $takenTime,
+          isCorrect: $isCorrect,
+          question: $question
         );
     }
 
@@ -51,6 +67,8 @@ class QuestionAttempt
     public function checkAnswerCorrectness(): bool
     {
         $this->isCorrect = $this->question->isAnswerCorrect($this->userAnswer);
+
         return $this->isCorrect;
     }
+
 }
