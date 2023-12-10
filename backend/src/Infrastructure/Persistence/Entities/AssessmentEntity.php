@@ -52,99 +52,123 @@ class AssessmentEntity implements PersistenceEntityInterface
 
     #[ORM\Column(name: 'feedback', type: Types::STRING)]
     private string $feedback;
+
     public function getId(): string
     {
         return $this->id;
     }
+
     public function setId(string $id): void
     {
         $this->id = $id;
     }
+
     public function getUser(): UserEntity
     {
         return $this->user;
     }
-    public function setUser(UserEntity $user):void
+
+    public function setUser(UserEntity $user): void
     {
         $this->user = $user;
     }
+
     public function getLanguage(): LanguageEntity
     {
         return $this->language;
     }
-    public function setLanguage(LanguageEntity $language):void
+
+    public function setLanguage(LanguageEntity $language): void
     {
         $this->language = $language;
     }
+
     public function getCategory(): CategoryEntity
     {
         return $this->category;
     }
-    public function setCategory(CategoryEntity $category):void
+
+    public function setCategory(CategoryEntity $category): void
     {
         $this->category = $category;
     }
+
     public function getAssessmentDetails(): AssessmentDetailsEntity
     {
         return $this->assessmentDetails;
     }
-    public function setAssessmentDetails(AssessmentDetailsEntity $assessmentDetails):void
+
+    public function setAssessmentDetails(AssessmentDetailsEntity $assessmentDetails): void
     {
         $this->assessmentDetails = $assessmentDetails;
     }
+
     public function getStatus(): string
     {
         return $this->status;
     }
-    public function setStatus(string $status):void
+
+    public function setStatus(string $status): void
     {
         $this->status = $status;
     }
+
     public function getStartTime(): \DateTime
     {
         return $this->startTime;
     }
-    public function setStartTime(\DateTime $startTime):void
+
+    public function setStartTime(\DateTime $startTime): void
     {
         $this->startTime = $startTime;
     }
+
     public function getEndTime(): \DateTime
     {
         return $this->endTime;
     }
-    public function setEndTime(\DateTime $endTime):void
+
+    public function setEndTime(\DateTime $endTime): void
     {
         $this->endTime = $endTime;
     }
+
     public function getStartDifficulty(): string
     {
         return $this->startDifficulty;
     }
-    public function setStartDifficulty(string $startDifficulty):void
+
+    public function setStartDifficulty(string $startDifficulty): void
     {
         $this->startDifficulty = $startDifficulty;
     }
+
     public function getCurrentDifficulty(): string
     {
         return $this->currentDifficulty;
     }
-    public function setCurrentDifficulty(string $currentDifficulty):void
+
+    public function setCurrentDifficulty(string $currentDifficulty): void
     {
         $this->currentDifficulty = $currentDifficulty;
     }
+
     public function getEndDifficulty(): string
     {
         return $this->endDifficulty;
     }
-    public function setEndDifficulty(string $endDifficulty):void
+
+    public function setEndDifficulty(string $endDifficulty): void
     {
         $this->endDifficulty = $endDifficulty;
     }
+
     public function getFeedback(): string
     {
         return $this->feedback;
     }
-    public function setFeedback(string $feedback):void
+
+    public function setFeedback(string $feedback): void
     {
         $this->feedback = $feedback;
     }
@@ -171,7 +195,7 @@ class AssessmentEntity implements PersistenceEntityInterface
         $assessmentEntity->setCurrentDifficulty($assessment->getCurrentDifficulty());
         $assessmentEntity->setEndDifficulty($assessment->getDifficultyAtEnd());
         $assessmentEntity->setFeedback($assessment->getFeedback());
-        
+
         return $assessmentEntity;
     }
 

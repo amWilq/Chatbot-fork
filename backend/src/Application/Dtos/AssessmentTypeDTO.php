@@ -12,11 +12,12 @@ readonly class AssessmentTypeDTO implements EntityToArrayInterface
 {
 
     protected function __construct(
-      private string $id,
-      private string $name,
-      private string $description,
-      private array $difficulties
-    ) {}
+        private string $id,
+        private string $name,
+        private string $description,
+        private array $difficulties
+    ) {
+    }
 
     protected function getId(): string
     {
@@ -41,26 +42,26 @@ readonly class AssessmentTypeDTO implements EntityToArrayInterface
     public static function fromDomainEntity(AssessmentType $assessmentType
     ): self {
         return new self(
-          id: $assessmentType->getId()->toString(),
-          name: $assessmentType->getName(),
-          description: $assessmentType->getDescription(),
-          difficulties: $assessmentType->getDifficulties()
+            id: $assessmentType->getId()->toString(),
+            name: $assessmentType->getName(),
+            description: $assessmentType->getDescription(),
+            difficulties: $assessmentType->getDifficulties()
         );
     }
 
     #[ArrayShape([
-      'assessmentTypeId' => 'string',
-      'name' => 'string',
-      'description' => 'string',
-      'difficulties' => 'array',
+        'assessmentTypeId' => 'string',
+        'name' => 'string',
+        'description' => 'string',
+        'difficulties' => 'array',
     ])]
     public function toArray(): array
     {
         return [
-          'assessmentTypeId' => $this->getId(),
-          'name' => $this->getName(),
-          'description' => $this->getDescription(),
-          'difficulties' => $this->getDifficulties()
+            'assessmentTypeId' => $this->getId(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'difficulties' => $this->getDifficulties(),
         ];
     }
 }

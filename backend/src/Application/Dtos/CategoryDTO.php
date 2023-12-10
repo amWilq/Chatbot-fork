@@ -12,10 +12,11 @@ readonly class CategoryDTO implements EntityToArrayInterface
 {
 
     private function __construct(
-      private string $id,
-      private string $name,
-      private string $iconUrl,
-    ) {}
+        private string $id,
+        private string $name,
+        private string $iconUrl,
+    ) {
+    }
 
     protected function getId(): string
     {
@@ -35,23 +36,23 @@ readonly class CategoryDTO implements EntityToArrayInterface
     public static function fromDomainEntity(Category $category): self
     {
         return new self(
-          id: $category->getId()->toString(),
-          name: $category->getName(),
-          iconUrl: $category->getIconUrl()
+            id: $category->getId()->toString(),
+            name: $category->getName(),
+            iconUrl: $category->getIconUrl()
         );
     }
 
     #[ArrayShape([
-      'categoryId' => 'string',
-      'name' => 'string',
-      'icon' => 'string',
+        'categoryId' => 'string',
+        'name' => 'string',
+        'icon' => 'string',
     ])]
     public function toArray(): array
     {
         return [
-          'categoryId' => $this->getId(),
-          'name' => $this->getName(),
-          'icon' => $this->getIconUrl(),
+            'categoryId' => $this->getId(),
+            'name' => $this->getName(),
+            'icon' => $this->getIconUrl(),
         ];
     }
 

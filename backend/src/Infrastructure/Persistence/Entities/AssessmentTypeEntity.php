@@ -21,39 +21,49 @@ class AssessmentTypeEntity
     private string $description;
     #[ORM\Column(name: 'difficulties', type: Types::JSON)]
     private array $difficulties;
+
     public function getId(): string
     {
         return $this->id;
     }
-    public function setId(string $id):void
+
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
-    public function setName(string $name):void
+
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
+
     public function getDescription(): string
     {
         return $this->description;
     }
-    public function setDescription(string $description):void
+
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
+
     public function getDifficulties(): array
     {
         return $this->difficulties;
     }
+
     public function setDifficulties(array $difficulties): self
     {
         $this->difficulties = $difficulties;
+
         return $this;
     }
+
     public static function fromDomainEntity(AssessmentType $assessmentType): self
     {
         $assessmentTypeEntity = new self();

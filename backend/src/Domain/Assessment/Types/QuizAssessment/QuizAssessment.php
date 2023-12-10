@@ -19,15 +19,15 @@ final class QuizAssessment extends AssessmentType
      * Class constructor.
      */
     private function __construct(
-      string $id,
-      int $questionCount,
-      int $correctAnswerCount,
-      array $questionsAttempts,
-      protected int $durationInSeconds,
+        string $id,
+        int $questionCount,
+        int $correctAnswerCount,
+        array $questionsAttempts,
+        protected int $durationInSeconds,
     ) {
         parent::__construct(
-          id: $id,
-          formatName: FormatEnum::QUIZ->value
+            id: $id,
+            formatName: FormatEnum::QUIZ->value
         );
         $this->questionCount = $questionCount;
         $this->correctAnswerCount = $correctAnswerCount;
@@ -35,18 +35,18 @@ final class QuizAssessment extends AssessmentType
     }
 
     public static function create(
-      int $durationInSeconds,
-      string $id = null,
-      int $questionCount = 0,
-      int $correctAnswerCount = 0,
-      array $questionsAttempts = [],
+        int $durationInSeconds,
+        string $id = null,
+        int $questionCount = 0,
+        int $correctAnswerCount = 0,
+        array $questionsAttempts = [],
     ): self {
         return new self(
-          id: $id,
-          questionCount: $questionCount,
-          correctAnswerCount: $correctAnswerCount,
-          questionsAttempts: $questionsAttempts,
-          durationInSeconds: $durationInSeconds,
+            id: $id,
+            questionCount: $questionCount,
+            correctAnswerCount: $correctAnswerCount,
+            questionsAttempts: $questionsAttempts,
+            durationInSeconds: $durationInSeconds,
         );
     }
 
@@ -71,7 +71,7 @@ final class QuizAssessment extends AssessmentType
     }
 
     public function setQuestionsAttempts(
-      QuestionAttempt $questionAttempt
+        QuestionAttempt $questionAttempt
     ): void {
         $this->questionsAttempts[] = $questionAttempt;
         $this->questionCount++;

@@ -14,10 +14,10 @@ class QuestionAttempt
     private bool $isCorrect;
 
     private function __construct(
-      string $userAnswer,
-      int $takenTime,
-      bool $isCorrect,
-      private readonly Question $question
+        string $userAnswer,
+        int $takenTime,
+        bool $isCorrect,
+        private readonly Question $question
     ) {
         $this->userAnswer = $userAnswer;
         $this->takenTime = $takenTime;
@@ -25,16 +25,16 @@ class QuestionAttempt
     }
 
     public static function create(
-      Question $question,
-      string $userAnswer = null,
-      int $takenTime = null,
-      bool $isCorrect = null
+        Question $question,
+        string $userAnswer = null,
+        int $takenTime = null,
+        bool $isCorrect = null
     ): self {
         return new self(
-          userAnswer: $userAnswer,
-          takenTime: $takenTime,
-          isCorrect: $isCorrect,
-          question: $question
+            userAnswer: $userAnswer,
+            takenTime: $takenTime,
+            isCorrect: $isCorrect,
+            question: $question
         );
     }
 

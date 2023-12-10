@@ -18,17 +18,17 @@ class User extends AggregateRoot
      * User constructor.
      */
     private function __construct(
-      string $id,
-      string $status,
-      string $createdAt,
-      protected UserDeviceId $deviceId,
-      protected string $name,
+        string $id,
+        string $status,
+        string $createdAt,
+        protected UserDeviceId $deviceId,
+        protected string $name,
     ) {
         $this->id = UserId::create($id) ?? UserId::create(
-          AggregateRoot::generateId()
+            AggregateRoot::generateId()
         );
         $this->status = UserAccountStatusEnum::tryFrom(
-          $status
+            $status
         ) ?? UserAccountStatusEnum::ACTIVE;
         $this->createdAt = new \DateTime($createdAt ?? 'now');
     }
@@ -37,18 +37,18 @@ class User extends AggregateRoot
      * Create a new instance of the current object
      */
     public static function create(
-      string $name,
-      string $deviceId,
-      string $id = null,
-      string $status = null,
-      string $createdAt = null
+        string $name,
+        string $deviceId,
+        string $id = null,
+        string $status = null,
+        string $createdAt = null
     ): self {
         return new self(
-          id: $id,
-          status: $status,
-          createdAt: $createdAt,
-          deviceId: UserDeviceId::create($deviceId),
-          name: $name,
+            id: $id,
+            status: $status,
+            createdAt: $createdAt,
+            deviceId: UserDeviceId::create($deviceId),
+            name: $name,
         );
     }
 

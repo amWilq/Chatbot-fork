@@ -12,11 +12,12 @@ readonly class LanguageDTO implements EntityToArrayInterface
 {
 
     private function __construct(
-      private string $id,
-      private string $name,
-      private string $iconUrl,
-      private array $categoryIds,
-    ) {}
+        private string $id,
+        private string $name,
+        private string $iconUrl,
+        private array $categoryIds,
+    ) {
+    }
 
     protected function getId(): string
     {
@@ -47,26 +48,26 @@ readonly class LanguageDTO implements EntityToArrayInterface
         }
 
         return new self(
-          id: $language->getId()->toString(),
-          name: $language->getName(),
-          iconUrl: $language->getIconUrl(),
-          categoryIds: $categoryIds
+            id: $language->getId()->toString(),
+            name: $language->getName(),
+            iconUrl: $language->getIconUrl(),
+            categoryIds: $categoryIds
         );
     }
 
     #[ArrayShape([
-      'languageId' => 'string',
-      'name' => 'string',
-      'icon' => 'string',
-      'categoryIds' => 'array',
+        'languageId' => 'string',
+        'name' => 'string',
+        'icon' => 'string',
+        'categoryIds' => 'array',
     ])]
     public function toArray(): array
     {
         return [
-          'languageId' => $this->getId(),
-          'name' => $this->getName(),
-          'icon' => $this->getIconUrl(),
-          'categoryIds' => $this->getCategoryIds(),
+            'languageId' => $this->getId(),
+            'name' => $this->getName(),
+            'icon' => $this->getIconUrl(),
+            'categoryIds' => $this->getCategoryIds(),
         ];
     }
 

@@ -41,6 +41,7 @@ readonly class CategoryId extends ValueObject implements EntityToStringInterface
         if (!$object instanceof self) {
             return false;
         }
+
         return $this->id === $object->id;
     }
 

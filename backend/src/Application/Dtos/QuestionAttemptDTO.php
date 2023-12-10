@@ -12,14 +12,15 @@ readonly class QuestionAttemptDTO implements EntityToArrayInterface
 {
 
     private function __construct(
-      private string $content,
-      private array $answers,
-      private string $correctAnswer,
-      private string $explanation,
-      private string $yourAnswer,
-      private bool $isCorrect,
-      private int $takenTime
-    ) {}
+        private string $content,
+        private array $answers,
+        private string $correctAnswer,
+        private string $explanation,
+        private string $yourAnswer,
+        private bool $isCorrect,
+        private int $takenTime
+    ) {
+    }
 
     protected function getContent(): string
     {
@@ -59,35 +60,35 @@ readonly class QuestionAttemptDTO implements EntityToArrayInterface
     public static function fromDomainEntity(QuestionAttempt $questionAttempt
     ): self {
         return new self(
-          content: $questionAttempt->getQuestion()->getContent(),
-          answers: $questionAttempt->getQuestion()->getOptions(),
-          correctAnswer: $questionAttempt->getQuestion()->getCorrectAnswer(),
-          explanation: $questionAttempt->getQuestion()->getExplanation(),
-          yourAnswer: $questionAttempt->getAnswer(),
-          isCorrect: $questionAttempt->isCorrect(),
-          takenTime: $questionAttempt->getTakenTime(),
+            content: $questionAttempt->getQuestion()->getContent(),
+            answers: $questionAttempt->getQuestion()->getOptions(),
+            correctAnswer: $questionAttempt->getQuestion()->getCorrectAnswer(),
+            explanation: $questionAttempt->getQuestion()->getExplanation(),
+            yourAnswer: $questionAttempt->getAnswer(),
+            isCorrect: $questionAttempt->isCorrect(),
+            takenTime: $questionAttempt->getTakenTime(),
         );
     }
 
     #[ArrayShape([
-      'content' => 'string',
-      'answers' => 'array',
-      'correctAnswer' => 'string',
-      'explanation' => 'string',
-      'yourAnswer' => 'string',
-      'isCorrect' => 'bool',
-      'takenTime' => 'int',
+        'content' => 'string',
+        'answers' => 'array',
+        'correctAnswer' => 'string',
+        'explanation' => 'string',
+        'yourAnswer' => 'string',
+        'isCorrect' => 'bool',
+        'takenTime' => 'int',
     ])]
     public function toArray(): array
     {
         return [
-          'content' => $this->getContent(),
-          'answers' => $this->getAnswers(),
-          'correctAnswer' => $this->getCorrectAnswer(),
-          'explanation' => $this->getExplanation(),
-          'yourAnswer' => $this->getYourAnswer(),
-          'isCorrect' => $this->isCorrect(),
-          'takenTime' => $this->getTakenTime(),
+            'content' => $this->getContent(),
+            'answers' => $this->getAnswers(),
+            'correctAnswer' => $this->getCorrectAnswer(),
+            'explanation' => $this->getExplanation(),
+            'yourAnswer' => $this->getYourAnswer(),
+            'isCorrect' => $this->isCorrect(),
+            'takenTime' => $this->getTakenTime(),
         ];
     }
 

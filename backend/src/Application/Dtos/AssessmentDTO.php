@@ -15,18 +15,19 @@ readonly class AssessmentDTO implements EntityToArrayInterface
     use HelperTrait;
 
     private function __construct(
-      private string $id,
-      private string $state,
-      private string $userDeviceId,
-      private string $categoryId,
-      private string $languageId,
-      private string $difficultyAtStart,
-      private string $difficultyAtEnd,
-      private string $startTime,
-      private string $endTime,
-      private string $feedback,
-      private AssessmentTypeDTO $assessmentDetails
-    ) {}
+        private string $id,
+        private string $state,
+        private string $userDeviceId,
+        private string $categoryId,
+        private string $languageId,
+        private string $difficultyAtStart,
+        private string $difficultyAtEnd,
+        private string $startTime,
+        private string $endTime,
+        private string $feedback,
+        private AssessmentTypeDTO $assessmentDetails
+    ) {
+    }
 
     protected function getId(): string
     {
@@ -84,64 +85,63 @@ readonly class AssessmentDTO implements EntityToArrayInterface
     }
 
     public static function fromDomainEntity(
-      Assessment $assessment
+        Assessment $assessment
     ): self {
         $assessmentTypeName = $assessment->getAssessmentType()->getName();
 
-        $DTOClass= self::convertNameToClassName(
-          $assessmentTypeName,
-          'AssessmentDTO'
+        $DtoClass = self::convertNameToClassName(
+            $assessmentTypeName,
+            'AssessmentDTO'
         );
 
-        if (!class_exists($DTOClass))
-        {
-            throw new ClassNotFoundError("Class '$DTOClass' not found.");
+        if (!class_exists($DtoClass)) {
+            throw new ClassNotFoundError("Class '$DtoClass' not found.");
         }
 
         return new self(
-          id: $assessment->getId()->toString(),
-          state: $assessment->getStatus()->name,
-          userDeviceId: $assessment->getUser()->getDeviceId()->toString(),
-          categoryId: $assessment->getCategory()->getId()->toString(),
-          languageId: $assessment->getLanguage()->getId()->toString(),
-          difficultyAtStart: $assessment->getDifficultyAtStart()->value,
-          difficultyAtEnd: $assessment->getDifficultyAtEnd()->value,
-          startTime: $assessment->getStartTime()->format(DATE_ATOM),
-          endTime: $assessment->getEndTime()->format(DATE_ATOM),
-          feedback: $assessment->getFeedback(),
-          assessmentDetails: $DTOClass::fromDomainEntity(
-            $assessment->getAssessmentType()
-          ),
+            id: $assessment->getId()->toString(),
+            state: $assessment->getStatus()->name,
+            userDeviceId: $assessment->getUser()->getDeviceId()->toString(),
+            categoryId: $assessment->getCategory()->getId()->toString(),
+            languageId: $assessment->getLanguage()->getId()->toString(),
+            difficultyAtStart: $assessment->getDifficultyAtStart()->value,
+            difficultyAtEnd: $assessment->getDifficultyAtEnd()->value,
+            startTime: $assessment->getStartTime()->format(DATE_ATOM),
+            endTime: $assessment->getEndTime()->format(DATE_ATOM),
+            feedback: $assessment->getFeedback(),
+            assessmentDetails: $DtoClass::fromDomainEntity(
+                $assessment->getAssessmentType()
+            ),
         );
     }
 
     #[ArrayShape([
-      'assessmentId' => 'string',
-      'assessmentState' => 'string',
-      'userDeviceId' => 'string',
-      'CategoryId' => 'string',
-      'LanguageId' => 'string',
-      'difficultyAtStart' => 'string',
-      'difficultyAtEnd' => 'string',
-      'startTime' => 'string',
-      'endTime' => 'string',
-      'feedback' => 'string',
-      'assessmentDetails' => 'array',
+        'assessmentId' => 'string',
+        'assessmentState' => 'string',
+        'userDeviceId' => 'string',
+        'CategoryId' => 'string',
+        'LanguageId' => 'string',
+        'difficultyAtStart' => 'string',
+        'difficultyAtEnd' => 'string',
+        'startTime' => 'string',
+        'endTime' => 'string',
+        'feedback' => 'string',
+        'assessmentDetails' => 'array',
     ])]
     public function toArray(): array
     {
         return [
-          'assessmentId' => $this->getId(),
-          'assessmentState' => $this->getState(),
-          'userDeviceId' => $this->getUserDeviceId(),
-          'CategoryId' => $this->getCategoryId(),
-          'LanguageId' => $this->getLanguageId(),
-          'difficultyAtStart' => $this->getDifficultyAtStart(),
-          'difficultyAtEnd' => $this->getDifficultyAtEnd(),
-          'startTime' => $this->getStartTime(),
-          'endTime' => $this->getEndTime(),
-          'feedback' => $this->getFeedback(),
-          'assessmentDetails' => $this->getAssessmentDetails()->toArray(),
+            'assessmentId' => $this->getId(),
+            'assessmentState' => $this->getState(),
+            'userDeviceId' => $this->getUserDeviceId(),
+            'CategoryId' => $this->getCategoryId(),
+            'LanguageId' => $this->getLanguageId(),
+            'difficultyAtStart' => $this->getDifficultyAtStart(),
+            'difficultyAtEnd' => $this->getDifficultyAtEnd(),
+            'startTime' => $this->getStartTime(),
+            'endTime' => $this->getEndTime(),
+            'feedback' => $this->getFeedback(),
+            'assessmentDetails' => $this->getAssessmentDetails()->toArray(),
         ];
     }
 

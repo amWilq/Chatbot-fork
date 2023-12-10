@@ -12,12 +12,13 @@ readonly class UserDTO implements EntityToArrayInterface
 {
 
     private function __construct(
-      private string $id,
-      private string $deviceId,
-      private string $name,
-      private string $status,
-      private string $createdAt
-    ) {}
+        private string $id,
+        private string $deviceId,
+        private string $name,
+        private string $status,
+        private string $createdAt
+    ) {
+    }
 
     protected function getId(): string
     {
@@ -47,29 +48,29 @@ readonly class UserDTO implements EntityToArrayInterface
     public static function fromDomainEntity(User $user): self
     {
         return new self(
-          id: $user->getId()->toString(),
-          deviceId: $user->getDeviceId()->toString(),
-          name: $user->getName(),
-          status: $user->getStatus()->value,
-          createdAt: $user->getCreatedAt()->format(DATE_ATOM)
+            id: $user->getId()->toString(),
+            deviceId: $user->getDeviceId()->toString(),
+            name: $user->getName(),
+            status: $user->getStatus()->value,
+            createdAt: $user->getCreatedAt()->format(DATE_ATOM)
         );
     }
 
     #[ArrayShape([
-      'userId' => 'string',
-      'userDeviceId' => 'string',
-      'name' => 'string',
-      'status' => 'string',
-      'createdAt' => 'string',
+        'userId' => 'string',
+        'userDeviceId' => 'string',
+        'name' => 'string',
+        'status' => 'string',
+        'createdAt' => 'string',
     ])]
     public function toArray(): array
     {
         return [
-          'userId' => $this->getId(),
-          'userDeviceId' => $this->getDeviceId(),
-          'name' => $this->getName(),
-          'status' => $this->getStatus(),
-          'createdAt' => $this->getCreatedAt(),
+            'userId' => $this->getId(),
+            'userDeviceId' => $this->getDeviceId(),
+            'name' => $this->getName(),
+            'status' => $this->getStatus(),
+            'createdAt' => $this->getCreatedAt(),
         ];
     }
 

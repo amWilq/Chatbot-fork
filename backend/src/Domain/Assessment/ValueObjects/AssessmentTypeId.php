@@ -31,6 +31,7 @@ readonly class AssessmentTypeId extends ValueObject implements EntityToStringInt
         if (!$object instanceof self) {
             return false;
         }
+
         return $this->id === $object->id;
     }
 

@@ -10,39 +10,38 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class UserEntityRepository extends BaseEntityRepository
 {
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, UserEntity::class);
     }
 
     public function find(
-      $id,
-      $lockMode = null,
-      $lockVersion = null
+        $id,
+        $lockMode = null,
+        $lockVersion = null
     ): ?User {
         $entity = parent::find(
-          $id,
-          $lockMode,
-          $lockVersion
+            $id,
+            $lockMode,
+            $lockVersion
         );
 
         return $entity instanceof UserEntity ? $this->mapToDomainEntity(
-          $entity
+            $entity
         ) : null;
     }
 
     public function findOneBy(
-      array $criteria,
-      ?array $orderBy = null
+        array $criteria,
+        array $orderBy = null
     ): ?User {
         $entity = parent::findOneBy(
-          $criteria,
-          $orderBy
+            $criteria,
+            $orderBy
         );
 
         return $entity instanceof UserEntity ? $this->mapToDomainEntity(
-          $entity
+            $entity
         ) : null;
     }
 
@@ -58,16 +57,16 @@ class UserEntityRepository extends BaseEntityRepository
      * @return User[]
      */
     public function findBy(
-      array $criteria,
-      ?array $orderBy = null,
-      $limit = null,
-      $offset = null
+        array $criteria,
+        array $orderBy = null,
+        $limit = null,
+        $offset = null
     ): array {
         $entities = parent::findBy(
-          $criteria,
-          $orderBy,
-          $limit,
-          $offset
+            $criteria,
+            $orderBy,
+            $limit,
+            $offset
         );
 
         return array_map([$this, 'mapToDomainEntity'], $entities);
@@ -76,7 +75,7 @@ class UserEntityRepository extends BaseEntityRepository
     protected function save(User|AggregateRoot $aggregateRoot): void
     {
         $this->_em->persist(
-          UserEntity::fromDomainEntity($aggregateRoot)
+            UserEntity::fromDomainEntity($aggregateRoot)
         );
         $this->_em->flush();
     }
@@ -84,21 +83,20 @@ class UserEntityRepository extends BaseEntityRepository
     protected function delete(User|AggregateRoot $aggregateRoot): void
     {
         $this->_em->remove(
-          UserEntity::fromDomainEntity($aggregateRoot)
+            UserEntity::fromDomainEntity($aggregateRoot)
         );
         $this->_em->flush();
     }
 
     protected function mapToDomainEntity(
-      UserEntity|PersistenceEntityInterface $entity
+        UserEntity|PersistenceEntityInterface $entity
     ): User {
         return User::create(
-          id: $entity->getId(),
-          deviceId: $entity->getDeviceId(),
-          name: $entity->getName(),
-          status: $entity->getStatus(),
-          createdAt: $entity->getCreatedAt()
+            id: $entity->getId(),
+            deviceId: $entity->getDeviceId(),
+            name: $entity->getName(),
+            status: $entity->getStatus(),
+            createdAt: $entity->getCreatedAt()
         );
     }
-
 }

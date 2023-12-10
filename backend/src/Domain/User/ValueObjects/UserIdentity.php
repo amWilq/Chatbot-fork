@@ -14,6 +14,7 @@ readonly class UserIdentity extends ValueObject implements EntityToStringInterfa
         protected string $id,
     ) {
     }
+
     /**
      * Create a new instance of the current object
      */
@@ -23,6 +24,7 @@ readonly class UserIdentity extends ValueObject implements EntityToStringInterfa
             id: $id
         );
     }
+
     /**
      * Get id as string.
      */
@@ -30,6 +32,7 @@ readonly class UserIdentity extends ValueObject implements EntityToStringInterfa
     {
         return $this->id;
     }
+
     /**
      * @inheritDoc
      */
@@ -38,6 +41,7 @@ readonly class UserIdentity extends ValueObject implements EntityToStringInterfa
         if (!$object instanceof self) {
             return false;
         }
+
         return $this->id === $object->id;
     }
 }

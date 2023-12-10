@@ -44,7 +44,7 @@ readonly class Format extends ValueObject
     /**
      * @inheritDoc
      */
-    public function equals(ValueObject $object) : bool
+    public function equals(ValueObject $object): bool
     {
         if (!$object instanceof self) {
             return false;

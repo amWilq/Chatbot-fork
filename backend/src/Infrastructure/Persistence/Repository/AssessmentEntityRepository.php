@@ -17,41 +17,41 @@ class AssessmentEntityRepository extends BaseEntityRepository
 {
 
     public function __construct(
-      ManagerRegistry $registry,
-      private UserEntityRepository $userEntityRepository,
-      private LanguageEntityRepository $languageEntityRepository,
-      private CategoryEntityRepository $categoryEntityRepository,
+        ManagerRegistry $registry,
+        private UserEntityRepository $userEntityRepository,
+        private LanguageEntityRepository $languageEntityRepository,
+        private CategoryEntityRepository $categoryEntityRepository,
     ) {
         parent::__construct($registry, AssessmentEntity::class);
     }
 
     public function find(
-      $id,
-      $lockMode = null,
-      $lockVersion = null
+        $id,
+        $lockMode = null,
+        $lockVersion = null
     ): ?Assessment {
         $entity = parent::find(
-          $id,
-          $lockMode,
-          $lockVersion
+            $id,
+            $lockMode,
+            $lockVersion
         );
 
         return $entity instanceof AssessmentEntity ? $this->mapToDomainEntity(
-          $entity
+            $entity
         ) : null;
     }
 
     public function findOneBy(
-      array $criteria,
-      ?array $orderBy = null
+        array $criteria,
+        ?array $orderBy = null
     ): ?Assessment {
         $entity = parent::findOneBy(
-          $criteria,
-          $orderBy
+            $criteria,
+            $orderBy
         );
 
         return $entity instanceof AssessmentEntity ? $this->mapToDomainEntity(
-          $entity
+            $entity
         ) : null;
     }
 
@@ -67,16 +67,16 @@ class AssessmentEntityRepository extends BaseEntityRepository
      * @return Assessment[]
      */
     public function findBy(
-      array $criteria,
-      ?array $orderBy = null,
-      $limit = null,
-      $offset = null
+        array $criteria,
+        ?array $orderBy = null,
+        $limit = null,
+        $offset = null
     ): array {
         $entities = parent::findBy(
-          $criteria,
-          $orderBy,
-          $limit,
-          $offset
+            $criteria,
+            $orderBy,
+            $limit,
+            $offset
         );
 
         return array_map([$this, 'mapToDomainEntity'], $entities);
@@ -85,7 +85,7 @@ class AssessmentEntityRepository extends BaseEntityRepository
     protected function save(Assessment|AggregateRoot $aggregateRoot): void
     {
         $this->_em->persist(
-          AssessmentEntity::fromDomainEntity($aggregateRoot)
+            AssessmentEntity::fromDomainEntity($aggregateRoot)
         );
         $this->_em->flush();
     }
@@ -93,72 +93,72 @@ class AssessmentEntityRepository extends BaseEntityRepository
     protected function delete(Assessment|AggregateRoot $aggregateRoot): void
     {
         $this->_em->remove(
-          AssessmentEntity::fromDomainEntity($aggregateRoot)
+            AssessmentEntity::fromDomainEntity($aggregateRoot)
         );
         $this->_em->flush();
     }
 
     protected function mapToDomainEntity(
-      AssessmentEntity|PersistenceEntityInterface $entity
+        AssessmentEntity|PersistenceEntityInterface $entity
     ): Assessment {
         return Assessment::create(
-          id: $entity->getId(),
-          status: $entity->getStatus(),
-          user: $this->userEntityRepository->mapToDomainEntity(
-            $entity->getUser()
-          ),
-          category: $this->categoryEntityRepository->mapToDomainEntity(
-            $entity->getCategory()
-          ),
-          language: $this->languageEntityRepository->mapToDomainEntity(
-            $entity->getLanguage()
-          ),
-          startTime: $entity->getStartTime(),
-          endTime: $entity->getEndTime(),
-          difficulty: $entity->getStartDifficulty(),
-          currentDifficulty: $entity->getCurrentDifficulty(),
-          difficultyAtEnd: $entity->getEndDifficulty(),
-          feedback: $entity->getFeedback(),
-          assessmentType: $this->assessmentDetailsToDomainObject(
-            $entity->getAssessmentDetails()
-          ),
+            id: $entity->getId(),
+            status: $entity->getStatus(),
+            user: $this->userEntityRepository->mapToDomainEntity(
+                $entity->getUser()
+            ),
+            category: $this->categoryEntityRepository->mapToDomainEntity(
+                $entity->getCategory()
+            ),
+            language: $this->languageEntityRepository->mapToDomainEntity(
+                $entity->getLanguage()
+            ),
+            startTime: $entity->getStartTime(),
+            endTime: $entity->getEndTime(),
+            difficulty: $entity->getStartDifficulty(),
+            currentDifficulty: $entity->getCurrentDifficulty(),
+            difficultyAtEnd: $entity->getEndDifficulty(),
+            feedback: $entity->getFeedback(),
+            assessmentType: $this->assessmentDetailsToDomainObject(
+                $entity->getAssessmentDetails()
+            ),
         );
     }
 
     private function assessmentDetailsToDomainObject(
-      AssessmentDetailsEntity $assessmentDetails
+        AssessmentDetailsEntity $assessmentDetails
     ): ?AssessmentType {
         $assessmentType = $assessmentDetails->getAssessmentType();
         switch ($assessmentType->getName()) {
             case 'quiz':
                 [
-                  $questionCount,
-                  $correctAnswerCount,
-                  $durationInSeconds,
-                  $questions,
+                    $questionCount,
+                    $correctAnswerCount,
+                    $durationInSeconds,
+                    $questions,
                 ] = $assessmentDetails->getAssessmentDetails();
                 $attempts = [];
                 foreach ($questions as $question) {
                     $q = Question::create(
-                      content: $question['content'],
-                      options: $question['options'],
-                      correctAnswer: $question['correctAnswer'],
-                      explanation: $question['explanation'],
+                        content: $question['content'],
+                        options: $question['options'],
+                        correctAnswer: $question['correctAnswer'],
+                        explanation: $question['explanation'],
                     );
                     $attempts[] = QuestionAttempt::create(
-                      userAnswer: $question['userAnswer'],
-                      takenTime: $question['takenTime'],
-                      isCorrect: $question['isCorrect'],
-                      question: $q
+                        userAnswer: $question['userAnswer'],
+                        takenTime: $question['takenTime'],
+                        isCorrect: $question['isCorrect'],
+                        question: $q
                     );
                 }
 
                 return QuizAssessment::create(
-                  id: $assessmentDetails->getAssessmentType()->getId(),
-                  questionCount: $questionCount,
-                  correctAnswerCount: $correctAnswerCount,
-                  questionsAttempts: $attempts,
-                  durationInSeconds: $durationInSeconds,
+                    id: $assessmentDetails->getAssessmentType()->getId(),
+                    questionCount: $questionCount,
+                    correctAnswerCount: $correctAnswerCount,
+                    questionsAttempts: $attempts,
+                    durationInSeconds: $durationInSeconds,
                 );
             default:
                 return null;

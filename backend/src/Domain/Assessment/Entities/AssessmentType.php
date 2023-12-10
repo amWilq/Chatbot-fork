@@ -20,11 +20,11 @@ class AssessmentType extends AggregateRoot
      * AssessmentType constructor.
      */
     public function __construct(
-      string $id,
-      string $formatName,
+        string $id,
+        string $formatName,
     ) {
         $this->id = AssessmentTypeId::create($id) ?? AssessmentTypeId::create(
-          AggregateRoot::generateId()
+            AggregateRoot::generateId()
         );
         $this->format = Format::create(FormatEnum::tryFrom($formatName));
     }

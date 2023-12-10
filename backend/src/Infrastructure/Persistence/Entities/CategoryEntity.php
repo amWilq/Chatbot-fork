@@ -21,30 +21,37 @@ class CategoryEntity
 
     #[ORM\Column(name: 'icon_url', type: Types::STRING)]
     private string $iconUrl;
+
     public function getId(): string
     {
         return $this->id;
     }
-    public function setId(string $id):void
+
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
-    public function setName(string $name):void
+
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
+
     public function getIconUrl(): string
     {
         return $this->iconUrl;
     }
-    public function setIconUrl(string $iconUrl):void
+
+    public function setIconUrl(string $iconUrl): void
     {
         $this->iconUrl = $iconUrl;
     }
+
     public static function fromDomainEntity(Category $category): self
     {
         $categoryEntity = new self();

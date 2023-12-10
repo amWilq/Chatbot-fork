@@ -9,9 +9,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 abstract class BaseEntityRepository extends ServiceEntityRepository
 {
     abstract protected function mapToDomainEntity(
-      PersistenceEntityInterface $entity) : AggregateRoot;
+        PersistenceEntityInterface $entity
+    ): AggregateRoot;
+
     abstract protected function save(
-      AggregateRoot $aggregateRoot) : void;
+        AggregateRoot $aggregateRoot
+    ): void;
+
     abstract protected function delete(
-      AggregateRoot $aggregateRoot) : void;
+        AggregateRoot $aggregateRoot
+    ): void;
 }

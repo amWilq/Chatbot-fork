@@ -28,61 +28,61 @@ final class Assessment extends AggregateRoot
     protected ?string $feedback = null;
 
     private function __construct(
-      string $id,
-      string $status,
-      string $startTime,
-      string $endTime,
-      string $difficultyAtEnd,
-      string $currentDifficulty,
-      string $feedback,
-      protected User $user,
-      protected Category $category,
-      protected Language $language,
-      protected DifficultiesEnum $difficultyAtStart,
-      protected AssessmentType $assessmentType,
+        string $id,
+        string $status,
+        string $startTime,
+        string $endTime,
+        string $difficultyAtEnd,
+        string $currentDifficulty,
+        string $feedback,
+        protected User $user,
+        protected Category $category,
+        protected Language $language,
+        protected DifficultiesEnum $difficultyAtStart,
+        protected AssessmentType $assessmentType,
     ) {
         $this->id = AssessmentId::create($id) ?? AssessmentId::create(
-          AggregateRoot::generateId()
+            AggregateRoot::generateId()
         );
         $this->status = AssessmentStatusEnum::tryFrom(
-          $status
+            $status
         ) ?? AssessmentStatusEnum::ASSESSMENT_START_SUCCESS;
         $this->startTime = new DateTime($startTime ?? 'now');
         $this->endTime = $endTime ? new DateTime($endTime) : null;
         $this->currentDifficulty = DifficultiesEnum::tryFrom(
-          $currentDifficulty
+            $currentDifficulty
         );
         $this->difficultyAtEnd = DifficultiesEnum::tryFrom($difficultyAtEnd);
         $this->feedback = $feedback;
     }
 
     public static function create(
-      User $user,
-      Category $category,
-      Language $language,
-      string $difficulty,
-      AssessmentType $assessmentType,
-      string $id = null,
-      string $status = null,
-      string $startTime = null,
-      string $endTime = null,
-      string $difficultyAtEnd = null,
-      string $currentDifficulty = null,
-      string $feedback = null,
+        User $user,
+        Category $category,
+        Language $language,
+        string $difficulty,
+        AssessmentType $assessmentType,
+        string $id = null,
+        string $status = null,
+        string $startTime = null,
+        string $endTime = null,
+        string $difficultyAtEnd = null,
+        string $currentDifficulty = null,
+        string $feedback = null,
     ): self {
         return new self(
-          id: $id,
-          status: $status,
-          user: $user,
-          category: $category,
-          language: $language,
-          startTime: $startTime,
-          endTime: $endTime,
-          difficultyAtStart: DifficultiesEnum::tryFrom($difficulty),
-          currentDifficulty: $currentDifficulty,
-          difficultyAtEnd: $difficultyAtEnd,
-          assessmentType: $assessmentType,
-          feedback: $feedback,
+            id: $id,
+            status: $status,
+            user: $user,
+            category: $category,
+            language: $language,
+            startTime: $startTime,
+            endTime: $endTime,
+            difficultyAtStart: DifficultiesEnum::tryFrom($difficulty),
+            currentDifficulty: $currentDifficulty,
+            difficultyAtEnd: $difficultyAtEnd,
+            assessmentType: $assessmentType,
+            feedback: $feedback,
         );
     }
 
@@ -134,7 +134,7 @@ final class Assessment extends AggregateRoot
     public function setCurrentDifficulty(string $currentDifficulty): void
     {
         $this->currentDifficulty = DifficultiesEnum::tryFrom(
-          $currentDifficulty
+            $currentDifficulty
         );
     }
 

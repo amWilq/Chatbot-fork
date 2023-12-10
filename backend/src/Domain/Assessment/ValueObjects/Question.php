@@ -62,8 +62,8 @@ readonly class Question extends ValueObject
         }
 
         return $this->content === $object->content
-          && $this->correctAnswer === $object->correctAnswer
-          && $this->explanation === $object->explanation
-          && $this->arraysAreEqual($this->options, $object->options);
+            && $this->correctAnswer === $object->correctAnswer
+            && $this->explanation === $object->explanation
+            && $this->arraysAreEqual($this->options, $object->options);
     }
 }

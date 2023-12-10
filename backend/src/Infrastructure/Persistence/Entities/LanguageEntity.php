@@ -32,46 +32,58 @@ class LanguageEntity implements PersistenceEntityInterface
     {
         return $this->id;
     }
+
     public function setId(string $id): void
     {
         $this->id = $id;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
-    public function setName(string $name):void
+
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
+
     public function getIconUrl(): string
     {
         return $this->iconUrl;
     }
-    public function setIconUrl(string $iconUrl):void
+
+    public function setIconUrl(string $iconUrl): void
     {
         $this->iconUrl = $iconUrl;
     }
+
     public function getCategories(): Collection
     {
         return $this->categories;
     }
+
     public function addCategory(CategoryEntity $category): self
     {
         if (!$this->categories->contains($category)) {
             $this->categories[] = $category;
         }
+
         return $this;
     }
+
     public function removeCategory(CategoryEntity $category): self
     {
         $this->categories->removeElement($category);
+
         return $this;
     }
+
     private function __construct()
     {
         $this->categories = new ArrayCollection();
     }
+
     public static function fromDomainEntity(Language $language): self
     {
         $languageEntity = new self();

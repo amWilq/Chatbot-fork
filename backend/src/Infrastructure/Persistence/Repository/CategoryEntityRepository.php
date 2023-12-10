@@ -11,7 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\LockMode;
 
 class CategoryEntityRepository extends BaseEntityRepository
-  implements CategoryRepositoryInterface
+    implements CategoryRepositoryInterface
 {
 
     public function __construct(ManagerRegistry $registry)
@@ -20,25 +20,25 @@ class CategoryEntityRepository extends BaseEntityRepository
     }
 
     public function find(
-      $id,
-      $lockMode = null,
-      $lockVersion = null
+        $id,
+        $lockMode = null,
+        $lockVersion = null
     ): ?Category {
         $entity = parent::find($id, $lockMode, $lockVersion);
 
         return $entity instanceof CategoryEntity ? $this->mapToDomainEntity(
-          $entity
+            $entity
         ) : null;
     }
 
     public function findOneBy(
-      array $criteria,
-      ?array $orderBy = null
+        array $criteria,
+        ?array $orderBy = null
     ): ?Category {
         $entity = parent::findOneBy($criteria, $orderBy);
 
         return $entity instanceof CategoryEntity ? $this->mapToDomainEntity(
-          $entity
+            $entity
         ) : null;
     }
 
@@ -54,10 +54,10 @@ class CategoryEntityRepository extends BaseEntityRepository
      * @return Category[]
      */
     public function findBy(
-      array $criteria,
-      ?array $orderBy = null,
-      $limit = null,
-      $offset = null
+        array $criteria,
+        ?array $orderBy = null,
+        $limit = null,
+        $offset = null
     ): array {
         $entities = parent::findBy($criteria, $orderBy, $limit, $offset);
 
@@ -67,7 +67,7 @@ class CategoryEntityRepository extends BaseEntityRepository
     public function save(Category|AggregateRoot $aggregateRoot): void
     {
         $this->_em->persist(
-          CategoryEntity::fromDomainEntity($aggregateRoot)
+            CategoryEntity::fromDomainEntity($aggregateRoot)
         );
         $this->_em->flush();
     }
@@ -75,7 +75,7 @@ class CategoryEntityRepository extends BaseEntityRepository
     public function delete(Category|AggregateRoot $aggregateRoot): void
     {
         $this->_em->remove(
-          CategoryEntity::fromDomainEntity($aggregateRoot)
+            CategoryEntity::fromDomainEntity($aggregateRoot)
         );
         $this->_em->flush();
     }
@@ -83,9 +83,9 @@ class CategoryEntityRepository extends BaseEntityRepository
     public function mapToDomainEntity(CategoryEntity|PersistenceEntityInterface $entity
     ): Category {
         return Category::create(
-          id: $entity->getId(),
-          name: $entity->getName(),
-          iconUrl: $entity->getIconUrl(),
+            id: $entity->getId(),
+            name: $entity->getName(),
+            iconUrl: $entity->getIconUrl(),
         );
     }
 
