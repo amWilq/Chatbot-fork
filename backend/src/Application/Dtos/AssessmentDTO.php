@@ -89,13 +89,13 @@ readonly class AssessmentDTO implements EntityToArrayInterface
     ): self {
         $assessmentTypeName = $assessment->getAssessmentType()->getName();
 
-        $DtoClass = self::convertNameToClassName(
+        $dtoClass = self::convertNameToClassName(
             $assessmentTypeName,
             'AssessmentDTO'
         );
 
-        if (!class_exists($DtoClass)) {
-            throw new ClassNotFoundError("Class '$DtoClass' not found.");
+        if (!class_exists($dtoClass)) {
+            throw new ClassNotFoundError("Class '$dtoClass' not found.");
         }
 
         return new self(
@@ -109,7 +109,7 @@ readonly class AssessmentDTO implements EntityToArrayInterface
             startTime: $assessment->getStartTime()->format(DATE_ATOM),
             endTime: $assessment->getEndTime()->format(DATE_ATOM),
             feedback: $assessment->getFeedback(),
-            assessmentDetails: $DtoClass::fromDomainEntity(
+            assessmentDetails: $dtoClass::fromDomainEntity(
                 $assessment->getAssessmentType()
             ),
         );
