@@ -14,12 +14,12 @@ class Language extends AggregateRoot
      * Language constructor.
      */
     private function __construct(
-        string $id,
+        ?string $id,
         protected string $name,
         protected string $iconUrl,
         protected array $categories,
     ) {
-        $this->id = LanguageId::create($id) ??
+        $this->id = $id ? LanguageId::create($id) :
             LanguageId::create(AggregateRoot::generateId());
     }
 

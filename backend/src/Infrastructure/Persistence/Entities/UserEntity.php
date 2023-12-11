@@ -5,13 +5,13 @@ namespace App\Infrastructure\Persistence\Entities;
 use App\Domain\User\Entities\User;
 use App\Infrastructure\Persistence\Repository\UserEntityRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserEntityRepository::class)]
 #[ORM\Table(name: 'users')]
 class UserEntity implements PersistenceEntityInterface
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'NONE')]
     #[ORM\Column(name: 'user_id', type: Types::STRING)]
@@ -79,11 +79,16 @@ class UserEntity implements PersistenceEntityInterface
         $this->name = $name;
     }
 
-    public static function fromDomainEntity(User $user): self
+    public static function fromDomainEntity(User $user, EntityManagerInterface $entityManager): self
     {
-        $userEntity = new self();
+        $userEntity = $entityManager->getRepository(UserEntity::class)
+                        ->find($user->getId()->toString(), raw: true);
 
-        $userEntity->setId($user->getId()->toString());
+        if (!$userEntity) {
+            $userEntity = new self();
+            $userEntity->setId($user->getId()->toString());
+        }
+
         $userEntity->setDeviceId($user->getDeviceId()->toString());
         $userEntity->setName($user->getName());
         $userEntity->setStatus($user->getStatus()->value);
@@ -91,5 +96,4 @@ class UserEntity implements PersistenceEntityInterface
 
         return $userEntity;
     }
-
 }

@@ -18,13 +18,13 @@ class User extends AggregateRoot
      * User constructor.
      */
     private function __construct(
-        string $id,
-        string $status,
-        string $createdAt,
+        ?string $id,
+        ?string $status,
+        ?string $createdAt,
         protected UserDeviceId $deviceId,
         protected string $name,
     ) {
-        $this->id = UserId::create($id) ?? UserId::create(
+        $this->id = $id ? UserId::create($id) : UserId::create(
             AggregateRoot::generateId()
         );
         $this->status = UserAccountStatusEnum::tryFrom(

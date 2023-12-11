@@ -19,7 +19,7 @@ final class QuizAssessment extends AssessmentType
      * Class constructor.
      */
     private function __construct(
-        string $id,
+        ?string $id,
         int $questionCount,
         int $correctAnswerCount,
         array $questionsAttempts,

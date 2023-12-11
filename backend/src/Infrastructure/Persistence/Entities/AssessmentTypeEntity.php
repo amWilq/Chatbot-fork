@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Entities;
 use App\Domain\Assessment\Entities\AssessmentType;
 use App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AssessmentTypeEntityRepository::class)]
@@ -64,11 +65,16 @@ class AssessmentTypeEntity
         return $this;
     }
 
-    public static function fromDomainEntity(AssessmentType $assessmentType): self
+    public static function fromDomainEntity(AssessmentType $assessmentType, EntityManagerInterface $entityManager): self
     {
-        $assessmentTypeEntity = new self();
+        $assessmentTypeEntity = $entityManager->getRepository(AssessmentTypeEntity::class)
+            ->find($assessmentType->getId()->toString(), raw: true);
 
-        $assessmentTypeEntity->setId($assessmentType->getId()->toString());
+        if (!$assessmentTypeEntity) {
+            $assessmentTypeEntity = new self();
+            $assessmentTypeEntity->setId($assessmentType->getId()->toString());
+        }
+
         $assessmentTypeEntity->setName($assessmentType->getName());
         $assessmentTypeEntity->setDescription($assessmentType->getDescription());
         $assessmentTypeEntity->setDifficulties($assessmentType->getDifficulties());

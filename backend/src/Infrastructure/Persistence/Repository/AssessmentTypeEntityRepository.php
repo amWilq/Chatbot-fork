@@ -10,7 +10,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class AssessmentTypeEntityRepository extends BaseEntityRepository
 {
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, AssessmentTypeEntity::class);
@@ -19,27 +18,37 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
     public function find(
         $id,
         $lockMode = null,
-        $lockVersion = null
-    ): ?AssessmentType {
+        $lockVersion = null,
+        bool $raw = false,
+    ): null|AssessmentType|AssessmentTypeEntity {
         $entity = parent::find(
             $id,
             $lockMode,
             $lockVersion
         );
 
-        return $entity instanceof AssessmentType ? $this->mapToDomainEntity(
+        if ($entity instanceof AssessmentTypeEntity && $raw) {
+            return $entity;
+        }
+
+        return $entity instanceof AssessmentTypeEntity ? $this->mapToDomainEntity(
             $entity
         ) : null;
     }
 
     public function findOneBy(
         array $criteria,
-        ?array $orderBy = null
-    ): ?AssessmentType {
+        array $orderBy = null,
+        bool $raw = false,
+    ): null|AssessmentType|AssessmentTypeEntity {
         $entity = parent::findOneBy(
             $criteria,
             $orderBy
         );
+
+        if ($entity instanceof AssessmentTypeEntity && $raw) {
+            return $entity;
+        }
 
         return $entity instanceof AssessmentType ? $this->mapToDomainEntity(
             $entity
@@ -47,21 +56,22 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
     }
 
     /**
-     * @return AssessmentType[]
+     * @return AssessmentType[]|AssessmentTypeEntity[]
      */
-    public function findAll(): array
+    public function findAll(bool $raw = false): array
     {
-        return array_map([$this, 'mapToDomainEntity'], parent::findAll());
+        return $this->findBy([], raw: $raw);
     }
 
     /**
-     * @return AssessmentType[]
+     * @return AssessmentType[]|AssessmentTypeEntity[]
      */
     public function findBy(
         array $criteria,
-        ?array $orderBy = null,
+        array $orderBy = null,
         $limit = null,
-        $offset = null
+        $offset = null,
+        bool $raw = false,
     ): array {
         $entities = parent::findBy(
             $criteria,
@@ -70,7 +80,7 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
             $offset
         );
 
-        return array_map([$this, 'mapToDomainEntity'], $entities);
+        return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
     }
 
     protected function save(AssessmentType|AggregateRoot $aggregateRoot): void
@@ -97,5 +107,4 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
             $entity->getName()
         );
     }
-
 }

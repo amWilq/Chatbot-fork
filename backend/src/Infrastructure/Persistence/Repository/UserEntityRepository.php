@@ -18,13 +18,18 @@ class UserEntityRepository extends BaseEntityRepository
     public function find(
         $id,
         $lockMode = null,
-        $lockVersion = null
-    ): ?User {
+        $lockVersion = null,
+        bool $raw = false,
+    ): null|User|UserEntity {
         $entity = parent::find(
             $id,
             $lockMode,
             $lockVersion
         );
+
+        if ($entity instanceof UserEntity && $raw) {
+            return $entity;
+        }
 
         return $entity instanceof UserEntity ? $this->mapToDomainEntity(
             $entity
@@ -33,12 +38,17 @@ class UserEntityRepository extends BaseEntityRepository
 
     public function findOneBy(
         array $criteria,
-        array $orderBy = null
-    ): ?User {
+        array $orderBy = null,
+        bool $raw = false,
+    ): null|User|UserEntity {
         $entity = parent::findOneBy(
             $criteria,
             $orderBy
         );
+
+        if ($entity instanceof UserEntity && $raw) {
+            return $entity;
+        }
 
         return $entity instanceof UserEntity ? $this->mapToDomainEntity(
             $entity
@@ -46,21 +56,22 @@ class UserEntityRepository extends BaseEntityRepository
     }
 
     /**
-     * @return User[]
+     * @return User[]|UserEntity[]
      * */
-    public function findAll(): array
+    public function findAll(bool $raw = false): array
     {
-        return array_map([$this, 'mapToDomainEntity'], parent::findAll());
+        return $this->findBy([], raw: $raw);
     }
 
     /**
-     * @return User[]
+     * @return User[]|UserEntity[]
      */
     public function findBy(
         array $criteria,
         array $orderBy = null,
         $limit = null,
-        $offset = null
+        $offset = null,
+        bool $raw = false,
     ): array {
         $entities = parent::findBy(
             $criteria,
@@ -69,7 +80,7 @@ class UserEntityRepository extends BaseEntityRepository
             $offset
         );
 
-        return array_map([$this, 'mapToDomainEntity'], $entities);
+        return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
     }
 
     protected function save(User|AggregateRoot $aggregateRoot): void

@@ -4,16 +4,13 @@ namespace App\Infrastructure\Persistence\Repository;
 
 use App\Domain\Category\Entities\Category;
 use App\Domain\Category\Repositories\CategoryRepositoryInterface;
-use App\Infrastructure\Persistence\Entities\PersistenceEntityInterface;
 use App\Infrastructure\Persistence\Entities\CategoryEntity;
+use App\Infrastructure\Persistence\Entities\PersistenceEntityInterface;
 use App\Shared\Models\AggregateRoot;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\DBAL\LockMode;
 
-class CategoryEntityRepository extends BaseEntityRepository
-    implements CategoryRepositoryInterface
+class CategoryEntityRepository extends BaseEntityRepository implements CategoryRepositoryInterface
 {
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, CategoryEntity::class);
@@ -22,9 +19,14 @@ class CategoryEntityRepository extends BaseEntityRepository
     public function find(
         $id,
         $lockMode = null,
-        $lockVersion = null
-    ): ?Category {
+        $lockVersion = null,
+        bool $raw = false,
+    ): null|Category|CategoryEntity {
         $entity = parent::find($id, $lockMode, $lockVersion);
+
+        if ($entity instanceof CategoryEntity && $raw) {
+            return $entity;
+        }
 
         return $entity instanceof CategoryEntity ? $this->mapToDomainEntity(
             $entity
@@ -33,9 +35,14 @@ class CategoryEntityRepository extends BaseEntityRepository
 
     public function findOneBy(
         array $criteria,
-        ?array $orderBy = null
-    ): ?Category {
+        array $orderBy = null,
+        bool $raw = false,
+    ): null|Category|CategoryEntity {
         $entity = parent::findOneBy($criteria, $orderBy);
+
+        if ($entity instanceof CategoryEntity && $raw) {
+            return $entity;
+        }
 
         return $entity instanceof CategoryEntity ? $this->mapToDomainEntity(
             $entity
@@ -43,25 +50,26 @@ class CategoryEntityRepository extends BaseEntityRepository
     }
 
     /**
-     * @return Category[]
+     * @return Category[]|CategoryEntity[]
      */
-    public function findAll(): array
+    public function findAll(bool $raw = false): array
     {
-        return array_map([$this, 'mapToDomainEntity'], parent::findAll());
+        return $this->findBy([], raw: $raw);
     }
 
     /**
-     * @return Category[]
+     * @return Category[]|CategoryEntity[]
      */
     public function findBy(
         array $criteria,
         ?array $orderBy = null,
         $limit = null,
-        $offset = null
+        $offset = null,
+        bool $raw = false,
     ): array {
         $entities = parent::findBy($criteria, $orderBy, $limit, $offset);
 
-        return array_map([$this, 'mapToDomainEntity'], $entities);
+        return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
     }
 
     public function save(Category|AggregateRoot $aggregateRoot): void
@@ -88,5 +96,4 @@ class CategoryEntityRepository extends BaseEntityRepository
             iconUrl: $entity->getIconUrl(),
         );
     }
-
 }

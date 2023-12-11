@@ -4,7 +4,10 @@ namespace App\Infrastructure\Persistence\Entities;
 
 use App\Domain\Category\Entities\Category;
 use App\Infrastructure\Persistence\Repository\CategoryEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryEntityRepository::class)]
@@ -52,11 +55,16 @@ class CategoryEntity
         $this->iconUrl = $iconUrl;
     }
 
-    public static function fromDomainEntity(Category $category): self
+    public static function fromDomainEntity(Category $category, EntityManagerInterface $entityManager): self
     {
-        $categoryEntity = new self();
+        $categoryEntity = $entityManager->getRepository(CategoryEntity::class)
+            ->find($category->getId()->toString(), raw: true);
 
-        $categoryEntity->setId($category->getId()->toString());
+        if (!$categoryEntity) {
+            $categoryEntity = new self();
+            $categoryEntity->setId($category->getId()->toString());
+        }
+
         $categoryEntity->setName($category->getName());
         $categoryEntity->setIconUrl($category->getIconUrl());
 

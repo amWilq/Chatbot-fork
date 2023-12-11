@@ -4,7 +4,6 @@ namespace App\Shared\Models;
 
 abstract class AggregateRoot
 {
-
     protected ValueObject $id;
 
     /**
@@ -16,7 +15,7 @@ abstract class AggregateRoot
     }
 
     /**
-     * Check if the current object is equal to the given object
+     * Check if the current object is equal to the given object.
      */
     public function equals(AggregateRoot $other): bool
     {

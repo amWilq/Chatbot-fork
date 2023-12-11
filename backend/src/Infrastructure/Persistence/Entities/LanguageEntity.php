@@ -7,6 +7,7 @@ use App\Infrastructure\Persistence\Repository\LanguageEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LanguageEntityRepository::class)]
@@ -24,8 +25,10 @@ class LanguageEntity implements PersistenceEntityInterface
     #[ORM\Column(name: 'icon_url', type: Types::STRING)]
     private string $iconUrl;
 
-    #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'category_id')]
-    #[ORM\ManyToOne(targetEntity: CategoryEntity::class)]
+    #[ORM\JoinTable(name: 'languages_categories')]
+    #[ORM\JoinColumn(name: 'language_id', referencedColumnName: 'language_id')]
+    #[ORM\InverseJoinColumn(name: 'category_id', referencedColumnName: 'category_id')]
+    #[ORM\ManyToMany(targetEntity: CategoryEntity::class)]
     private Collection $categories;
 
     public function getId(): string
@@ -84,15 +87,20 @@ class LanguageEntity implements PersistenceEntityInterface
         $this->categories = new ArrayCollection();
     }
 
-    public static function fromDomainEntity(Language $language): self
+    public static function fromDomainEntity(Language $language, EntityManagerInterface $entityManager): self
     {
-        $languageEntity = new self();
+        $languageEntity = $entityManager->getRepository(LanguageEntity::class)
+            ->find($language->getId()->toString(), raw: true);
 
-        $languageEntity->setId($language->getId()->toString());
+        if (!$languageEntity) {
+            $languageEntity = new self();
+            $languageEntity->setId($language->getId()->toString());
+        }
+
         $languageEntity->setName($language->getName());
         $languageEntity->setIconUrl($language->getIconUrl());
         foreach ($language->getCategories() as $category) {
-            $languageEntity->addCategory($category);
+            $languageEntity->addCategory(CategoryEntity::fromDomainEntity($category, $entityManager));
         }
 
         return $languageEntity;

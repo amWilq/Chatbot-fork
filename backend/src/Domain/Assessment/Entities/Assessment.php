@@ -28,20 +28,20 @@ final class Assessment extends AggregateRoot
     protected ?string $feedback = null;
 
     private function __construct(
-        string $id,
-        string $status,
-        string $startTime,
-        string $endTime,
-        string $difficultyAtEnd,
-        string $currentDifficulty,
-        string $feedback,
+        ?string $id,
+        ?string $status,
+        ?string $startTime,
+        ?string $endTime,
+        ?string $difficultyAtEnd,
+        ?string $currentDifficulty,
+        ?string $feedback,
         protected User $user,
         protected Category $category,
         protected Language $language,
         protected DifficultiesEnum $difficultyAtStart,
         protected AssessmentType $assessmentType,
     ) {
-        $this->id = AssessmentId::create($id) ?? AssessmentId::create(
+        $this->id = $id ? AssessmentId::create($id) : AssessmentId::create(
             AggregateRoot::generateId()
         );
         $this->status = AssessmentStatusEnum::tryFrom(

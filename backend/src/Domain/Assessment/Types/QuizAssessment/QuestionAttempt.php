@@ -14,9 +14,9 @@ class QuestionAttempt
     private bool $isCorrect;
 
     private function __construct(
-        string $userAnswer,
-        int $takenTime,
-        bool $isCorrect,
+        ?string $userAnswer,
+        ?int $takenTime,
+        ?bool $isCorrect,
         private readonly Question $question
     ) {
         $this->userAnswer = $userAnswer;

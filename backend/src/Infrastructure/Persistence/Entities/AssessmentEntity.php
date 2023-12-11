@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Entities;
 use App\Domain\Assessment\Entities\Assessment;
 use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AssessmentEntityRepository::class)]
@@ -173,11 +174,19 @@ class AssessmentEntity implements PersistenceEntityInterface
         $this->feedback = $feedback;
     }
 
-    public static function fromDomainEntity(Assessment $assessment, array $assessmentDetails): self
-    {
-        $assessmentEntity = new self();
+    public static function fromDomainEntity(
+        Assessment $assessment,
+        EntityManagerInterface $entityManager,
+        array $assessmentDetails
+    ): self {
+        $assessmentEntity = $entityManager->getRepository(AssessmentEntity::class)
+            ->find($assessment->getId()->toString(), raw: true);
 
-        $assessmentEntity->setId($assessment->getId()->toString());
+        if (!$assessmentEntity) {
+            $assessmentEntity = new self();
+            $assessmentEntity->setId($assessment->getId()->toString());
+        }
+
         $assessmentEntity->setUser(UserEntity::fromDomainEntity($assessment->getUser()));
         $assessmentEntity->setCategory(CategoryEntity::fromDomainEntity($assessment->getCategory()));
         $assessmentEntity->setLanguage(LanguageEntity::fromDomainEntity($assessment->getLanguage()));

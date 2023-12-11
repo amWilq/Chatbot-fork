@@ -6,10 +6,31 @@
 parameters:
 
 services:
+  JsonSchema\Validator: ~
+  Symfony\Component\Serializer\Encoder\JsonEncoder: ~
+  App\Infrastructure\EventListeners\WebsocketOpenEventListener:
+    tags:
+      - {name: 'kernel.event_listener', event: 'App\Infrastructure\Events\WebsocketOpenEvent', method: 'onWebsocketOpen'}
+  App\Infrastructure\EventListeners\WebsocketMessageEventListener:
+    tags:
+      - {name: 'kernel.event_listener', event: 'App\Infrastructure\Events\WebsocketMessageEvent', method: 'onWebsocketMessage'}
+  App\Infrastructure\EventListeners\WebsocketCloseEventListener:
+    tags:
+      - {name: 'kernel.event_listener', event: 'App\Infrastructure\Events\WebsocketCloseEvent', method: 'onWebsocketClose'}
+
+  app.json_schema.validator:
+    alias: JsonSchema\Validator
+  app.assessment:
+    class: App\Application\Services\AssessmentService
+    arguments:
+      $validator: '@app.json_schema.validator'
+      $projectDir: '%kernel.project_dir%'
   # default configuration for services in *this* file
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    bind:
+      $projectDir: '%kernel.project_dir%'
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
@@ -27,6 +48,6 @@ when@dev:
   parameters:
     app.db_name: chatbot
     app.db_user: chatbot
-    app.db_host: '127.0.0.1'
-    app.db_port: 3306
-    app.db_version: '5.7'
+    app.db_host: database
+    app.db_port: '3306'
+    app.db_version: '5.7.40'

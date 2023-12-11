@@ -10,11 +10,11 @@ class Category extends AggregateRoot
 {
 
     private function __construct(
-        string $id,
+        ?string $id,
         protected string $name,
         protected string $iconUrl,
     ) {
-        $this->id = CategoryId::create($id) ??
+        $this->id = $id ? CategoryId::create($id) :
             CategoryId::create(AggregateRoot::generateId());
     }
 

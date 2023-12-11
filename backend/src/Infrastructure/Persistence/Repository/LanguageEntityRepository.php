@@ -20,9 +20,14 @@ class LanguageEntityRepository extends BaseEntityRepository
     public function find(
         $id,
         $lockMode = null,
-        $lockVersion = null
-    ): ?Language {
+        $lockVersion = null,
+        bool $raw = false,
+    ): null|Language|LanguageEntity {
         $entity = parent::find($id, $lockMode, $lockVersion);
+
+        if ($entity instanceof LanguageEntity && $raw) {
+            return $entity;
+        }
 
         return $entity instanceof LanguageEntity ? $this->mapToDomainEntity(
             $entity
@@ -31,9 +36,14 @@ class LanguageEntityRepository extends BaseEntityRepository
 
     public function findOneBy(
         array $criteria,
-        array $orderBy = null
-    ): ?Language {
+        array $orderBy = null,
+        bool $raw = false,
+    ): null|Language|LanguageEntity {
         $entity = parent::findOneBy($criteria, $orderBy);
+
+        if ($entity instanceof LanguageEntity && $raw) {
+            return $entity;
+        }
 
         return $entity instanceof LanguageEntity ? $this->mapToDomainEntity(
             $entity
@@ -41,21 +51,22 @@ class LanguageEntityRepository extends BaseEntityRepository
     }
 
     /**
-     * @return Language[]
+     * @return Language[]|LanguageEntity[]
      */
-    public function findAll(): array
+    public function findAll(bool $raw = false): array
     {
-        return array_map([$this, 'mapToDomainEntity'], parent::findAll());
+        return $this->findBy([], raw: $raw);
     }
 
     /**
-     * @return Language[]
+     * @return Language[]|LanguageEntity[]
      */
     public function findBy(
         array $criteria,
         array $orderBy = null,
         $limit = null,
-        $offset = null
+        $offset = null,
+        bool $raw = false,
     ): array {
         $entities = parent::findBy(
             $criteria,
@@ -64,7 +75,22 @@ class LanguageEntityRepository extends BaseEntityRepository
             $offset
         );
 
-        return array_map([$this, 'mapToDomainEntity'], $entities);
+        return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
+    }
+
+    /**
+     * @return Language[]|LanguageEntity[]
+     */
+    public function findByCategoryId(string $categoryId, bool $raw = false): array
+    {
+        $qb = $this->createQueryBuilder('le')
+            ->innerJoin('le.categories', 'c')
+            ->where('c.id = :category_id')
+            ->setParameter('category_id', $categoryId);
+
+        $entities = $qb->getQuery()->getResult();
+
+        return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
     }
 
     protected function save(Language|AggregateRoot $aggregateRoot): void
