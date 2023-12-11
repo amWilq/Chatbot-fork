@@ -2,6 +2,7 @@ import { HttpResponse } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from 'src/app/entities/category.model';
+import { Language } from 'src/app/entities/languages.model';
 import { CategoryService } from 'src/app/services/category.service';
 
 interface SelectedFavCard {
@@ -32,9 +33,11 @@ export class HomePageComponent implements OnInit {
   usernameInput: string = '';
   showAssessmentComponent: boolean = false;
   selectedFavCardLanguageId: number | null = null;
+  savedState: { [languageId: string]: { categoryId: string, item: Language } } = {};
 
   constructor(private router: Router, private categoryService: CategoryService) { }
-ngOnInit() {
+
+  ngOnInit() {
     this.loadAllCategories();
     this.loadFavDataFromLocalStorage();
   }
@@ -56,14 +59,7 @@ ngOnInit() {
 
   private loadFavDataFromLocalStorage() {
     const localStorageState = JSON.parse(localStorage.getItem('savedState') || '{}');
-    try {
-    this.sampleFavData = Object.values(localStorageState).map((entry: any) => ({
-      item: entry.item,
-      categoryId: entry.categoryId
-    }));
-  } catch (e) {
-    console.error('Error parsing local storage data:', e);
-  }
+    this.savedState = localStorageState;
   }
 
   private updateSelectedCardIndex(selectedIndex: number | null, currentIndex: number, isFavData: boolean) {
@@ -92,11 +88,11 @@ ngOnInit() {
     this.selectedFavCardLanguageId = this.selectedFavCard[0].item.languageId
   }
 
-  onDeleteCard(card: Category) {
-    const index = this.sampleFavData.indexOf(card);
-    if (index >= 0) {
-      this.sampleFavData.splice(index, 1);
-      localStorage.setItem('savedState', JSON.stringify(this.sampleFavData));
+  onDeleteCard(card: any) {
+    const languageId = card.value.item.languageId;
+    if (languageId) {
+      delete this.savedState[languageId];
+      localStorage.setItem('savedState', JSON.stringify(this.savedState));
     }
   }
 

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { QuizService } from './services/quiz.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   selector: 'app-root',
@@ -20,20 +21,19 @@ export class AppComponent {
   }
 
   private loadUsername() {
-    this.username = localStorage.getItem('username');
-    console.log('Wczytuję pseudonim:', this.username);
+    this.username = localStorage.getItem('userId');
   }
 
   onInput(ev: any) {
     this.usernameInput = ev.target!.value;
   }
 
+
   saveUsername() {
     if (this.isValidUsername()) {
-      localStorage.setItem('username', this.usernameInput);
-      this.username = this.usernameInput;
-    } else {
-      console.log('Nieprawidłowy pseudonim!');
+      const userId = uuidv4();
+      localStorage.setItem('userId', userId);
+      this.username = userId;
     }
   }
 

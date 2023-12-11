@@ -9,6 +9,8 @@ import { ExploreContainerComponentModule } from 'src/app/components/explore-cont
 import { StackedCardComponentModule } from 'src/app/components/stacked-card/stacked-card.module';
 import { CustomMatCardComponentModule } from 'src/app/components/custom-mat-card/custom-mat-card.module';
 import { PickAnswerQuizComponentModule } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.module';
+import { CodeSnippetComponent } from 'src/app/components/code-snippet/code-snippet.component';
+import { CodeSnippetComponentModule } from 'src/app/components/code-snippet/code-snippet.module';
 
 @NgModule({
   imports: [
@@ -19,7 +21,8 @@ import { PickAnswerQuizComponentModule } from 'src/app/components/pick-answer-qu
     StackedCardComponentModule,
     CustomMatCardComponentModule,
     HomePageRoutingModule,
-    PickAnswerQuizComponentModule
+    PickAnswerQuizComponentModule,
+    CodeSnippetComponentModule,
   ],
   declarations: [HomePageComponent]
 })

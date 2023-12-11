@@ -2,7 +2,7 @@
   <div class="container">
     <ion-header [translucent]="true">
       <ion-toolbar>
-        <ion-title class="card-title">Ulubione</ion-title>
+        <ion-title class="card-title">Favorite</ion-title>
         <ion-buttons slot="end">
           <ion-button expand="block" (click)="onToggleCardVisibility()">
             <ion-icon [name]="isCardVisible ? 'chevron-up-outline' : 'chevron-down-outline'" size="large"
@@ -13,23 +13,29 @@
     </ion-header>
 
     <div class="card-container">
-      <ion-card *ngFor="let card of sampleFavData; let i = index"
+      <ion-card *ngFor="let card of savedState | keyvalue; let i = index"
         [ngClass]="{'highlight-card': selectedFavCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
-        (click)="onFavoriteCardClick(card, i, true)" class="card">
+        (click)="onFavoriteCardClick(card.value, i, true)" class="card">
         <ion-icon (click)="onDeleteCard(card)" *ngIf="selectedFavCardIndex === i" name="close-outline" size="large"
           fill="clear" class="close-icon"></ion-icon>
-        <div class="card-image-container"></div>
+
+        <div class="card-image-container">
+          <ion-img class="card-image" src="{{ card.value.item.icon }}"></ion-img>
+        </div>
         <ion-card-content>
-          <div class="card-description">{{ card.name }}</div>
+          <div class="card-description">{{ card.value.item.name }}</div>
         </ion-card-content>
       </ion-card>
     </div>
 
   </div>
 
+
+
   <ion-card *ngFor="let card of categorys; let i = index"
     [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }" class="rounded-card ion-card-spacing">
     <ion-card-content class="ion-card-content-spacing">
+      <ion-img style="max-width: 10vw;" src="{{card.icon}}"></ion-img>
       <span class="span-test">{{ card.name }}</span>
       <div style="display: flex; align-self: center;">
         <ion-icon (click)="onHandleArrowIconClick('tab2', card)" class="span-test" size="large"

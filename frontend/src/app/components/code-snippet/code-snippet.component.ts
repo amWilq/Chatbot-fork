@@ -1,24 +1,52 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { HIGHLIGHT_OPTIONS, HighlightLoader, HighlightOptions } from 'ngx-highlightjs';
 import { QuizQuestion } from 'src/app/entities/quiz-question.model';
 import { QuizService } from 'src/app/services/quiz.service';
+
 @Component({
-  selector: 'pick-answer-quiz',
-  templateUrl: './pick-answer-quiz.component.html',
-  styleUrls: ['./pick-answer-quiz.component.scss']
+  selector: 'code-snippet',
+  templateUrl: './code-snippet.component.html',
+  styleUrls: ['./code-snippet.component.scss']
 })
-export class PickAnswerQuizComponent {
+export class CodeSnippetComponent {
   @Input() questions: any
   @Input() duration: number = 5;
+  // @Input() languages: string[] = ['C#', 'Java', 'JavaScript', 'Python', 'TypeScript'];
   @Output() quizCompleted: EventEmitter<void> = new EventEmitter<void>();
   selectedAnswer: string | null = null;
   progress: number = 0;
   displayTime: string | undefined;
   timer: any | null = null;
-
+code! : string;
   constructor(private quizService: QuizService) {
   }
 
   ngOnInit() {
+
+    this.code = `def find_average(numbers):
+      total_sum = sum(numbers)
+      count = len(numbers)
+      average = total_sum / count  # Potential error when count is zero
+      return average
+  numbers = []
+  print(find_average(numbers))`;
+    this.code = `  exports: [CodeSnippetComponent],
+    providers: [
+      {
+        provide: HIGHLIGHT_OPTIONS,
+        useValue: {
+          coreLibraryLoader: () => import('highlight.js/lib/core'),
+          lineNumbersLoader: () => import('ngx-highlightjs/line-numbers'), // Optional, only if you want the line numbers
+          languages: {
+            typescript: () => import('highlight.js/lib/languages/typescript'),
+            css: () => import('highlight.js/lib/languages/css'),
+            xml: () => import('highlight.js/lib/languages/xml'),
+            python: () => import('highlight.js/lib/languages/python') // Add this line for Python
+          },
+        }
+      }
+    ]`;
     this.startTimer();
   }
 
@@ -55,3 +83,4 @@ export class PickAnswerQuizComponent {
     return this.questions;
   }
 }
+

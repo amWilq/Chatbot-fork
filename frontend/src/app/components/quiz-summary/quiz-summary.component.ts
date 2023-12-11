@@ -12,7 +12,6 @@ export class QuizSummaryComponent implements OnInit {
   @Output() returnToMenu = new EventEmitter<void>();
 
   ngOnInit(): void {
-    console.log(this.quizResponse);
   }
 
   onReplayQuiz(): void {

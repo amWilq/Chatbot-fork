@@ -13,7 +13,7 @@ import { AssessmentsService } from 'src/app/services/assessments.service';
 })
 export class QuizComponent {
   @ViewChild(PickAnswerQuizComponent) private pickAnswerQuizComponent!: PickAnswerQuizComponent;
-  @Input() questions: QuizQuestion[] = [];
+  @Input() questions: any;
   loading = false;
   summaryData!: QuizModel;
   assessmentTypeId: any;
@@ -21,6 +21,7 @@ export class QuizComponent {
   assessmentName: any;
   showSummary: boolean = false;
   duration: any;
+  type: any;
   private queryParamsSubscription!: Subscription;
   private quizCompletedSubscription!: Subscription;
   private completeAssessmentSubscription!: Subscription;
@@ -37,13 +38,17 @@ export class QuizComponent {
   ngOnInit(): void {
     this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe({
       next: (params) => {
+        this.type = params['type'];
         this.duration = params['duration'];
         this.assessmentName = params['assessmentName'];
         this.assessmentId = params['assessmentId'];
         this.assessmentTypeId = params['assessmentTypeId'];
-        this.questions = JSON.parse(params['questions']);
-      },
-      error: (err) => console.error('Error reading query parameters:', err)
+        if (this.type === 'code-snippet') {
+          this.questions = JSON.parse(params['questions'])
+        } else if (this.type === 'quiz') {
+          this.questions = JSON.parse(params['questions'])
+        }
+      }
     });
     this.subscribeToQuizCompletion();
     this.loadQuizStatus();
@@ -55,9 +60,9 @@ export class QuizComponent {
         const requestBody = {
           "assessmentTypeId": this.assessmentTypeId,
           "endTime": new Date().toISOString(),
-          "userId": localStorage.getItem('username')
+          "userId": localStorage.getItem('userId')
         }
-        this.completeAssessmentSubscription =  this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).subscribe(response => {
+        this.completeAssessmentSubscription = this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).subscribe(response => {
           this.quizService.setQuizsStatus(true);
           this.quizService.setTimeStatus('');
           this.summaryData = response.body.quiz;
@@ -98,6 +103,5 @@ export class QuizComponent {
     });
     // Zresetuj stan komponentu
     this.showSummary = false;
-    console.log("onReturnToMenu");
   }
 }

@@ -8,6 +8,7 @@ import { LanguagesService } from 'src/app/services/languages.service';
   templateUrl: './category-component.html',
   styleUrls: ['./category-component.scss']
 })
+
 export class CategoryComponent implements OnInit {
   selectedCategory: string | null = null;
   selectedItemId: Language | null = null;

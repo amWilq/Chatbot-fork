@@ -44,12 +44,6 @@ export class StackedCardComponent {
     }
   }
 
-  test(card: any, index: number) {
-    console.log('test', card, index);
-  }
-
-
-
 
   async presentToast(text: string ) {
     const toast = await this.toastController.create({
