@@ -8,22 +8,17 @@ parameters:
 services:
   JsonSchema\Validator: ~
   Symfony\Component\Serializer\Encoder\JsonEncoder: ~
-  App\Infrastructure\EventListeners\WebsocketOpenEventListener:
-    tags:
-      - {name: 'kernel.event_listener', event: 'App\Infrastructure\Events\WebsocketOpenEvent', method: 'onWebsocketOpen'}
-  App\Infrastructure\EventListeners\WebsocketMessageEventListener:
-    tags:
-      - {name: 'kernel.event_listener', event: 'App\Infrastructure\Events\WebsocketMessageEvent', method: 'onWebsocketMessage'}
-  App\Infrastructure\EventListeners\WebsocketCloseEventListener:
-    tags:
-      - {name: 'kernel.event_listener', event: 'App\Infrastructure\Events\WebsocketCloseEvent', method: 'onWebsocketClose'}
+  Symfony\Component\Console\Output\OutputInterface: ~
+  Symfony\Component\Console\Logger\ConsoleLogger: ~
 
-  app.json_schema.validator:
-    alias: JsonSchema\Validator
-  app.assessment:
-    class: App\Application\Services\AssessmentService
+  App\Application\Services\WebsocketService:
     arguments:
-      $validator: '@app.json_schema.validator'
+      $host: '0.0.0.0'
+      $port: 80
+  app.schema.validator:
+    class: App\Application\Services\SchemaValidatorService
+    arguments:
+      $validator: JsonSchema\Validator
       $projectDir: '%kernel.project_dir%'
   # default configuration for services in *this* file
   _defaults:
@@ -31,6 +26,8 @@ services:
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
     bind:
       $projectDir: '%kernel.project_dir%'
+      $host: '0.0.0.0'
+      $port: 80
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name

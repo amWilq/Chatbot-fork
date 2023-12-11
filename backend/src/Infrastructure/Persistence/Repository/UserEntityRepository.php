@@ -83,7 +83,7 @@ class UserEntityRepository extends BaseEntityRepository
         return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
     }
 
-    protected function save(User|AggregateRoot $aggregateRoot): void
+    public function save(User|AggregateRoot $aggregateRoot): void
     {
         $this->_em->persist(
             UserEntity::fromDomainEntity($aggregateRoot)
@@ -91,7 +91,7 @@ class UserEntityRepository extends BaseEntityRepository
         $this->_em->flush();
     }
 
-    protected function delete(User|AggregateRoot $aggregateRoot): void
+    public function delete(User|AggregateRoot $aggregateRoot): void
     {
         $this->_em->remove(
             UserEntity::fromDomainEntity($aggregateRoot)

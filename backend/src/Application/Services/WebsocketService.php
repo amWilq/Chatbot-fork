@@ -16,7 +16,7 @@ class WebsocketService
     ) {
     }
 
-    public function openConnection(string $userId, $connection): void
+    protected function setConnection(string $userId, $connection): void
     {
         $this->connections[$userId] = $connection;
     }
@@ -34,6 +34,6 @@ class WebsocketService
         }
 
         $connection->send('Handshake successful!');
-        $this->openConnection($userId, $connection);
+        $this->setConnection($userId, $connection);
     }
 }

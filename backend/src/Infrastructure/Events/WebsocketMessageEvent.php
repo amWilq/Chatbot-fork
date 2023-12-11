@@ -8,10 +8,14 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class WebsocketMessageEvent extends Event
 {
-
     public function __construct(
         public readonly Server $server,
         public readonly Frame $frame
     ) {
+    }
+
+    public function getData(): string
+    {
+        return $this->frame->data;
     }
 }

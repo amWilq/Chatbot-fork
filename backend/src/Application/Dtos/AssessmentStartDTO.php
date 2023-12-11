@@ -2,6 +2,7 @@
 
 namespace App\Application\Dtos;
 
+use App\Domain\Assessment\Entities\Assessment;
 use App\Shared\Models\EntityToArrayInterface;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Immutable;
@@ -53,6 +54,19 @@ readonly class AssessmentStartDTO implements EntityToArrayInterface
     protected function getStartTime(): string
     {
         return $this->startTime;
+    }
+
+    public static function fromDomainEntity(Assessment $assessment): self
+    {
+        return self::create(
+            assessmentState: $assessment->getStatus()->value,
+            assessmentId: $assessment->getId()->toString(),
+            assessmentTypeId: $assessment->getAssessmentType()->getId()->toString(),
+            categoryId: $assessment->getCategory()->getId()->toString(),
+            languageId: $assessment->getLanguage()->getId()->toString(),
+            startTime: $assessment->getStartTime()->format(DATE_ATOM),
+            difficulty: $assessment->getCurrentDifficulty()->value,
+        );
     }
 
     public static function create(

@@ -3,60 +3,153 @@
 namespace App\Application\Services;
 
 use App\Application\Dtos\AssessmentStartDTO;
+use App\Domain\Assessment\Entities\Assessment;
+use App\Domain\Assessment\Entities\AssessmentType;
+use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
+use App\Domain\Category\Entities\Category;
+use App\Domain\Language\Entities\Language;
+use App\Domain\User\Entities\User;
+use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
+use App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository;
+use App\Infrastructure\Persistence\Repository\CategoryEntityRepository;
+use App\Infrastructure\Persistence\Repository\LanguageEntityRepository;
+use App\Infrastructure\Persistence\Repository\UserEntityRepository;
 use JsonSchema\Exception\JsonDecodingException;
-use JsonSchema\Validator;
-use PHPUnit\Framework\MockObject\Exception;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class AssessmentService
 {
-    private const SCHEMAS_DIR = '%s/resources/schemas/%s';
-    private const ASSESSMENT_START_SCHEMA = 'AssessmentStartRequest.json';
+    private const ASSESSMENT_START_SCHEMA = 'AssessmentStartRequest';
+
+    private Assessment $assessment;
+
+    public function getAssessment(): Assessment
+    {
+        return $this->assessment;
+    }
+
+    public function setAssessment(Assessment $assessment): void
+    {
+        $this->assessment = $assessment;
+    }
 
     public function __construct(
-        private readonly Validator $validator,
-        private readonly string $projectDir
+        private readonly UserEntityRepository $userEntityRepository,
+        private readonly AssessmentEntityRepository $assessmentEntityRepository,
+        private readonly AssessmentTypeEntityRepository $assessmentTypeEntityRepository,
+        private readonly CategoryEntityRepository $categoryEntityRepository,
+        private readonly LanguageEntityRepository $languageEntityRepository,
+        private readonly SchemaValidatorService $schemaValidatorService,
     ) {
     }
 
     /**
      * @throws BadRequestException|JsonDecodingException|
      */
-    public function startAssessment(object $postData): array
+    public function startAssessment(object $postData, string $assessmentTypeName): array
     {
-        try {
-            $isValid = $this->validateRequestBody($postData, self::ASSESSMENT_START_SCHEMA);
-        } catch (\JsonException $e) {
-            throw new JsonDecodingException("Unsuccessful json decode: $e");
-        }
+        $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_START_SCHEMA);
 
-        if (!$isValid) {
-            throw new BadRequestException("Request body doesn't meet schema!");
-        }
+        [
+            $user,
+            $category,
+            $language,
+            $assessmentType,
+        ] = $this->manageAssociations($postData, $assessmentTypeName);
 
+        $this->setAssessment(
+            Assessment::create(
+                user: $user,
+                category: $category,
+                language: $language,
+                assessmentType: $assessmentType,
+                difficulty: $postData->difficulty,
+                startTime: $postData->startTime,
+            )
+        );
 
+        $this->assessmentEntityRepository->save($this->getAssessment());
 
-        return AssessmentStartDTO::create(
-            assessmentState: '',
-            assessmentId: '',
-            assessmentTypeId: '',
-            startTime: '',
-            languageId: '',
-            difficulty: '',
-            categoryId: '',
-        )->toArray();
+        return AssessmentStartDTO::fromDomainEntity($this->getAssessment())->toArray();
+    }
+
+    protected function manageAssociations(object $postData, string $assessmentTypeName): array
+    {
+        $user = $this->getUser($postData->userDeviceId, $postData->username);
+        $category = $this->getCategory($postData->categoryId);
+        $language = $this->getLanguage($postData->languageId);
+        $assessmentType = $this->getAssessmentType($postData, $assessmentTypeName);
+
+        return [$user, $category, $language, $assessmentType];
     }
 
     /**
-     * @throws \JsonException
+     * @throws BadRequestException
      */
-    private function validateRequestBody(object $requestBody, string $schemaName): bool
+    protected function getUser(string $userDeviceId, string $username = null): User
     {
-        $schema = sprintf(self::SCHEMAS_DIR, $this->projectDir, $schemaName);
-        $this->validator->validate($postData,
-            json_decode(file_get_contents($schema), false, 512, JSON_THROW_ON_ERROR)
-        );
+        $user = $this->userEntityRepository->findOneBy(['user_device_id' => $userDeviceId]);
+        if (!$user) {
+            $user = User::create(
+                name: $username ?? 'default_name',
+                deviceId: $userDeviceId
+            );
+            $this->userEntityRepository->save($user);
+        }
 
-        return $this->validator->isValid();
+        return $user;
+    }
+
+    /**
+     * @throws BadRequestException
+     */
+    protected function getCategory(string $categoryId): Category
+    {
+        $category = $this->categoryEntityRepository->find($categoryId);
+        if (!$category) {
+            throw new BadRequestException('Chosen Category does not exist.');
+        }
+
+        return $category;
+    }
+
+    /**
+     * @throws BadRequestException
+     */
+    protected function getLanguage(string $languageId): Language
+    {
+        $language = $this->languageEntityRepository->find($languageId);
+        if (!$language) {
+            throw new BadRequestException('Chosen Language does not exist.');
+        }
+
+        return $language;
+    }
+
+    /**
+     * @throws BadRequestException
+     */
+    protected function getAssessmentType(object $postData, string $assessmentTypeName): AssessmentType
+    {
+        $assessmentType = $this->assessmentTypeEntityRepository->find($postData->assessmentTypeId);
+        if (!$assessmentType) {
+            throw new BadRequestException('Chosen Assessment Type does not exist.');
+        }
+
+        if ($assessmentType->getName() !== $assessmentTypeName) {
+            throw new BadRequestException("Given assessment type name doesn't match the assessment type id in payload.");
+        }
+
+        return $this->retrieveAssessmentType($postData, $assessmentTypeName);
+    }
+
+    protected function retrieveAssessmentType(object $postData, string $assessmentTypeName): AssessmentType
+    {
+        return match ($assessmentTypeName) {
+            'quiz' => QuizAssessment::create(
+                durationInSeconds: $postData->duration ?? '10',
+            ),
+            default => throw new BadRequestException('Selected AssessmentType not supported on server.'),
+        };
     }
 }

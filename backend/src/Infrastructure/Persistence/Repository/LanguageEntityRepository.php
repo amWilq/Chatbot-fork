@@ -93,7 +93,7 @@ class LanguageEntityRepository extends BaseEntityRepository
         return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
     }
 
-    protected function save(Language|AggregateRoot $aggregateRoot): void
+    public function save(Language|AggregateRoot $aggregateRoot): void
     {
         $this->_em->persist(
             LanguageEntity::fromDomainEntity($aggregateRoot)
@@ -101,7 +101,7 @@ class LanguageEntityRepository extends BaseEntityRepository
         $this->_em->flush();
     }
 
-    protected function delete(Language|AggregateRoot $aggregateRoot): void
+    public function delete(Language|AggregateRoot $aggregateRoot): void
     {
         $this->_em->remove(
             LanguageEntity::fromDomainEntity($aggregateRoot)

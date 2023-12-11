@@ -83,7 +83,7 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
         return !$raw ? array_map([$this, 'mapToDomainEntity'], $entities) : $entities;
     }
 
-    protected function save(AssessmentType|AggregateRoot $aggregateRoot): void
+    public function save(AssessmentType|AggregateRoot $aggregateRoot): void
     {
         $this->_em->persist(
             AssessmentTypeEntity::fromDomainEntity($aggregateRoot)
@@ -91,7 +91,7 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
         $this->_em->flush();
     }
 
-    protected function delete(AssessmentType|AggregateRoot $aggregateRoot): void
+    public function delete(AssessmentType|AggregateRoot $aggregateRoot): void
     {
         $this->_em->remove(
             AssessmentTypeEntity::fromDomainEntity($aggregateRoot)

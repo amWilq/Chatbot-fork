@@ -4,8 +4,10 @@ namespace App\Infrastructure\Controllers;
 
 use App\Application\Services\AssessmentService;
 use App\Application\Services\AssessmentTypeService;
-use Symfony\Component\HttpFoundation\Request;
+use App\Application\Services\WebsocketService;
+use App\Domain\Assessment\Enums\AssessmentStatusEnum;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
@@ -14,6 +16,7 @@ class AssessmentController extends AbstractBaseController
     public function __construct(
         private readonly AssessmentService $assessmentService,
         private readonly AssessmentTypeService $assessmentTypeService,
+        private readonly WebsocketService $websocketService,
         private readonly JsonEncoder $jsonEncoder,
     ) {
     }
@@ -41,10 +44,18 @@ class AssessmentController extends AbstractBaseController
     #[Route('/assessments/{assessmentTypeName}/start', name: 'app.assessments.start', methods: ['POST'])]
     public function startAssessment(Request $request, string $assessmentTypeName): JsonResponse
     {
-        $output[] =
-            $this->assessmentService->startAssessment(
-                $this->jsonEncoder->decode($request->getContent(), JsonEncoder::FORMAT, ['json_decode_associative' => false])
-            );
+        $output = $this->assessmentService->startAssessment(
+            $this->jsonEncoder->decode(
+                $request->getContent(), JsonEncoder::FORMAT, ['json_decode_associative' => false]
+            ),
+            $assessmentTypeName
+        );
+        $this->assessmentService->getAssessment()->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+
+//        $this->websocketService->connect(
+//            $this->assessmentService->getAssessment()
+//                ->getUser()->getId()->toString()
+//        );
 
         return $this->prettyJsonResponse($output);
     }

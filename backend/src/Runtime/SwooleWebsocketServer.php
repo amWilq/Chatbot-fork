@@ -51,21 +51,21 @@ class SwooleWebsocketServer extends ServerFactory
             if (null === $this->eventDispatcher) {
                 return;
             }
-            $this->eventDispatcher->dispatch(new WebsocketOpenEvent($this, $request));
+            $this->eventDispatcher->dispatch(new WebsocketOpenEvent($server, $request));
         });
 
         $server->on('Message', function (Server $server, Frame $frame) {
             if (null === $this->eventDispatcher) {
                 return;
             }
-            $this->eventDispatcher->dispatch(new WebsocketMessageEvent($this, $frame));
+            $this->eventDispatcher->dispatch(new WebsocketMessageEvent($server, $frame));
         });
 
         $server->on('Close', function (Server $server, int $fd) {
             if (null === $this->eventDispatcher) {
                 return;
             }
-            $this->eventDispatcher->dispatch(new WebsocketCloseEvent($this, $fd));
+            $this->eventDispatcher->dispatch(new WebsocketCloseEvent($server, $fd));
         });
 
         return $server;

@@ -42,7 +42,6 @@
     "categoryId",
     "languageId",
     "difficulty",
-    "startTime",
-    "duration"
+    "startTime"
   ]
 }

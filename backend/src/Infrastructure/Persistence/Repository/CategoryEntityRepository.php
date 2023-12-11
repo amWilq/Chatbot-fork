@@ -62,7 +62,7 @@ class CategoryEntityRepository extends BaseEntityRepository implements CategoryR
      */
     public function findBy(
         array $criteria,
-        ?array $orderBy = null,
+        array $orderBy = null,
         $limit = null,
         $offset = null,
         bool $raw = false,
@@ -88,7 +88,7 @@ class CategoryEntityRepository extends BaseEntityRepository implements CategoryR
         $this->_em->flush();
     }
 
-    public function mapToDomainEntity(CategoryEntity|PersistenceEntityInterface $entity
+    protected function mapToDomainEntity(CategoryEntity|PersistenceEntityInterface $entity
     ): Category {
         return Category::create(
             id: $entity->getId(),

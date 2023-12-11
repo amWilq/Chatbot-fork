@@ -8,18 +8,15 @@ use App\Domain\Assessment\ValueObjects\AssessmentId;
 use App\Domain\Category\Entities\Category;
 use App\Domain\Language\Entities\Language;
 use App\Domain\User\Entities\User;
-use App\Domain\User\ValueObjects\UserDeviceId;
 use App\Shared\Models\AggregateRoot;
-use DateTime;
 
 final class Assessment extends AggregateRoot
 {
-
     protected AssessmentStatusEnum $status;
 
-    protected DateTime $startTime;
+    protected \DateTime $startTime;
 
-    protected ?DateTime $endTime = null;
+    protected ?\DateTime $endTime = null;
 
     protected ?DifficultiesEnum $difficultyAtEnd = null;
 
@@ -47,8 +44,8 @@ final class Assessment extends AggregateRoot
         $this->status = AssessmentStatusEnum::tryFrom(
             $status
         ) ?? AssessmentStatusEnum::ASSESSMENT_START_SUCCESS;
-        $this->startTime = new DateTime($startTime ?? 'now');
-        $this->endTime = $endTime ? new DateTime($endTime) : null;
+        $this->startTime = new \DateTime($startTime ?? 'now');
+        $this->endTime = $endTime ? new \DateTime($endTime) : null;
         $this->currentDifficulty = DifficultiesEnum::tryFrom(
             $currentDifficulty
         );
@@ -96,17 +93,17 @@ final class Assessment extends AggregateRoot
         $this->status = $status;
     }
 
-    public function getStartTime(): DateTime
+    public function getStartTime(): \DateTime
     {
         return $this->startTime;
     }
 
-    public function getEndTime(): DateTime
+    public function getEndTime(): \DateTime
     {
         return $this->endTime;
     }
 
-    public function setEndTime(DateTime $endTime): void
+    public function setEndTime(\DateTime $endTime): void
     {
         $this->endTime = $endTime;
     }
@@ -167,5 +164,4 @@ final class Assessment extends AggregateRoot
     {
         return $this->assessmentType;
     }
-
 }
