@@ -61,7 +61,7 @@ class AssessmentController extends AbstractBaseController
     }
 
     #[Route('/assessments/{assessmentTypeName}/{assessmentId}', name: 'app.assessments.interact', methods: ['POST'])]
-    public function assessmentInteraction(string $assessmentTypeName, string $assessmentId): JsonResponse
+    public function assessmentInteraction(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
     {
         $output = [];
 
@@ -69,9 +69,14 @@ class AssessmentController extends AbstractBaseController
     }
 
     #[Route('/assessments/{assessmentTypeName}/{assessmentId}/complete', name: 'app.assessments.complete', methods: ['POST'])]
-    public function completeAssessment(string $assessmentTypeName, string $assessmentId): JsonResponse
+    public function completeAssessment(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
     {
-        $output = [];
+        $output = $this->assessmentService->completeAssessment(
+            $this->jsonEncoder->decode(
+                $request->getContent(), JsonEncoder::FORMAT, ['json_decode_associative' => false]
+            ),
+            [$assessmentTypeName, $assessmentId]
+        );
 
         return $this->prettyJsonResponse($output);
     }

@@ -2,9 +2,11 @@
 
 namespace App\Application\Services;
 
+use App\Application\Dtos\AssessmentDTO;
 use App\Application\Dtos\AssessmentStartDTO;
 use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Entities\AssessmentType;
+use App\Domain\Assessment\Enums\AssessmentStatusEnum;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Domain\Category\Entities\Category;
 use App\Domain\Language\Entities\Language;
@@ -20,6 +22,7 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 class AssessmentService
 {
     private const ASSESSMENT_START_SCHEMA = 'AssessmentStartRequest';
+    private const ASSESSMENT_COMPLETE_SCHEMA = 'AssessmentCompleteRequest';
 
     private Assessment $assessment;
 
@@ -73,6 +76,23 @@ class AssessmentService
         return AssessmentStartDTO::fromDomainEntity($this->getAssessment())->toArray();
     }
 
+    public function completeAssessment(object $postData, array $pathParams): array
+    {
+        $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_COMPLETE_SCHEMA);
+        [$assessmentTypeName, $assessmentId] = $pathParams;
+
+        $assessment = $this->getAssessmentById($assessmentId);
+        $assessment = $this->assessment->equals($assessment) ? $this->getAssessment() : $assessment;
+
+        $this->isRequestedUserAssociated($assessment, $postData, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
+        $this->isRequestedAssessmentTypeAssociated($assessment, $postData, $assessmentTypeName, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
+
+        $assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
+        $this->assessmentEntityRepository->save($assessment);
+
+        return AssessmentDTO::fromDomainEntity($assessment)->toArray();
+    }
+
     protected function manageAssociations(object $postData, string $assessmentTypeName): array
     {
         $user = $this->getUser($postData->userDeviceId, $postData->username);
@@ -83,9 +103,6 @@ class AssessmentService
         return [$user, $category, $language, $assessmentType];
     }
 
-    /**
-     * @throws BadRequestException
-     */
     protected function getUser(string $userDeviceId, string $username = null): User
     {
         $user = $this->userEntityRepository->findOneBy(['user_device_id' => $userDeviceId]);
@@ -98,6 +115,21 @@ class AssessmentService
         }
 
         return $user;
+    }
+
+    /**
+     * @throws BadRequestException
+     */
+    protected function isRequestedUserAssociated(Assessment $assessment, object $postData, AssessmentStatusEnum $errorStatus): bool
+    {
+        if (!$assessment->getUser()->equals(
+            $this->getUser($postData->userDeviceId)
+        )) {
+            $assessment->setStatus($errorStatus);
+            throw new BadRequestException('This user is not associated with this assessment.');
+        }
+
+        return true;
     }
 
     /**
@@ -129,6 +161,19 @@ class AssessmentService
     /**
      * @throws BadRequestException
      */
+    protected function getAssessmentById(string $assessmentId): Assessment
+    {
+        $assessment = $this->assessmentEntityRepository->find($assessmentId);
+        if (!$assessment) {
+            throw new BadRequestException('Assessment was not found.');
+        }
+
+        return $assessment;
+    }
+
+    /**
+     * @throws BadRequestException
+     */
     protected function getAssessmentType(object $postData, string $assessmentTypeName): AssessmentType
     {
         $assessmentType = $this->assessmentTypeEntityRepository->find($postData->assessmentTypeId);
@@ -143,6 +188,24 @@ class AssessmentService
         return $this->retrieveAssessmentType($postData, $assessmentTypeName);
     }
 
+    /**
+     * @throws BadRequestException
+     */
+    protected function isRequestedAssessmentTypeAssociated(Assessment $assessment, object $postData, string $name, AssessmentStatusEnum $errorStatus): bool
+    {
+        if (!$assessment->getAssessmentType()->equals(
+            $this->getAssessmentType($postData, $name)
+        )) {
+            $assessment->setStatus($errorStatus);
+            throw new BadRequestException('This assessment type is not associated with this assessment.');
+        }
+
+        return true;
+    }
+
+    /**
+     * @throws BadRequestException
+     */
     protected function retrieveAssessmentType(object $postData, string $assessmentTypeName): AssessmentType
     {
         return match ($assessmentTypeName) {
