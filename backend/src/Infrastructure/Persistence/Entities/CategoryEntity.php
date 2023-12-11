@@ -60,7 +60,7 @@ class CategoryEntity
         $categoryEntity = $entityManager->getRepository(CategoryEntity::class)
             ->find($category->getId()->toString(), raw: true);
 
-        if (!$categoryEntity) {
+        if (is_null($categoryEntity)) {
             $categoryEntity = new self();
             $categoryEntity->setId($category->getId()->toString());
         }

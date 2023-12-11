@@ -8,8 +8,6 @@ parameters:
 services:
   JsonSchema\Validator: ~
   Symfony\Component\Serializer\Encoder\JsonEncoder: ~
-  Symfony\Component\Console\Output\OutputInterface: ~
-  Symfony\Component\Console\Logger\ConsoleLogger: ~
 
   App\Application\Services\WebsocketService:
     arguments:

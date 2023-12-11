@@ -92,7 +92,7 @@ class LanguageEntity implements PersistenceEntityInterface
         $languageEntity = $entityManager->getRepository(LanguageEntity::class)
             ->find($language->getId()->toString(), raw: true);
 
-        if (!$languageEntity) {
+        if (is_null($languageEntity)) {
             $languageEntity = new self();
             $languageEntity->setId($language->getId()->toString());
         }

@@ -85,18 +85,18 @@ class UserEntityRepository extends BaseEntityRepository
 
     public function save(User|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->persist(
-            UserEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->persist(
+            UserEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     public function delete(User|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->remove(
-            UserEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->remove(
+            UserEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     protected function mapToDomainEntity(

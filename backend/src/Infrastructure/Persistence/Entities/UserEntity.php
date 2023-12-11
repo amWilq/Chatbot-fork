@@ -20,13 +20,13 @@ class UserEntity implements PersistenceEntityInterface
     #[ORM\Column(name: 'device_id', type: Types::STRING)]
     private string $deviceId;
 
-    #[ORM\Column(name: 'name', type: Types::STRING)]
-    private string $name;
+    #[ORM\Column(name: 'name', type: Types::STRING, nullable: true)]
+    private ?string $name;
 
     #[ORM\Column(name: 'status', type: Types::STRING)]
     private string $status;
 
-    #[ORM\Column(name: 'created_at', type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIMETZ_MUTABLE)]
     private \DateTime $createdAt;
 
     public function getId(): string
@@ -69,12 +69,12 @@ class UserEntity implements PersistenceEntityInterface
         $this->createdAt = $createdAt;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(?string $name): void
     {
         $this->name = $name;
     }
@@ -84,7 +84,7 @@ class UserEntity implements PersistenceEntityInterface
         $userEntity = $entityManager->getRepository(UserEntity::class)
                         ->find($user->getId()->toString(), raw: true);
 
-        if (!$userEntity) {
+        if (is_null($userEntity)) {
             $userEntity = new self();
             $userEntity->setId($user->getId()->toString());
         }

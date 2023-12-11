@@ -27,8 +27,8 @@ final class Assessment extends AggregateRoot
     private function __construct(
         ?string $id,
         ?string $status,
-        ?string $startTime,
-        ?string $endTime,
+        ?\DateTime $startTime,
+        ?\DateTime $endTime,
         ?string $difficultyAtEnd,
         ?string $currentDifficulty,
         ?string $feedback,
@@ -44,11 +44,11 @@ final class Assessment extends AggregateRoot
         $this->status = AssessmentStatusEnum::tryFrom(
             $status
         ) ?? AssessmentStatusEnum::ASSESSMENT_START_SUCCESS;
-        $this->startTime = new \DateTime($startTime ?? 'now');
-        $this->endTime = $endTime ? new \DateTime($endTime) : null;
+        $this->startTime = $startTime ?? new \DateTime();
+        $this->endTime = $endTime ?: null;
         $this->currentDifficulty = DifficultiesEnum::tryFrom(
             $currentDifficulty
-        );
+        ) ?? $this->getDifficultyAtStart();
         $this->difficultyAtEnd = DifficultiesEnum::tryFrom($difficultyAtEnd);
         $this->feedback = $feedback;
     }
@@ -61,8 +61,8 @@ final class Assessment extends AggregateRoot
         AssessmentType $assessmentType,
         string $id = null,
         string $status = null,
-        string $startTime = null,
-        string $endTime = null,
+        \DateTime $startTime = null,
+        \DateTime $endTime = null,
         string $difficultyAtEnd = null,
         string $currentDifficulty = null,
         string $feedback = null,
@@ -98,7 +98,7 @@ final class Assessment extends AggregateRoot
         return $this->startTime;
     }
 
-    public function getEndTime(): \DateTime
+    public function getEndTime(): ?\DateTime
     {
         return $this->endTime;
     }
@@ -113,7 +113,7 @@ final class Assessment extends AggregateRoot
         return $this->difficultyAtStart;
     }
 
-    public function getDifficultyAtEnd(): DifficultiesEnum
+    public function getDifficultyAtEnd(): ?DifficultiesEnum
     {
         return $this->difficultyAtEnd;
     }
@@ -123,19 +123,19 @@ final class Assessment extends AggregateRoot
         $this->difficultyAtEnd = $this->currentDifficulty;
     }
 
-    public function getCurrentDifficulty(): DifficultiesEnum
+    public function getCurrentDifficulty(): ?DifficultiesEnum
     {
         return $this->currentDifficulty;
     }
 
-    public function setCurrentDifficulty(string $currentDifficulty): void
+    public function setCurrentDifficulty(?string $currentDifficulty): void
     {
         $this->currentDifficulty = DifficultiesEnum::tryFrom(
             $currentDifficulty
         );
     }
 
-    public function getFeedback(): string
+    public function getFeedback(): ?string
     {
         return $this->feedback;
     }

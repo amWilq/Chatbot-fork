@@ -74,18 +74,18 @@ class CategoryEntityRepository extends BaseEntityRepository implements CategoryR
 
     public function save(Category|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->persist(
-            CategoryEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->persist(
+            CategoryEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     public function delete(Category|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->remove(
-            CategoryEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->remove(
+            CategoryEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     protected function mapToDomainEntity(CategoryEntity|PersistenceEntityInterface $entity

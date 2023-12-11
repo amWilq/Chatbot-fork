@@ -2,14 +2,13 @@
 
 namespace App\Domain\User\Entities;
 
-use App\Domain\User\ValueObjects\UserDeviceId;
-use App\Shared\Models\AggregateRoot;
 use App\Domain\User\Enums\UserAccountStatusEnum;
+use App\Domain\User\ValueObjects\UserDeviceId;
 use App\Domain\User\ValueObjects\UserId;
+use App\Shared\Models\AggregateRoot;
 
 class User extends AggregateRoot
 {
-
     protected UserAccountStatusEnum $status;
 
     protected \DateTime $createdAt;
@@ -20,7 +19,7 @@ class User extends AggregateRoot
     private function __construct(
         ?string $id,
         ?string $status,
-        ?string $createdAt,
+        ?\DateTime $createdAt,
         protected UserDeviceId $deviceId,
         protected string $name,
     ) {
@@ -30,18 +29,18 @@ class User extends AggregateRoot
         $this->status = UserAccountStatusEnum::tryFrom(
             $status
         ) ?? UserAccountStatusEnum::ACTIVE;
-        $this->createdAt = new \DateTime($createdAt ?? 'now');
+        $this->createdAt = $createdAt ?? new \DateTime();
     }
 
     /**
-     * Create a new instance of the current object
+     * Create a new instance of the current object.
      */
     public static function create(
         string $name,
         string $deviceId,
         string $id = null,
         string $status = null,
-        string $createdAt = null
+        \DateTime $createdAt = null
     ): self {
         return new self(
             id: $id,
@@ -76,5 +75,4 @@ class User extends AggregateRoot
     {
         return $this->createdAt;
     }
-
 }

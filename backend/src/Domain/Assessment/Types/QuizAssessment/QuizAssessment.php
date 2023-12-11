@@ -7,7 +7,6 @@ use App\Domain\Assessment\Enums\FormatEnum;
 
 final class QuizAssessment extends AssessmentType
 {
-
     protected int $questionCount;
 
     protected int $correctAnswerCount;
@@ -74,9 +73,9 @@ final class QuizAssessment extends AssessmentType
         QuestionAttempt $questionAttempt
     ): void {
         $this->questionsAttempts[] = $questionAttempt;
-        $this->questionCount++;
+        ++$this->questionCount;
         if ($questionAttempt->isCorrect()) {
-            $this->correctAnswerCount++;
+            ++$this->correctAnswerCount;
         }
     }
 
@@ -84,5 +83,4 @@ final class QuizAssessment extends AssessmentType
     {
         return $this->getParent();
     }
-
 }

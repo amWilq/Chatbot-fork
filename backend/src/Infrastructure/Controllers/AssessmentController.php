@@ -50,7 +50,10 @@ class AssessmentController extends AbstractBaseController
             ),
             $assessmentTypeName
         );
-        $this->assessmentService->getAssessment()->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+        //TODO: for now not being updated, need to make changes in persistence layer
+//        $assessment = $this->assessmentService->getAssessment();
+//        $assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+//        $this->assessmentService->setAssessment($assessment);
 
 //        $this->websocketService->connect(
 //            $this->assessmentService->getAssessment()

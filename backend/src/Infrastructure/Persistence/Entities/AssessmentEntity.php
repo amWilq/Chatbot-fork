@@ -18,41 +18,41 @@ class AssessmentEntity implements PersistenceEntityInterface
     private string $id;
 
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')]
-    #[ORM\ManyToOne(targetEntity: UserEntity::class)]
+    #[ORM\ManyToOne(targetEntity: UserEntity::class, cascade: ['persist'])]
     private UserEntity $user;
 
     #[ORM\JoinColumn(name: 'language_id', referencedColumnName: 'language_id')]
-    #[ORM\ManyToOne(targetEntity: LanguageEntity::class)]
+    #[ORM\ManyToOne(targetEntity: LanguageEntity::class, cascade: ['persist'])]
     private LanguageEntity $language;
 
     #[ORM\JoinColumn(name: 'category_id', referencedColumnName: 'category_id')]
-    #[ORM\ManyToOne(targetEntity: CategoryEntity::class)]
+    #[ORM\ManyToOne(targetEntity: CategoryEntity::class, cascade: ['persist'])]
     private CategoryEntity $category;
 
     #[ORM\JoinColumn(name: 'assessment_details_id', referencedColumnName: 'assessment_details_id')]
-    #[ORM\OneToOne(targetEntity: AssessmentDetailsEntity::class)]
+    #[ORM\OneToOne(targetEntity: AssessmentDetailsEntity::class, cascade: ['persist'])]
     private AssessmentDetailsEntity $assessmentDetails;
 
     #[ORM\Column(name: 'status', type: Types::STRING)]
     private string $status;
 
-    #[ORM\Column(name: 'start_time', type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(name: 'start_time', type: Types::DATETIMETZ_MUTABLE)]
     private \DateTime $startTime;
 
-    #[ORM\Column(name: 'end_time', type: Types::DATETIMETZ_IMMUTABLE)]
-    private \DateTime $endTime;
+    #[ORM\Column(name: 'end_time', type: Types::DATETIMETZ_MUTABLE, nullable: true)]
+    private ?\DateTime $endTime;
 
     #[ORM\Column(name: 'start_difficulty', type: Types::STRING)]
     private string $startDifficulty;
 
-    #[ORM\Column(name: 'current_difficulty', type: Types::STRING)]
-    private string $currentDifficulty;
+    #[ORM\Column(name: 'current_difficulty', type: Types::STRING, nullable: true)]
+    private ?string $currentDifficulty;
 
-    #[ORM\Column(name: 'end_difficulty', type: Types::STRING)]
-    private string $endDifficulty;
+    #[ORM\Column(name: 'end_difficulty', type: Types::STRING, nullable: true)]
+    private ?string $endDifficulty;
 
-    #[ORM\Column(name: 'feedback', type: Types::STRING)]
-    private string $feedback;
+    #[ORM\Column(name: 'feedback', type: Types::STRING, nullable: true)]
+    private ?string $feedback;
 
     public function getId(): string
     {
@@ -124,12 +124,12 @@ class AssessmentEntity implements PersistenceEntityInterface
         $this->startTime = $startTime;
     }
 
-    public function getEndTime(): \DateTime
+    public function getEndTime(): ?\DateTime
     {
         return $this->endTime;
     }
 
-    public function setEndTime(\DateTime $endTime): void
+    public function setEndTime(?\DateTime $endTime): void
     {
         $this->endTime = $endTime;
     }
@@ -144,32 +144,32 @@ class AssessmentEntity implements PersistenceEntityInterface
         $this->startDifficulty = $startDifficulty;
     }
 
-    public function getCurrentDifficulty(): string
+    public function getCurrentDifficulty(): ?string
     {
         return $this->currentDifficulty;
     }
 
-    public function setCurrentDifficulty(string $currentDifficulty): void
+    public function setCurrentDifficulty(?string $currentDifficulty): void
     {
         $this->currentDifficulty = $currentDifficulty;
     }
 
-    public function getEndDifficulty(): string
+    public function getEndDifficulty(): ?string
     {
         return $this->endDifficulty;
     }
 
-    public function setEndDifficulty(string $endDifficulty): void
+    public function setEndDifficulty(?string $endDifficulty): void
     {
         $this->endDifficulty = $endDifficulty;
     }
 
-    public function getFeedback(): string
+    public function getFeedback(): ?string
     {
         return $this->feedback;
     }
 
-    public function setFeedback(string $feedback): void
+    public function setFeedback(?string $feedback): void
     {
         $this->feedback = $feedback;
     }
@@ -177,32 +177,32 @@ class AssessmentEntity implements PersistenceEntityInterface
     public static function fromDomainEntity(
         Assessment $assessment,
         EntityManagerInterface $entityManager,
-        array $assessmentDetails
+        array $assessmentDetails = []
     ): self {
         $assessmentEntity = $entityManager->getRepository(AssessmentEntity::class)
             ->find($assessment->getId()->toString(), raw: true);
 
-        if (!$assessmentEntity) {
+        if (is_null($assessmentEntity)) {
             $assessmentEntity = new self();
             $assessmentEntity->setId($assessment->getId()->toString());
         }
 
-        $assessmentEntity->setUser(UserEntity::fromDomainEntity($assessment->getUser()));
-        $assessmentEntity->setCategory(CategoryEntity::fromDomainEntity($assessment->getCategory()));
-        $assessmentEntity->setLanguage(LanguageEntity::fromDomainEntity($assessment->getLanguage()));
+        $assessmentEntity->setUser(UserEntity::fromDomainEntity($assessment->getUser(), $entityManager));
+        $assessmentEntity->setCategory(CategoryEntity::fromDomainEntity($assessment->getCategory(), $entityManager));
+        $assessmentEntity->setLanguage(LanguageEntity::fromDomainEntity($assessment->getLanguage(), $entityManager));
         $assessmentEntity->setAssessmentDetails(
             new AssessmentDetailsEntity(
-                $assessment->getId()->toString(),
-                $assessment->getAssessmentType()->getId()->toString(),
+                $assessmentEntity,
+                AssessmentTypeEntity::fromDomainEntity($assessment->getAssessmentType(), $entityManager),
                 $assessmentDetails
             )
         );
         $assessmentEntity->setStatus($assessment->getStatus()->name);
         $assessmentEntity->setStartTime($assessment->getStartTime());
         $assessmentEntity->setEndTime($assessment->getEndTime());
-        $assessmentEntity->setStartDifficulty($assessment->getDifficultyAtStart());
-        $assessmentEntity->setCurrentDifficulty($assessment->getCurrentDifficulty());
-        $assessmentEntity->setEndDifficulty($assessment->getDifficultyAtEnd());
+        $assessmentEntity->setStartDifficulty($assessment->getDifficultyAtStart()->value);
+        $assessmentEntity->setCurrentDifficulty($assessment->getCurrentDifficulty()?->value);
+        $assessmentEntity->setEndDifficulty($assessment->getDifficultyAtEnd()?->value);
         $assessmentEntity->setFeedback($assessment->getFeedback());
 
         return $assessmentEntity;

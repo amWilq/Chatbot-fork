@@ -50,7 +50,7 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
             return $entity;
         }
 
-        return $entity instanceof AssessmentType ? $this->mapToDomainEntity(
+        return $entity instanceof AssessmentTypeEntity ? $this->mapToDomainEntity(
             $entity
         ) : null;
     }
@@ -85,18 +85,18 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
 
     public function save(AssessmentType|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->persist(
-            AssessmentTypeEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->persist(
+            AssessmentTypeEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     public function delete(AssessmentType|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->remove(
-            AssessmentTypeEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->remove(
+            AssessmentTypeEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     protected function mapToDomainEntity(

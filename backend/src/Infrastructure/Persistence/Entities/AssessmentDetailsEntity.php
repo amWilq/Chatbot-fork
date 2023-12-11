@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Persistence\Entities;
 
+use App\Domain\Assessment\Entities\Assessment;
+use App\Domain\Assessment\Entities\AssessmentType;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -56,10 +58,10 @@ class AssessmentDetailsEntity
         $this->assessmentDetails = $assessmentDetails;
     }
 
-    public function __construct(string $assessmentId, string $assessmentTypeId, array $assessmentDetails)
+    public function __construct(AssessmentEntity $assessment, AssessmentTypeEntity $assessmentType, array $assessmentDetails)
     {
-        $this->setAssessment($assessmentId);
-        $this->setAssessmentType($assessmentTypeId);
+        $this->setAssessment($assessment);
+        $this->setAssessmentType($assessmentType);
         $this->setAssessmentDetails($assessmentDetails);
     }
 

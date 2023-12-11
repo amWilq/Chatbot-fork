@@ -94,18 +94,29 @@ class AssessmentEntityRepository extends BaseEntityRepository
 
     public function save(Assessment|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->persist(
-            AssessmentEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->persist(
+            AssessmentEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     public function delete(Assessment|AggregateRoot $aggregateRoot): void
     {
-        $this->_em->remove(
-            AssessmentEntity::fromDomainEntity($aggregateRoot)
+        $this->getEntityManager()->remove(
+            AssessmentEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
         );
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
+    }
+
+    public function update(Assessment|AggregateRoot $aggregateRoot): void
+    {
+        $bool = $this->getEntityManager()->contains(
+            AssessmentEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
+        );
+
+        var_dump($bool);
+
+        $this->getEntityManager()->flush();
     }
 
     protected function mapToDomainEntity(
@@ -141,11 +152,18 @@ class AssessmentEntityRepository extends BaseEntityRepository
         $assessmentType = $assessmentDetails->getAssessmentType();
         switch ($assessmentType->getName()) {
             case 'quiz':
+                if (empty($assessmentDetails->getAssessmentDetails())) {
+                    return QuizAssessment::create(
+                        id: $assessmentDetails->getAssessmentType()->getId(),
+                        durationInSeconds: 15
+                    );
+                }
+
                 [
-                    $questionCount,
-                    $correctAnswerCount,
-                    $durationInSeconds,
-                    $questions,
+                    'answeredQuestions' => $questionCount,
+                    'correctAnswers' => $correctAnswerCount,
+                    'duration' => $durationInSeconds,
+                    'questions' => $questions,
                 ] = $assessmentDetails->getAssessmentDetails();
                 $attempts = [];
                 foreach ($questions as $question) {

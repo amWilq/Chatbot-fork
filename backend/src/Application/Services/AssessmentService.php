@@ -17,6 +17,8 @@ use App\Infrastructure\Persistence\Repository\CategoryEntityRepository;
 use App\Infrastructure\Persistence\Repository\LanguageEntityRepository;
 use App\Infrastructure\Persistence\Repository\UserEntityRepository;
 use JsonSchema\Exception\JsonDecodingException;
+use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class AssessmentService
@@ -25,6 +27,8 @@ class AssessmentService
     private const ASSESSMENT_COMPLETE_SCHEMA = 'AssessmentCompleteRequest';
 
     private Assessment $assessment;
+    private ConsoleOutput $output;
+    private ConsoleLogger $consoleLogger;
 
     public function getAssessment(): Assessment
     {
@@ -44,6 +48,8 @@ class AssessmentService
         private readonly LanguageEntityRepository $languageEntityRepository,
         private readonly SchemaValidatorService $schemaValidatorService,
     ) {
+        $this->output = new ConsoleOutput();
+        $this->consoleLogger = new ConsoleLogger($this->output);
     }
 
     /**
@@ -67,7 +73,7 @@ class AssessmentService
                 language: $language,
                 assessmentType: $assessmentType,
                 difficulty: $postData->difficulty,
-                startTime: $postData->startTime,
+                startTime: new \DateTime($postData->startTime),
             )
         );
 
@@ -81,16 +87,17 @@ class AssessmentService
         $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_COMPLETE_SCHEMA);
         [$assessmentTypeName, $assessmentId] = $pathParams;
 
-        $assessment = $this->getAssessmentById($assessmentId);
-        $assessment = $this->assessment->equals($assessment) ? $this->getAssessment() : $assessment;
+        $this->setAssessment(
+            $this->getAssessmentById($assessmentId)
+        );
 
-        $this->isRequestedUserAssociated($assessment, $postData, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
-        $this->isRequestedAssessmentTypeAssociated($assessment, $postData, $assessmentTypeName, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
+        $this->isRequestedUserAssociated($this->assessment, $postData, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
+        $this->isRequestedAssessmentTypeAssociated($this->assessment, $postData, $assessmentTypeName, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
 
-        $assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
-        $this->assessmentEntityRepository->save($assessment);
+        $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
+        $this->assessmentEntityRepository->update($this->assessment);
 
-        return AssessmentDTO::fromDomainEntity($assessment)->toArray();
+        return AssessmentDTO::fromDomainEntity($this->assessment)->toArray();
     }
 
     protected function manageAssociations(object $postData, string $assessmentTypeName): array
@@ -105,8 +112,8 @@ class AssessmentService
 
     protected function getUser(string $userDeviceId, string $username = null): User
     {
-        $user = $this->userEntityRepository->findOneBy(['user_device_id' => $userDeviceId]);
-        if (!$user) {
+        $user = $this->userEntityRepository->findOneBy(['deviceId' => $userDeviceId]);
+        if (is_null($user)) {
             $user = User::create(
                 name: $username ?? 'default_name',
                 deviceId: $userDeviceId
@@ -138,7 +145,8 @@ class AssessmentService
     protected function getCategory(string $categoryId): Category
     {
         $category = $this->categoryEntityRepository->find($categoryId);
-        if (!$category) {
+        if (is_null($category)) {
+            $this->consoleLogger->error(print_r($category, true));
             throw new BadRequestException('Chosen Category does not exist.');
         }
 
@@ -151,7 +159,8 @@ class AssessmentService
     protected function getLanguage(string $languageId): Language
     {
         $language = $this->languageEntityRepository->find($languageId);
-        if (!$language) {
+        if (is_null($language)) {
+            $this->consoleLogger->error(print_r($language, true));
             throw new BadRequestException('Chosen Language does not exist.');
         }
 
@@ -165,6 +174,7 @@ class AssessmentService
     {
         $assessment = $this->assessmentEntityRepository->find($assessmentId);
         if (!$assessment) {
+            $this->consoleLogger->error(print_r($assessment, true));
             throw new BadRequestException('Assessment was not found.');
         }
 
@@ -176,16 +186,19 @@ class AssessmentService
      */
     protected function getAssessmentType(object $postData, string $assessmentTypeName): AssessmentType
     {
-        $assessmentType = $this->assessmentTypeEntityRepository->find($postData->assessmentTypeId);
-        if (!$assessmentType) {
+
+        $assessmentType = $this->assessmentTypeEntityRepository->findOneBy(['name' => $assessmentTypeName]);
+        if (is_null($assessmentType)) {
+            $this->consoleLogger->error((string) print_r($assessmentType, true));
             throw new BadRequestException('Chosen Assessment Type does not exist.');
         }
 
         if ($assessmentType->getName() !== $assessmentTypeName) {
+            $this->consoleLogger->error(print_r([$assessmentType->getName(), $assessmentTypeName], true));
             throw new BadRequestException("Given assessment type name doesn't match the assessment type id in payload.");
         }
 
-        return $this->retrieveAssessmentType($postData, $assessmentTypeName);
+        return $this->retrieveAssessmentType($postData, $assessmentType);
     }
 
     /**
@@ -206,10 +219,11 @@ class AssessmentService
     /**
      * @throws BadRequestException
      */
-    protected function retrieveAssessmentType(object $postData, string $assessmentTypeName): AssessmentType
+    protected function retrieveAssessmentType(object $postData, AssessmentType $assessmentType): AssessmentType
     {
-        return match ($assessmentTypeName) {
+        return match ($assessmentType->getName()) {
             'quiz' => QuizAssessment::create(
+                id: $assessmentType->getId()->toString(),
                 durationInSeconds: $postData->duration ?? '10',
             ),
             default => throw new BadRequestException('Selected AssessmentType not supported on server.'),

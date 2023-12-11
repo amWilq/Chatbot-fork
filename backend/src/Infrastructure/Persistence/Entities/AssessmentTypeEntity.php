@@ -70,7 +70,7 @@ class AssessmentTypeEntity
         $assessmentTypeEntity = $entityManager->getRepository(AssessmentTypeEntity::class)
             ->find($assessmentType->getId()->toString(), raw: true);
 
-        if (!$assessmentTypeEntity) {
+        if (is_null($assessmentTypeEntity)) {
             $assessmentTypeEntity = new self();
             $assessmentTypeEntity->setId($assessmentType->getId()->toString());
         }
