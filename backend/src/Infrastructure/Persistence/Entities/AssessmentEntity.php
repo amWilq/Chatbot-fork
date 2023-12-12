@@ -3,6 +3,8 @@
 namespace App\Infrastructure\Persistence\Entities;
 
 use App\Domain\Assessment\Entities\Assessment;
+use App\Domain\Assessment\Entities\AssessmentType;
+use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
@@ -177,26 +179,31 @@ class AssessmentEntity implements PersistenceEntityInterface
     public static function fromDomainEntity(
         Assessment $assessment,
         EntityManagerInterface $entityManager,
-        array $assessmentDetails = []
     ): self {
         $assessmentEntity = $entityManager->getRepository(AssessmentEntity::class)
             ->find($assessment->getId()->toString(), raw: true);
 
+        $assessmentDetailsArray = self::extractAssessmentDetailsArray($assessment->getAssessmentType());
+
         if (is_null($assessmentEntity)) {
             $assessmentEntity = new self();
             $assessmentEntity->setId($assessment->getId()->toString());
+            $assessmentEntity->setAssessmentDetails(
+                new AssessmentDetailsEntity(
+                    $assessmentEntity,
+                    AssessmentTypeEntity::fromDomainEntity($assessment->getAssessmentType(), $entityManager),
+                    $assessmentDetailsArray
+                )
+            );
+        } else {
+            $assessmentDetails = $assessmentEntity->getAssessmentDetails();
+            $assessmentDetails->setAssessmentDetails($assessmentDetailsArray);
+            $assessmentEntity->setAssessmentDetails($assessmentDetails);
         }
 
         $assessmentEntity->setUser(UserEntity::fromDomainEntity($assessment->getUser(), $entityManager));
         $assessmentEntity->setCategory(CategoryEntity::fromDomainEntity($assessment->getCategory(), $entityManager));
         $assessmentEntity->setLanguage(LanguageEntity::fromDomainEntity($assessment->getLanguage(), $entityManager));
-        $assessmentEntity->setAssessmentDetails(
-            new AssessmentDetailsEntity(
-                $assessmentEntity,
-                AssessmentTypeEntity::fromDomainEntity($assessment->getAssessmentType(), $entityManager),
-                $assessmentDetails
-            )
-        );
         $assessmentEntity->setStatus($assessment->getStatus()->name);
         $assessmentEntity->setStartTime($assessment->getStartTime());
         $assessmentEntity->setEndTime($assessment->getEndTime());
@@ -208,4 +215,36 @@ class AssessmentEntity implements PersistenceEntityInterface
         return $assessmentEntity;
     }
 
+    public static function extractAssessmentDetailsArray(AssessmentType $assessmentType): array
+    {
+        return match ($assessmentType->getName()) {
+            'quiz' => self::quizAssessmentToArray($assessmentType),
+            default => [],
+        };
+    }
+
+    protected static function quizAssessmentToArray(QuizAssessment $assessmentType): array
+    {
+        $questions = [];
+        foreach ($assessmentType->getQuestionsAttempts() as $question) {
+            $questions[] = [
+                'content' => $question->getQuestion()->getContent(),
+                'answers' => $question->getQuestion()->getOptions(),
+                'correctAnswer' => $question->getQuestion()->getCorrectAnswer(),
+                'explanation' => $question->getQuestion()->getExplanation(),
+                'yourAnswer' => $question->getAnswer(),
+                'isCorrect' => $question->isCorrect(),
+                'takenTime' => $question->getTakenTime(),
+            ];
+        }
+
+        return [
+            'assessmentTypeId' => $assessmentType->getId(),
+            'assessmentTypeName' => $assessmentType->getName(),
+            'answeredQuestions' => $assessmentType->getQuestionCount(),
+            'correctAnswers' => $assessmentType->getCorrectAnswerCount(),
+            'duration' => $assessmentType->getDuration(),
+            'questions' => $questions,
+        ];
+    }
 }

@@ -14,7 +14,7 @@ trait HelperTrait
 
     }
 
-    public function _convertNameToClassName(string $name, string $classSuffix): string
+    public static function convertNameToClassName(string $name, string $classSuffix): string
     {
         // replace underscores or dashes with spaces
         $name = str_replace(['_', '-'], ' ', $name);
@@ -26,10 +26,5 @@ trait HelperTrait
         $name = str_replace(' ', '', $name);
 
         return $name.$classSuffix;
-    }
-
-    public static function convertNameToClassName(string $name, string $classSuffix): string
-    {
-        return (new static())->_convertNameToClassName($name, $classSuffix);
     }
 }

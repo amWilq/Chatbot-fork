@@ -17,9 +17,9 @@ class AssessmentEntityRepository extends BaseEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-        private UserEntityRepository $userEntityRepository,
-        private LanguageEntityRepository $languageEntityRepository,
-        private CategoryEntityRepository $categoryEntityRepository,
+        private readonly UserEntityRepository $userEntityRepository,
+        private readonly LanguageEntityRepository $languageEntityRepository,
+        private readonly CategoryEntityRepository $categoryEntityRepository,
     ) {
         parent::__construct($registry, AssessmentEntity::class);
     }
@@ -110,13 +110,10 @@ class AssessmentEntityRepository extends BaseEntityRepository
 
     public function update(Assessment|AggregateRoot $aggregateRoot): void
     {
-        $bool = $this->getEntityManager()->contains(
-            AssessmentEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager())
-        );
-
-        var_dump($bool);
-
-        $this->getEntityManager()->flush();
+        $assessment = AssessmentEntity::fromDomainEntity($aggregateRoot, $this->getEntityManager());
+        $this->getEntityManager()->contains($assessment) ?
+            $this->getEntityManager()->flush() :
+            $this->save($aggregateRoot);
     }
 
     protected function mapToDomainEntity(

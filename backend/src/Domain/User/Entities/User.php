@@ -26,9 +26,9 @@ class User extends AggregateRoot
         $this->id = $id ? UserId::create($id) : UserId::create(
             AggregateRoot::generateId()
         );
-        $this->status = UserAccountStatusEnum::tryFrom(
+        $this->status = $status ? UserAccountStatusEnum::tryFrom(
             $status
-        ) ?? UserAccountStatusEnum::ACTIVE;
+        ) : UserAccountStatusEnum::ACTIVE;
         $this->createdAt = $createdAt ?? new \DateTime();
     }
 

@@ -41,15 +41,15 @@ final class Assessment extends AggregateRoot
         $this->id = $id ? AssessmentId::create($id) : AssessmentId::create(
             AggregateRoot::generateId()
         );
-        $this->status = AssessmentStatusEnum::tryFrom(
+        $this->status = $status ? AssessmentStatusEnum::tryFrom(
             $status
-        ) ?? AssessmentStatusEnum::ASSESSMENT_START_SUCCESS;
+        ) : AssessmentStatusEnum::ASSESSMENT_START_SUCCESS;
         $this->startTime = $startTime ?? new \DateTime();
         $this->endTime = $endTime ?: null;
-        $this->currentDifficulty = DifficultiesEnum::tryFrom(
+        $this->currentDifficulty = $currentDifficulty ? DifficultiesEnum::tryFrom(
             $currentDifficulty
-        ) ?? $this->getDifficultyAtStart();
-        $this->difficultyAtEnd = DifficultiesEnum::tryFrom($difficultyAtEnd);
+        ) : $this->getDifficultyAtStart();
+        $this->difficultyAtEnd = $difficultyAtEnd ? DifficultiesEnum::tryFrom($difficultyAtEnd) : null;
         $this->feedback = $feedback;
     }
 

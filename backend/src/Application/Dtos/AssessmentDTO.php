@@ -7,6 +7,7 @@ use App\Shared\Models\EntityToArrayInterface;
 use App\Shared\Traits\HelperTrait;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Immutable;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\ErrorHandler\Error\ClassNotFoundError;
 
 #[Immutable]
@@ -21,10 +22,10 @@ readonly class AssessmentDTO implements EntityToArrayInterface
         private string $categoryId,
         private string $languageId,
         private string $difficultyAtStart,
-        private string $difficultyAtEnd,
+        private ?string $difficultyAtEnd,
         private string $startTime,
-        private string $endTime,
-        private string $feedback,
+        private ?string $endTime,
+        private ?string $feedback,
         private AssessmentTypeDTO $assessmentDetails
     ) {
     }
@@ -59,7 +60,7 @@ readonly class AssessmentDTO implements EntityToArrayInterface
         return $this->difficultyAtStart;
     }
 
-    protected function getDifficultyAtEnd(): string
+    protected function getDifficultyAtEnd(): ?string
     {
         return $this->difficultyAtEnd;
     }
@@ -69,12 +70,12 @@ readonly class AssessmentDTO implements EntityToArrayInterface
         return $this->startTime;
     }
 
-    protected function getEndTime(): string
+    protected function getEndTime(): ?string
     {
         return $this->endTime;
     }
 
-    protected function getFeedback(): string
+    protected function getFeedback(): ?string
     {
         return $this->feedback;
     }
@@ -89,13 +90,13 @@ readonly class AssessmentDTO implements EntityToArrayInterface
     ): self {
         $assessmentTypeName = $assessment->getAssessmentType()->getName();
 
-        $dtoClass = self::convertNameToClassName(
+        $dtoClass = 'App\\Application\\Dtos\\'.self::convertNameToClassName(
             $assessmentTypeName,
             'AssessmentDTO'
         );
 
         if (!class_exists($dtoClass)) {
-            throw new ClassNotFoundError("Class '$dtoClass' not found.");
+            throw new ClassNotFoundError("Class '$dtoClass' not found.", new Exception());
         }
 
         return new self(
@@ -105,9 +106,9 @@ readonly class AssessmentDTO implements EntityToArrayInterface
             categoryId: $assessment->getCategory()->getId()->toString(),
             languageId: $assessment->getLanguage()->getId()->toString(),
             difficultyAtStart: $assessment->getDifficultyAtStart()->value,
-            difficultyAtEnd: $assessment->getDifficultyAtEnd()->value,
+            difficultyAtEnd: $assessment->getDifficultyAtEnd()?->value,
             startTime: $assessment->getStartTime()->format(DATE_ATOM),
-            endTime: $assessment->getEndTime()->format(DATE_ATOM),
+            endTime: $assessment->getEndTime()?->format(DATE_ATOM),
             feedback: $assessment->getFeedback(),
             assessmentDetails: $dtoClass::fromDomainEntity(
                 $assessment->getAssessmentType()
@@ -144,5 +145,4 @@ readonly class AssessmentDTO implements EntityToArrayInterface
             'assessmentDetails' => $this->getAssessmentDetails()->toArray(),
         ];
     }
-
 }
