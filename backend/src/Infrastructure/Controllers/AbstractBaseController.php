@@ -5,7 +5,7 @@ namespace App\Infrastructure\Controllers;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AbstractBaseController extends AbstractController
+abstract class AbstractBaseController extends AbstractController
 {
     protected function prettyJsonResponse(array $output): JsonResponse
     {

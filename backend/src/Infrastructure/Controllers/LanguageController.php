@@ -6,6 +6,7 @@ use App\Application\Services\LanguageService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/languages', name: 'app.languages.')]
 class LanguageController extends AbstractBaseController
 {
     public function __construct(
@@ -13,14 +14,14 @@ class LanguageController extends AbstractBaseController
     ) {
     }
 
-    #[Route('/languages', name: 'app.languages.all', methods: ['GET'])]
+    #[Route('/', name: 'all', methods: ['GET'])]
     public function getAllLanguages(): JsonResponse
     {
         $output = $this->languageService->getAllLanguages();
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('//languages/category/{categoryId}', name: 'app.languages.by_category_id', methods: ['GET'])]
+    #[Route('/category/{categoryId}', name: 'by_category_id', methods: ['GET'])]
     public function getLanguagesByCategoryId(string $categoryId): JsonResponse
     {
         $output = $this->languageService->getLanguagesByCategoryId($categoryId);

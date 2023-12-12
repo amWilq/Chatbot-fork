@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-
+#[Route('/assessments', name: 'app.assessments.')]
 class AssessmentController extends AbstractBaseController
 {
     public function __construct(
@@ -21,7 +21,7 @@ class AssessmentController extends AbstractBaseController
     ) {
     }
 
-    #[Route('/assessments/types', name: 'app.assessments.types.all', methods: ['GET'])]
+    #[Route('/types', name: 'types.all', methods: ['GET'])]
     public function getAllAssessmentTypes(): JsonResponse
     {
         $output = $this->assessmentTypeService->getAllAssessmentTypes();
@@ -29,7 +29,7 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('/assessments/types/{id}', name: 'app.assessments.types.single', methods: ['GET'])]
+    #[Route('/types/{id}', name: 'types.single', methods: ['GET'])]
     public function getSingleAssessmentTypeById(string $id): JsonResponse
     {
         $output = $this->assessmentTypeService->getAssessmentTypeById($id);
@@ -41,7 +41,7 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('/assessments/{assessmentTypeName}/start', name: 'app.assessments.start', methods: ['POST'])]
+    #[Route('/{assessmentTypeName}/start', name: 'start', methods: ['POST'])]
     public function startAssessment(Request $request, string $assessmentTypeName): JsonResponse
     {
         $output = $this->assessmentService->startAssessment(
@@ -63,7 +63,7 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('/assessments/{assessmentTypeName}/{assessmentId}', name: 'app.assessments.interact', methods: ['POST'])]
+    #[Route('/{assessmentTypeName}/{assessmentId}', name: 'interact', methods: ['POST'])]
     public function assessmentInteraction(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
     {
         $output = [];
@@ -71,7 +71,7 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('/assessments/{assessmentTypeName}/{assessmentId}/complete', name: 'app.assessments.complete', methods: ['POST'])]
+    #[Route('/{assessmentTypeName}/{assessmentId}/complete', name: 'complete', methods: ['POST'])]
     public function completeAssessment(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
     {
         $output = $this->assessmentService->completeAssessment(
