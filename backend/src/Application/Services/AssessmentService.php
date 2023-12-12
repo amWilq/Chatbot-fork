@@ -52,9 +52,6 @@ class AssessmentService
         $this->consoleLogger = new ConsoleLogger($this->output);
     }
 
-    /**
-     * @throws BadRequestException|JsonDecodingException|
-     */
     public function startAssessment(object $postData, string $assessmentTypeName): array
     {
         $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_START_SCHEMA);
@@ -76,10 +73,12 @@ class AssessmentService
                 startTime: new \DateTime($postData->startTime),
             )
         );
+        $dto = AssessmentStartDTO::fromDomainEntity($this->assessment)->toArray();
+        $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
 
-        $this->assessmentEntityRepository->save($this->getAssessment());
+        $this->assessmentEntityRepository->save($this->assessment);
 
-        return AssessmentStartDTO::fromDomainEntity($this->getAssessment())->toArray();
+        return $dto;
     }
 
     public function completeAssessment(object $postData, array $pathParams): array
