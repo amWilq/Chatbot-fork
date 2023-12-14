@@ -16,15 +16,19 @@ use App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository;
 use App\Infrastructure\Persistence\Repository\CategoryEntityRepository;
 use App\Infrastructure\Persistence\Repository\LanguageEntityRepository;
 use App\Infrastructure\Persistence\Repository\UserEntityRepository;
-use JsonSchema\Exception\JsonDecodingException;
+use Psr\Cache\InvalidArgumentException;
+use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class AssessmentService
 {
     private const ASSESSMENT_START_SCHEMA = 'AssessmentStartRequest';
     private const ASSESSMENT_COMPLETE_SCHEMA = 'AssessmentCompleteRequest';
+    private const ASSESSMENT_INTERACTION_SCHEMA = 'AssessmentInteractionRequest';
+    private const CACHE_NAME_PREFIX = 'assessment_';
 
     private Assessment $assessment;
     private ConsoleOutput $output;
@@ -40,6 +44,9 @@ class AssessmentService
         $this->assessment = $assessment;
     }
 
+    /**
+     * @param MemcachedAdapter $cache
+     */
     public function __construct(
         private readonly UserEntityRepository $userEntityRepository,
         private readonly AssessmentEntityRepository $assessmentEntityRepository,
@@ -47,11 +54,15 @@ class AssessmentService
         private readonly CategoryEntityRepository $categoryEntityRepository,
         private readonly LanguageEntityRepository $languageEntityRepository,
         private readonly SchemaValidatorService $schemaValidatorService,
+        private readonly CacheInterface $cache,
     ) {
         $this->output = new ConsoleOutput();
         $this->consoleLogger = new ConsoleLogger($this->output);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function startAssessment(object $postData, string $assessmentTypeName): array
     {
         $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_START_SCHEMA);
@@ -76,11 +87,25 @@ class AssessmentService
         $dto = AssessmentStartDTO::fromDomainEntity($this->assessment)->toArray();
         $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
 
+        $item = $this->cache->getItem(self::CACHE_NAME_PREFIX.$this->assessment->getId()->toString());
+        $item->set($this->assessment);
+        $this->cache->save($item);
+
         $this->assessmentEntityRepository->save($this->assessment);
 
         return $dto;
     }
 
+    public function interactAssessment(object $data): array
+    {
+        $this->schemaValidatorService->validateRequestSchema($data, self::ASSESSMENT_INTERACTION_SCHEMA);
+
+        return [];
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
     public function completeAssessment(object $postData, array $pathParams): array
     {
         $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_COMPLETE_SCHEMA);
@@ -94,6 +119,8 @@ class AssessmentService
         $this->isRequestedAssessmentTypeAssociated($this->assessment, $postData, $assessmentTypeName, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
 
         $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
+
+        $this->cache->deleteItem(self::CACHE_NAME_PREFIX.$assessmentId);
         $this->assessmentEntityRepository->update($this->assessment);
 
         return AssessmentDTO::fromDomainEntity($this->assessment)->toArray();
@@ -171,6 +198,10 @@ class AssessmentService
      */
     protected function getAssessmentById(string $assessmentId): Assessment
     {
+        $cacheItem = $this->cache->getItem(self::CACHE_NAME_PREFIX.$assessmentId);
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
         $assessment = $this->assessmentEntityRepository->find($assessmentId);
         if (!$assessment) {
             $this->consoleLogger->error(print_r($assessment, true));
@@ -185,7 +216,6 @@ class AssessmentService
      */
     protected function getAssessmentType(object $postData, string $assessmentTypeName): AssessmentType
     {
-
         $assessmentType = $this->assessmentTypeEntityRepository->findOneBy(['name' => $assessmentTypeName]);
         if (is_null($assessmentType)) {
             $this->consoleLogger->error((string) print_r($assessmentType, true));

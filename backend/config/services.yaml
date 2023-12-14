@@ -4,9 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+  app.open_ai.model: 'gtp-4-1106-preview'
 services:
-  JsonSchema\Validator: ~
+  Swaggest\JsonSchema\Schema: ~
   Symfony\Component\Serializer\Encoder\JsonEncoder: ~
 
   App\Application\Services\WebsocketService:
@@ -16,7 +16,7 @@ services:
   app.schema.validator:
     class: App\Application\Services\SchemaValidatorService
     arguments:
-      $validator: JsonSchema\Validator
+      $validator: Swaggest\JsonSchema\Schema
       $projectDir: '%kernel.project_dir%'
   # default configuration for services in *this* file
   _defaults:

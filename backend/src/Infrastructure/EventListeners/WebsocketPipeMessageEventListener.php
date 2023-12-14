@@ -3,28 +3,28 @@
 namespace App\Infrastructure\EventListeners;
 
 use App\Application\Services\WebsocketService;
-use App\Infrastructure\Events\WebsocketCloseEvent;
+use App\Infrastructure\Events\WebsocketMessageEvent;
+use App\Infrastructure\Events\WebsocketPipeMessageEvent;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(event: WebsocketCloseEvent::class, method: 'onWebsocketClose')]
-class WebsocketCloseEventListener
+#[AsEventListener(event: WebsocketPipeMessageEvent::class, method: 'onWebsocketPipeMessage')]
+class WebsocketPipeMessageEventListener
 {
     private ConsoleLogger $consoleLogger;
     private ConsoleOutput $output;
-
     public function __construct(
         private WebsocketService $websocketService,
     ) {
         $this->output = new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG);
         $this->consoleLogger = new ConsoleLogger($this->output);
     }
-
-    public function onWebsocketClose(WebsocketCloseEvent $event)
+    public function onWebsocketPipeMessage(WebsocketPipeMessageEvent $event)
     {
-        $this->consoleLogger->log(LogLevel::DEBUG, 'Test Close');
+        $this->consoleLogger->log(LogLevel::DEBUG, $event->fd);
     }
+
 }

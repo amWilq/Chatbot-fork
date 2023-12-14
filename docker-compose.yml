@@ -14,12 +14,15 @@ services:
     build:
       context: ./backend
       dockerfile: .docker/Dockerfile
+    env_file:
+      - ./backend/.env
     environment:
       AUTORELOAD_PROGRAMS: "app-swoole"
       AUTORELOAD_ANY_FILES: 0
       DISABLE_DEFAULT_SERVER: 1
     ports:
       - "80:80"
+      - "8591:9000"
     volumes:
       - ./backend:/var/www/html
     networks:
@@ -34,7 +37,14 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./mysql:/var/lib/mysql
+      - mysql:/var/lib/mysql
+    networks:
+      - default
+  memcached:
+    image: memcached
+    ports:
+      - "11211:11211"
+    restart: always
     networks:
       - default
   frontend:
@@ -49,3 +59,7 @@ services:
 networks:
     default:
         name: chatbot
+
+volumes:
+  mysql:
+    name: chatbot-mysql

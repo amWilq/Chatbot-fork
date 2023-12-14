@@ -6,6 +6,7 @@ use App\Application\Services\AssessmentService;
 use App\Application\Services\AssessmentTypeService;
 use App\Application\Services\WebsocketService;
 use App\Domain\Assessment\Enums\AssessmentStatusEnum;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,7 +17,6 @@ class AssessmentController extends AbstractBaseController
     public function __construct(
         private readonly AssessmentService $assessmentService,
         private readonly AssessmentTypeService $assessmentTypeService,
-        private readonly WebsocketService $websocketService,
         private readonly JsonEncoder $jsonEncoder,
     ) {
     }
@@ -41,6 +41,9 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Route('/{assessmentTypeName}/start', name: 'start', methods: ['POST'])]
     public function startAssessment(Request $request, string $assessmentTypeName): JsonResponse
     {
@@ -50,15 +53,6 @@ class AssessmentController extends AbstractBaseController
             ),
             $assessmentTypeName
         );
-        //TODO: for now not being updated, need to make changes in persistence layer
-//        $assessment = $this->assessmentService->getAssessment();
-//        $assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
-//        $this->assessmentService->setAssessment($assessment);
-
-//        $this->websocketService->connect(
-//            $this->assessmentService->getAssessment()
-//                ->getUser()->getId()->toString()
-//        );
 
         return $this->prettyJsonResponse($output);
     }
@@ -71,6 +65,9 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Route('/{assessmentTypeName}/{assessmentId}/complete', name: 'complete', methods: ['POST'])]
     public function completeAssessment(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
     {

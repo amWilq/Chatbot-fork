@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "assessmentId": {
+      "type": "string",
+      "minLength": 8
+    },
+    "assessmentTypeName": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "quiz", "free-text", "code-snippet"
+      ]
+    },
+    "requestType": {
+      "type": "string",
+      "enum": [
+        "generateOutput",
+        "userInput"
+      ]
+    }
+  },
+  "allOf":[
+    {
+      "if": {
+        "properties": {
+          "requestType": {"enum": ["userInput"]}
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "assessmentTypeName": {"const": "quiz"}
+              }
+            },
+            "then": {
+              "properties": {
+                "data": {
+                  "$ref": "#/$defs/QuizAnswer"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "assessmentTypeName": {"const": "free-text"}
+              }
+            },
+            "then": {
+              "properties": {
+                "data": {
+                  "$ref": "#/$defs/FreeTextAnswer"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "assessmentTypeName": {"const": "code-snippet"}
+              }
+            },
+            "then": {
+              "properties": {
+                "data": {
+                  "$ref": "#/$defs/CodeSnippetAnswer"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "required": ["data"]
+    }
+  ],
+  "required": [
+    "assessmentId",
+    "assessmentTypeName",
+    "requestType"
+  ],
+  "$defs": {
+    "QuizAnswer": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "takenTime": {
+          "type": "number"
+        }
+      },
+      "required": ["answer", "takenTime"]
+    },
+    "FreeTextAnswer": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "currentStatus": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["message", "currentStatus"]
+    },
+    "CodeSnippetAnswer": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["answer"]
+    }
+  }
+}

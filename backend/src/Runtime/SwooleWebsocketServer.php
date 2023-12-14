@@ -5,6 +5,7 @@ namespace App\Runtime;
 use App\Infrastructure\Events\WebsocketCloseEvent;
 use App\Infrastructure\Events\WebsocketMessageEvent;
 use App\Infrastructure\Events\WebsocketOpenEvent;
+use App\Infrastructure\Events\WebsocketPipeMessageEvent;
 use Runtime\Swoole\ServerFactory;
 use Swoole\Http\Request;
 use Swoole\Websocket\Frame;
@@ -52,6 +53,13 @@ class SwooleWebsocketServer extends ServerFactory
                 return;
             }
             $this->eventDispatcher->dispatch(new WebsocketOpenEvent($server, $request));
+        });
+
+        $server->on('PipeMessage', function (Server $server, int $fd) {
+            if (null === $this->eventDispatcher) {
+                return;
+            }
+            $this->eventDispatcher->dispatch(new WebsocketPipeMessageEvent($server, $fd));
         });
 
         $server->on('Message', function (Server $server, Frame $frame) {
