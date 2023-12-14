@@ -13,17 +13,15 @@ readonly class Question extends ValueObject
         private string $content,
         private array $options,
         private string $correctAnswer,
-        private string $explanation,
     ) {
     }
 
-    public static function create(string $content, array $options, string $correctAnswer, string $explanation): self
+    public static function create(string $content, array $options, string $correctAnswer): self
     {
         return new self(
             content: $content,
             options: $options,
             correctAnswer: $correctAnswer,
-            explanation: $explanation
         );
     }
 
@@ -42,11 +40,6 @@ readonly class Question extends ValueObject
         return $this->correctAnswer;
     }
 
-    public function getExplanation(): string
-    {
-        return $this->explanation;
-    }
-
     public function isAnswerCorrect(string $userAnswer): bool
     {
         return $this->correctAnswer === $userAnswer;
@@ -63,7 +56,6 @@ readonly class Question extends ValueObject
 
         return $this->content === $object->content
             && $this->correctAnswer === $object->correctAnswer
-            && $this->explanation === $object->explanation
             && $this->arraysAreEqual($this->options, $object->options);
     }
 }

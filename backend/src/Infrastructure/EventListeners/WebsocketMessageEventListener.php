@@ -19,7 +19,7 @@ class WebsocketMessageEventListener
 
     public function __construct(
         private readonly AssessmentService $assessmentService,
-        private readonly JsonEncoder $jsonEncoder
+        private readonly JsonEncoder $jsonEncoder,
     ) {
         $this->output = new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG);
         $this->consoleLogger = new ConsoleLogger($this->output);
@@ -27,11 +27,21 @@ class WebsocketMessageEventListener
 
     public function onWebsocketMessage(WebsocketMessageEvent $event): void
     {
-        $this->assessmentService->interactAssessment(
-            $this->jsonEncoder->decode(
-                $event->frame->data, JsonEncoder::FORMAT, ['json_decode_associative' => false]
-            )
-        );
+        try {
+            $this->assessmentService->interactAssessment(
+                $this->jsonEncoder->decode(
+                    $event->frame->data, JsonEncoder::FORMAT, ['json_decode_associative' => false]
+                )
+            );
+        } catch (\Exception $e) {
+            $this->consoleLogger->error($e->getMessage());
+            $this->consoleLogger->log(LogLevel::INFO, 'Performing save close!');
+            $event->server->disconnect(
+                $event->frame->fd,
+                SWOOLE_WEBSOCKET_CLOSE_DATA_ERROR,
+                'Something went wrong, all states has been saved!'
+            );
+        }
         $this->consoleLogger->log(LogLevel::DEBUG, 'Test Message');
     }
 }

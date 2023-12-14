@@ -34,7 +34,7 @@
     },
     "duration": {
       "type": "number",
-      "minimum": 5
+      "minimum": 300
     }
   },
   "required": [

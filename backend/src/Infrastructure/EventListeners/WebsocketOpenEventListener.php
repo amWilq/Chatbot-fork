@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\EventListeners;
 
+use App\Application\Services\AssessmentService;
 use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Enums\AssessmentStatusEnum;
 use App\Infrastructure\Events\WebsocketOpenEvent;
@@ -27,6 +28,7 @@ class WebsocketOpenEventListener
      */
     public function __construct(
         private readonly AssessmentEntityRepository $assessmentEntityRepository,
+        private readonly AssessmentService $assessmentService,
         private readonly CacheInterface $cache,
     ) {
         $this->output = new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG);
@@ -63,6 +65,7 @@ class WebsocketOpenEventListener
             return;
         }
 
+        $this->assessmentService::initAssessment($assessment);
         $this->consoleLogger->log(LogLevel::INFO, 'Success Open');
     }
 

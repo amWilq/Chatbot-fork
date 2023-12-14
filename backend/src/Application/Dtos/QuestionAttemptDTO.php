@@ -63,7 +63,7 @@ readonly class QuestionAttemptDTO implements EntityToArrayInterface
             content: $questionAttempt->getQuestion()->getContent(),
             answers: $questionAttempt->getQuestion()->getOptions(),
             correctAnswer: $questionAttempt->getQuestion()->getCorrectAnswer(),
-            explanation: $questionAttempt->getQuestion()->getExplanation(),
+            explanation: $questionAttempt->getExplanation(),
             yourAnswer: $questionAttempt->getAnswer(),
             isCorrect: $questionAttempt->isCorrect(),
             takenTime: $questionAttempt->getTakenTime(),

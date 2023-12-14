@@ -25,7 +25,7 @@ class SchemaValidatorService
     }
 
     /**
-     * @throws JsonDecodingException|BadRequestException
+     * @throws \JsonException|BadRequestException
      */
     public function validateRequestSchema(object $postData, string $schemaName): void
     {
@@ -33,7 +33,7 @@ class SchemaValidatorService
             $isValid = $this->validateRequestBody($postData, $schemaName);
         } catch (\JsonException $e) {
             $this->consoleLogger->log(LogLevel::CRITICAL, print_r($e->getMessage(), true));
-            throw new JsonDecodingException(JSON_ERROR_NONE, $e->getPrevious());
+            throw new \JsonException('Something went wrong with decoding json!', 5001, $e->getPrevious());
         }
 
         if (!$isValid) {
@@ -51,7 +51,7 @@ class SchemaValidatorService
             $validator = Schema::import(
                 json_decode(
                     file_get_contents($schema), false, 512, JSON_THROW_ON_ERROR)
-                );
+            );
             $validator->in(
                 $requestBody
             );

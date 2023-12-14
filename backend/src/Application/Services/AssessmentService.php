@@ -30,18 +30,18 @@ class AssessmentService
     private const ASSESSMENT_INTERACTION_SCHEMA = 'AssessmentInteractionRequest';
     private const CACHE_NAME_PREFIX = 'assessment_';
 
-    private Assessment $assessment;
+    private static Assessment $assessment;
     private ConsoleOutput $output;
     private ConsoleLogger $consoleLogger;
 
     public function getAssessment(): Assessment
     {
-        return $this->assessment;
+        return self::$assessment;
     }
 
     public function setAssessment(Assessment $assessment): void
     {
-        $this->assessment = $assessment;
+        self::$assessment = $assessment;
     }
 
     /**
@@ -54,6 +54,7 @@ class AssessmentService
         private readonly CategoryEntityRepository $categoryEntityRepository,
         private readonly LanguageEntityRepository $languageEntityRepository,
         private readonly SchemaValidatorService $schemaValidatorService,
+        private readonly OpenAIService $openAIService,
         private readonly CacheInterface $cache,
     ) {
         $this->output = new ConsoleOutput();
@@ -84,21 +85,42 @@ class AssessmentService
                 startTime: new \DateTime($postData->startTime),
             )
         );
-        $dto = AssessmentStartDTO::fromDomainEntity($this->assessment)->toArray();
-        $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+        $dto = AssessmentStartDTO::fromDomainEntity(self::$assessment)->toArray();
+        self::$assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
 
-        $item = $this->cache->getItem(self::CACHE_NAME_PREFIX.$this->assessment->getId()->toString());
-        $item->set($this->assessment);
+        $item = $this->cache->getItem(self::CACHE_NAME_PREFIX.self::$assessment->getId()->toString());
+        $item->set(self::$assessment);
         $this->cache->save($item);
 
-        $this->assessmentEntityRepository->save($this->assessment);
+        $this->assessmentEntityRepository->save(self::$assessment);
 
         return $dto;
     }
 
     public function interactAssessment(object $data): array
     {
-        $this->schemaValidatorService->validateRequestSchema($data, self::ASSESSMENT_INTERACTION_SCHEMA);
+        $cacheItem = $this->cache->getItem(self::CACHE_NAME_PREFIX.$data->assessmentId);
+
+        try {
+            $this->schemaValidatorService->validateRequestSchema($data, self::ASSESSMENT_INTERACTION_SCHEMA);
+        } catch (\Exception $e) {
+            $this->consoleLogger->error($e->getMessage());
+            $cacheItem->set(self::$assessment);
+            $this->cache->save($cacheItem);
+            $this->assessmentEntityRepository->update(self::$assessment);
+            throw new \RuntimeException('Unexpected Error!', 5001, $e->getPrevious());
+        }
+
+        switch ($data->requestType) {
+            case 'userInput':
+                $this->handleUserInput($data);
+                break;
+            case 'generateOutput':
+                $this->handleGenerateOutput($data);
+                break;
+            default:
+                break;
+        }
 
         return [];
     }
@@ -115,15 +137,15 @@ class AssessmentService
             $this->getAssessmentById($assessmentId)
         );
 
-        $this->isRequestedUserAssociated($this->assessment, $postData, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
-        $this->isRequestedAssessmentTypeAssociated($this->assessment, $postData, $assessmentTypeName, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
+        $this->isRequestedUserAssociated(self::$assessment, $postData, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
+        $this->isRequestedAssessmentTypeAssociated(self::$assessment, $postData, $assessmentTypeName, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
 
-        $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
+        self::$assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
 
         $this->cache->deleteItem(self::CACHE_NAME_PREFIX.$assessmentId);
-        $this->assessmentEntityRepository->update($this->assessment);
+        $this->assessmentEntityRepository->update(self::$assessment);
 
-        return AssessmentDTO::fromDomainEntity($this->assessment)->toArray();
+        return AssessmentDTO::fromDomainEntity(self::$assessment)->toArray();
     }
 
     protected function manageAssociations(object $postData, string $assessmentTypeName): array
@@ -194,7 +216,7 @@ class AssessmentService
     }
 
     /**
-     * @throws BadRequestException
+     * @throws BadRequestException|InvalidArgumentException
      */
     protected function getAssessmentById(string $assessmentId): Assessment
     {
@@ -253,9 +275,24 @@ class AssessmentService
         return match ($assessmentType->getName()) {
             'quiz' => QuizAssessment::create(
                 id: $assessmentType->getId()->toString(),
-                durationInSeconds: $postData->duration ?? '10',
+                durationInSeconds: $postData->duration ?? '300',
             ),
             default => throw new BadRequestException('Selected AssessmentType not supported on server.'),
         };
+    }
+
+    protected function handleUserInput(object $data): array
+    {
+        return $this->openAIService->handleAnswer(self::$assessment, $data->data);
+    }
+
+    protected function handleGenerateOutput(object $data): array
+    {
+        return $this->openAIService->generateProblem($data->assessmentTypeName, $data->data);
+    }
+
+    public static function initAssessment(Assessment $assessment): void
+    {
+        self::$assessment = $assessment;
     }
 }

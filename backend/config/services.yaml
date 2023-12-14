@@ -9,10 +9,6 @@ services:
   Swaggest\JsonSchema\Schema: ~
   Symfony\Component\Serializer\Encoder\JsonEncoder: ~
 
-  App\Application\Services\WebsocketService:
-    arguments:
-      $host: '0.0.0.0'
-      $port: 80
   app.schema.validator:
     class: App\Application\Services\SchemaValidatorService
     arguments:
@@ -24,8 +20,6 @@ services:
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
     bind:
       $projectDir: '%kernel.project_dir%'
-      $host: '0.0.0.0'
-      $port: 80
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name

@@ -17,7 +17,6 @@ class WebsocketPipeMessageEventListener
     private ConsoleLogger $consoleLogger;
     private ConsoleOutput $output;
     public function __construct(
-        private WebsocketService $websocketService,
     ) {
         $this->output = new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG);
         $this->consoleLogger = new ConsoleLogger($this->output);
