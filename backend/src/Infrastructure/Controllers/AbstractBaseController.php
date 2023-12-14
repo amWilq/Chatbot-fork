@@ -2,10 +2,11 @@
 
 namespace App\Infrastructure\Controllers;
 
+use App\Port\Inbound\InboundPortInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-abstract class AbstractBaseController extends AbstractController
+abstract class AbstractBaseController extends AbstractController implements InboundPortInterface
 {
     protected function prettyJsonResponse(array $output): JsonResponse
     {

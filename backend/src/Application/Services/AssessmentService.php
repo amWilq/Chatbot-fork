@@ -7,15 +7,17 @@ use App\Application\Dtos\AssessmentStartDTO;
 use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Entities\AssessmentType;
 use App\Domain\Assessment\Enums\AssessmentStatusEnum;
+use App\Domain\Assessment\Enums\FormatEnum;
+use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
+use App\Domain\Assessment\Repositories\AssessmentTypeRepositoryInterface;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Domain\Category\Entities\Category;
+use App\Domain\Category\Repositories\CategoryRepositoryInterface;
 use App\Domain\Language\Entities\Language;
+use App\Domain\Language\Repositories\LanguageRepositoryInterface;
 use App\Domain\User\Entities\User;
-use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
-use App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository;
-use App\Infrastructure\Persistence\Repository\CategoryEntityRepository;
-use App\Infrastructure\Persistence\Repository\LanguageEntityRepository;
-use App\Infrastructure\Persistence\Repository\UserEntityRepository;
+use App\Domain\User\Repositories\UserRepositoryInterface;
+use App\Shared\Enums\ApiOperationsEnum;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\Cache\Adapter\MemcachedAdapter;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -23,7 +25,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Contracts\Cache\CacheInterface;
 
-class AssessmentService
+class AssessmentService implements AssessmentServiceInterface
 {
     private const ASSESSMENT_START_SCHEMA = 'AssessmentStartRequest';
     private const ASSESSMENT_COMPLETE_SCHEMA = 'AssessmentCompleteRequest';
@@ -48,13 +50,13 @@ class AssessmentService
      * @param MemcachedAdapter $cache
      */
     public function __construct(
-        private readonly UserEntityRepository $userEntityRepository,
-        private readonly AssessmentEntityRepository $assessmentEntityRepository,
-        private readonly AssessmentTypeEntityRepository $assessmentTypeEntityRepository,
-        private readonly CategoryEntityRepository $categoryEntityRepository,
-        private readonly LanguageEntityRepository $languageEntityRepository,
-        private readonly SchemaValidatorService $schemaValidatorService,
-        private readonly OpenAIService $openAIService,
+        private readonly UserRepositoryInterface $userEntityRepository,
+        private readonly AssessmentRepositoryInterface $assessmentEntityRepository,
+        private readonly AssessmentTypeRepositoryInterface $assessmentTypeEntityRepository,
+        private readonly CategoryRepositoryInterface $categoryEntityRepository,
+        private readonly LanguageRepositoryInterface $languageEntityRepository,
+        private readonly SchemaValidatorServiceInterface $schemaValidatorService,
+        private readonly OpenAIServiceInterface $openAIService,
         private readonly CacheInterface $cache,
     ) {
         $this->output = new ConsoleOutput();
@@ -82,7 +84,7 @@ class AssessmentService
                 language: $language,
                 assessmentType: $assessmentType,
                 difficulty: $postData->difficulty,
-                startTime: new \DateTime($postData->startTime),
+                startTime: $postData->startTime ?? null,
             )
         );
         $dto = AssessmentStartDTO::fromDomainEntity(self::$assessment)->toArray();
@@ -112,10 +114,10 @@ class AssessmentService
         }
 
         switch ($data->requestType) {
-            case 'userInput':
+            case ApiOperationsEnum::USER_INPUT->value:
                 $this->handleUserInput($data);
                 break;
-            case 'generateOutput':
+            case ApiOperationsEnum::GENERATE_OUTPUT->value:
                 $this->handleGenerateOutput($data);
                 break;
             default:
@@ -137,10 +139,21 @@ class AssessmentService
             $this->getAssessmentById($assessmentId)
         );
 
-        $this->isRequestedUserAssociated(self::$assessment, $postData, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
-        $this->isRequestedAssessmentTypeAssociated(self::$assessment, $postData, $assessmentTypeName, AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR);
+        $this->isRequestedUserAssociated(
+            self::$assessment,
+            $postData,
+            AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR
+        );
+        $this->isRequestedAssessmentTypeAssociated(
+            self::$assessment,
+            $postData,
+            $assessmentTypeName,
+            AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR
+        );
 
         self::$assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
+        self::$assessment->setDifficultyAtEnd();
+        self::$assessment->setEndTime(new \DateTime());
 
         $this->cache->deleteItem(self::CACHE_NAME_PREFIX.$assessmentId);
         $this->assessmentEntityRepository->update(self::$assessment);
@@ -195,7 +208,7 @@ class AssessmentService
         $category = $this->categoryEntityRepository->find($categoryId);
         if (is_null($category)) {
             $this->consoleLogger->error(print_r($category, true));
-            throw new BadRequestException('Chosen Category does not exist.');
+            throw new BadRequestException('Given Category does not exist.');
         }
 
         return $category;
@@ -209,7 +222,7 @@ class AssessmentService
         $language = $this->languageEntityRepository->find($languageId);
         if (is_null($language)) {
             $this->consoleLogger->error(print_r($language, true));
-            throw new BadRequestException('Chosen Language does not exist.');
+            throw new BadRequestException('Given Language does not exist.');
         }
 
         return $language;
@@ -241,12 +254,12 @@ class AssessmentService
         $assessmentType = $this->assessmentTypeEntityRepository->findOneBy(['name' => $assessmentTypeName]);
         if (is_null($assessmentType)) {
             $this->consoleLogger->error((string) print_r($assessmentType, true));
-            throw new BadRequestException('Chosen Assessment Type does not exist.');
+            throw new BadRequestException('Given Assessment Type does not exist.');
         }
 
         if ($assessmentType->getName() !== $assessmentTypeName) {
             $this->consoleLogger->error(print_r([$assessmentType->getName(), $assessmentTypeName], true));
-            throw new BadRequestException("Given assessment type name doesn't match the assessment type id in payload.");
+            throw new BadRequestException("Given assessment type name doesn't match given id: {$postData->assessmentTypeId}.");
         }
 
         return $this->retrieveAssessmentType($postData, $assessmentType);
@@ -255,13 +268,17 @@ class AssessmentService
     /**
      * @throws BadRequestException
      */
-    protected function isRequestedAssessmentTypeAssociated(Assessment $assessment, object $postData, string $name, AssessmentStatusEnum $errorStatus): bool
-    {
+    protected function isRequestedAssessmentTypeAssociated(
+        Assessment $assessment,
+        object $postData,
+        string $name,
+        AssessmentStatusEnum $errorStatus
+    ): bool {
         if (!$assessment->getAssessmentType()->equals(
             $this->getAssessmentType($postData, $name)
         )) {
             $assessment->setStatus($errorStatus);
-            throw new BadRequestException('This assessment type is not associated with this assessment.');
+            throw new BadRequestException('Given assessment type is not associated with given assessment.');
         }
 
         return true;
@@ -273,11 +290,11 @@ class AssessmentService
     protected function retrieveAssessmentType(object $postData, AssessmentType $assessmentType): AssessmentType
     {
         return match ($assessmentType->getName()) {
-            'quiz' => QuizAssessment::create(
+            FormatEnum::QUIZ->value => QuizAssessment::create(
                 id: $assessmentType->getId()->toString(),
                 durationInSeconds: $postData->duration ?? '300',
             ),
-            default => throw new BadRequestException('Selected AssessmentType not supported on server.'),
+            default => throw new BadRequestException('Given AssessmentType not supported on server.'),
         };
     }
 

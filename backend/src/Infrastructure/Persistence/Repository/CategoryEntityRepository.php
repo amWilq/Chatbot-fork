@@ -49,17 +49,11 @@ class CategoryEntityRepository extends BaseEntityRepository implements CategoryR
         ) : null;
     }
 
-    /**
-     * @return Category[]|CategoryEntity[]
-     */
     public function findAll(bool $raw = false): array
     {
         return $this->findBy([], raw: $raw);
     }
 
-    /**
-     * @return Category[]|CategoryEntity[]
-     */
     public function findBy(
         array $criteria,
         array $orderBy = null,

@@ -4,22 +4,27 @@ namespace App\Infrastructure\Persistence\Repository;
 
 use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Entities\AssessmentType;
+use App\Domain\Assessment\Enums\FormatEnum;
+use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Domain\Assessment\Types\QuizAssessment\QuestionAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Domain\Assessment\ValueObjects\Question;
+use App\Domain\Category\Repositories\CategoryRepositoryInterface;
+use App\Domain\Language\Repositories\LanguageRepositoryInterface;
+use App\Domain\User\Repositories\UserRepositoryInterface;
 use App\Infrastructure\Persistence\Entities\AssessmentDetailsEntity;
 use App\Infrastructure\Persistence\Entities\AssessmentEntity;
 use App\Infrastructure\Persistence\Entities\PersistenceEntityInterface;
 use App\Shared\Models\AggregateRoot;
 use Doctrine\Persistence\ManagerRegistry;
 
-class AssessmentEntityRepository extends BaseEntityRepository
+class AssessmentEntityRepository extends BaseEntityRepository implements AssessmentRepositoryInterface
 {
     public function __construct(
         ManagerRegistry $registry,
-        private readonly UserEntityRepository $userEntityRepository,
-        private readonly LanguageEntityRepository $languageEntityRepository,
-        private readonly CategoryEntityRepository $categoryEntityRepository,
+        private readonly UserRepositoryInterface $userEntityRepository,
+        private readonly LanguageRepositoryInterface $languageEntityRepository,
+        private readonly CategoryRepositoryInterface $categoryEntityRepository,
     ) {
         parent::__construct($registry, AssessmentEntity::class);
     }
@@ -64,17 +69,11 @@ class AssessmentEntityRepository extends BaseEntityRepository
         ) : null;
     }
 
-    /**
-     * @return Assessment[]|AssessmentEntity[]
-     */
     public function findAll(bool $raw = false): array
     {
         return $this->findBy([], raw: $raw);
     }
 
-    /**
-     * @return Assessment[]|AssessmentEntity[]
-     */
     public function findBy(
         array $criteria,
         array $orderBy = null,
@@ -148,7 +147,7 @@ class AssessmentEntityRepository extends BaseEntityRepository
     ): ?AssessmentType {
         $assessmentType = $assessmentDetails->getAssessmentType();
         switch ($assessmentType->getName()) {
-            case 'quiz':
+            case FormatEnum::QUIZ->value:
                 if (empty($assessmentDetails->getAssessmentDetails())) {
                     return QuizAssessment::create(
                         id: $assessmentDetails->getAssessmentType()->getId(),
@@ -168,12 +167,12 @@ class AssessmentEntityRepository extends BaseEntityRepository
                         content: $question['content'],
                         options: $question['options'],
                         correctAnswer: $question['correctAnswer'],
-                        explanation: $question['explanation'],
                     );
                     $attempts[] = QuestionAttempt::create(
                         userAnswer: $question['userAnswer'],
                         takenTime: $question['takenTime'],
                         isCorrect: $question['isCorrect'],
+                        explanation: $question['explanation'],
                         question: $q
                     );
                 }

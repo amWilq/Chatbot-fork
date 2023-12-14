@@ -3,12 +3,12 @@
 namespace App\Application\Services;
 
 use App\Domain\Assessment\Entities\Assessment;
-use App\Infrastructure\OpenAI\ApiClient;
+use App\Infrastructure\OpenAI\ApiClientInterface;
 
-class OpenAIService
+class OpenAIService implements OpenAIServiceInterface
 {
     public function __construct(
-        private readonly ApiClient $apiClient,
+        private readonly ApiClientInterface $apiClient,
     ) {
 
     }

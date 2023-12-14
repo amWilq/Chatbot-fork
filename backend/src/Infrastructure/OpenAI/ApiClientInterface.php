@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\OpenAI;
 
-class ApiClient implements ApiClientInterface
+interface ApiClientInterface
 {
 
 }

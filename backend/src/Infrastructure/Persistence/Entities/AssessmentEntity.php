@@ -4,6 +4,7 @@ namespace App\Infrastructure\Persistence\Entities;
 
 use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Entities\AssessmentType;
+use App\Domain\Assessment\Enums\FormatEnum;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
 use Doctrine\DBAL\Types\Types;
@@ -218,7 +219,7 @@ class AssessmentEntity implements PersistenceEntityInterface
     public static function extractAssessmentDetailsArray(AssessmentType $assessmentType): array
     {
         return match ($assessmentType->getName()) {
-            'quiz' => self::quizAssessmentToArray($assessmentType),
+            FormatEnum::QUIZ->value => self::quizAssessmentToArray($assessmentType),
             default => [],
         };
     }
@@ -231,7 +232,7 @@ class AssessmentEntity implements PersistenceEntityInterface
                 'content' => $question->getQuestion()->getContent(),
                 'answers' => $question->getQuestion()->getOptions(),
                 'correctAnswer' => $question->getQuestion()->getCorrectAnswer(),
-                'explanation' => $question->getQuestion()->getExplanation(),
+                'explanation' => $question->getExplanation(),
                 'yourAnswer' => $question->getAnswer(),
                 'isCorrect' => $question->isCorrect(),
                 'takenTime' => $question->getTakenTime(),

@@ -3,15 +3,15 @@
 namespace App\Application\Services;
 
 use App\Application\Dtos\LanguageDTO;
+use App\Domain\Language\Repositories\LanguageRepositoryInterface;
 use App\Infrastructure\Persistence\Entities\CategoryEntity;
 use App\Infrastructure\Persistence\Repository\CategoryEntityRepository;
 use App\Infrastructure\Persistence\Repository\LanguageEntityRepository;
 
-class LanguageService
+class LanguageService implements LanguageServiceInterface
 {
     public function __construct(
-        private readonly LanguageEntityRepository $languageEntityRepository,
-        private readonly CategoryEntityRepository $categoryEntityRepository,
+        private readonly LanguageRepositoryInterface $languageEntityRepository
     ) {
     }
 

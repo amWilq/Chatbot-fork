@@ -2,7 +2,6 @@
 
 namespace App\Application\Services;
 
-use JsonSchema\Exception\JsonDecodingException;
 use Psr\Log\LogLevel;
 use Swaggest\JsonSchema\Schema;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -10,14 +9,13 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
-class SchemaValidatorService
+class SchemaValidatorService implements SchemaValidatorServiceInterface
 {
     private const SCHEMAS_DIR = '%s/resources/schemas/%s.json';
     private ConsoleLogger $consoleLogger;
     private ConsoleOutput $output;
 
     public function __construct(
-        private readonly Schema $validator,
         private readonly string $projectDir,
     ) {
         $this->output = new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG);

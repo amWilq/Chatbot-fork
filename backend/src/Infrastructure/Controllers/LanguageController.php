@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Controllers;
 
-use App\Application\Services\LanguageService;
+use App\Application\Services\LanguageServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -10,11 +10,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class LanguageController extends AbstractBaseController
 {
     public function __construct(
-        private LanguageService $languageService,
+        private readonly LanguageServiceInterface $languageService,
     ) {
     }
 
-    #[Route('/', name: 'all', methods: ['GET'])]
+    #[Route('', name: 'all', methods: ['GET'])]
     public function getAllLanguages(): JsonResponse
     {
         $output = $this->languageService->getAllLanguages();

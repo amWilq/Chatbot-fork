@@ -2,11 +2,8 @@
 
 namespace App\Infrastructure\Controllers;
 
-use App\Application\Services\AssessmentService;
-use App\Application\Services\AssessmentTypeService;
-use App\Application\Services\WebsocketService;
-use App\Domain\Assessment\Enums\AssessmentStatusEnum;
-use Psr\Cache\InvalidArgumentException;
+use App\Application\Services\AssessmentServiceInterface;
+use App\Application\Services\AssessmentTypeServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,8 +12,8 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 class AssessmentController extends AbstractBaseController
 {
     public function __construct(
-        private readonly AssessmentService $assessmentService,
-        private readonly AssessmentTypeService $assessmentTypeService,
+        private readonly AssessmentServiceInterface $assessmentService,
+        private readonly AssessmentTypeServiceInterface $assessmentTypeService,
         private readonly JsonEncoder $jsonEncoder,
     ) {
     }
@@ -41,9 +38,6 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     #[Route('/{assessmentTypeName}/start', name: 'start', methods: ['POST'])]
     public function startAssessment(Request $request, string $assessmentTypeName): JsonResponse
     {
@@ -57,17 +51,6 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('/{assessmentTypeName}/{assessmentId}', name: 'interact', methods: ['POST'])]
-    public function assessmentInteraction(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
-    {
-        $output = [];
-
-        return $this->prettyJsonResponse($output);
-    }
-
-    /**
-     * @throws InvalidArgumentException
-     */
     #[Route('/{assessmentTypeName}/{assessmentId}/complete', name: 'complete', methods: ['POST'])]
     public function completeAssessment(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
     {

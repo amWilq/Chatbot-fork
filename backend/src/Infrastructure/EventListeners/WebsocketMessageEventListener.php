@@ -42,6 +42,5 @@ class WebsocketMessageEventListener
                 'Something went wrong, all states has been saved!'
             );
         }
-        $this->consoleLogger->log(LogLevel::DEBUG, 'Test Message');
     }
 }

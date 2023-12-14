@@ -2,11 +2,11 @@
 
 namespace App\Infrastructure\EventListeners;
 
-use App\Application\Services\AssessmentService;
+use App\Application\Services\AssessmentServiceInterface;
 use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Enums\AssessmentStatusEnum;
+use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Infrastructure\Events\WebsocketOpenEvent;
-use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LogLevel;
 use Swoole\Client\Exception;
@@ -27,8 +27,8 @@ class WebsocketOpenEventListener
      * @param MemcachedAdapter $cache
      */
     public function __construct(
-        private readonly AssessmentEntityRepository $assessmentEntityRepository,
-        private readonly AssessmentService $assessmentService,
+        private readonly AssessmentRepositoryInterface $assessmentEntityRepository,
+        private readonly AssessmentServiceInterface $assessmentService,
         private readonly CacheInterface $cache,
     ) {
         $this->output = new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG);

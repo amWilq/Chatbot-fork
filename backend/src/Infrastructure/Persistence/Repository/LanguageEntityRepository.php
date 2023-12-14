@@ -3,12 +3,13 @@
 namespace App\Infrastructure\Persistence\Repository;
 
 use App\Domain\Language\Entities\Language;
+use App\Domain\Language\Repositories\LanguageRepositoryInterface;
 use App\Infrastructure\Persistence\Entities\LanguageEntity;
 use App\Infrastructure\Persistence\Entities\PersistenceEntityInterface;
 use App\Shared\Models\AggregateRoot;
 use Doctrine\Persistence\ManagerRegistry;
 
-class LanguageEntityRepository extends BaseEntityRepository
+class LanguageEntityRepository extends BaseEntityRepository implements LanguageRepositoryInterface
 {
     public function __construct(
         ManagerRegistry $registry,

@@ -2,18 +2,18 @@
 
 namespace App\Infrastructure\Controllers;
 
-use App\Application\Services\CategoryService;
+use App\Application\Services\CategoryServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 #[Route('/categories', name: 'app.categories.')]
 class CategoryController extends AbstractBaseController
 {
     public function __construct(
-        private readonly CategoryService $categoryService
+        private readonly CategoryServiceInterface $categoryService
     ) {
     }
 
-    #[Route('/', name: 'all', methods: ['GET'])]
+    #[Route('', name: 'all', methods: ['GET'])]
     public function getAllCategories(): JsonResponse
     {
         $output = $this->categoryService->getAllCategories();

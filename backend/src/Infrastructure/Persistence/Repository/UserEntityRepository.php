@@ -3,12 +3,13 @@
 namespace App\Infrastructure\Persistence\Repository;
 
 use App\Domain\User\Entities\User;
+use App\Domain\User\Repositories\UserRepositoryInterface;
 use App\Infrastructure\Persistence\Entities\PersistenceEntityInterface;
 use App\Infrastructure\Persistence\Entities\UserEntity;
 use App\Shared\Models\AggregateRoot;
 use Doctrine\Persistence\ManagerRegistry;
 
-class UserEntityRepository extends BaseEntityRepository
+class UserEntityRepository extends BaseEntityRepository implements UserRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -55,9 +56,6 @@ class UserEntityRepository extends BaseEntityRepository
         ) : null;
     }
 
-    /**
-     * @return User[]|UserEntity[]
-     * */
     public function findAll(bool $raw = false): array
     {
         return $this->findBy([], raw: $raw);

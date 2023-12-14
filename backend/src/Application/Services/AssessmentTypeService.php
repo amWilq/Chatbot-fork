@@ -3,12 +3,13 @@
 namespace App\Application\Services;
 
 use App\Application\Dtos\AssessmentTypeDTO;
+use App\Domain\Assessment\Repositories\AssessmentTypeRepositoryInterface;
 use App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository;
 
-class AssessmentTypeService
+class AssessmentTypeService implements AssessmentTypeServiceInterface
 {
     public function __construct(
-        private AssessmentTypeEntityRepository $assessmentTypeEntityRepository
+        private readonly AssessmentTypeRepositoryInterface $assessmentTypeEntityRepository
     ) {
     }
 

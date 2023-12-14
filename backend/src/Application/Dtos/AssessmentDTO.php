@@ -15,6 +15,8 @@ readonly class AssessmentDTO implements EntityToArrayInterface
 {
     use HelperTrait;
 
+    private const DTO_CLASS_NAMESPACE = 'App\\Application\\Dtos\\';
+
     private function __construct(
         private string $id,
         private string $state,
@@ -90,7 +92,7 @@ readonly class AssessmentDTO implements EntityToArrayInterface
     ): self {
         $assessmentTypeName = $assessment->getAssessmentType()->getName();
 
-        $dtoClass = 'App\\Application\\Dtos\\'.self::convertNameToClassName(
+        $dtoClass = self::DTO_CLASS_NAMESPACE.self::convertNameToClassName(
             $assessmentTypeName,
             'AssessmentDTO'
         );

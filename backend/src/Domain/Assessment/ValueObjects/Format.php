@@ -41,9 +41,6 @@ readonly class Format extends ValueObject
         return $this->description;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function equals(ValueObject $object): bool
     {
         if (!$object instanceof self) {
@@ -54,7 +51,7 @@ readonly class Format extends ValueObject
     }
 
     /**
-     * Create a new instance of the current object
+     * Create a new instance of the current object.
      */
     public static function create(FormatEnum $name): self
     {

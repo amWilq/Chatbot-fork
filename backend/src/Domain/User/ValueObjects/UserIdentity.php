@@ -16,7 +16,7 @@ readonly class UserIdentity extends ValueObject implements EntityToStringInterfa
     }
 
     /**
-     * Create a new instance of the current object
+     * Create a new instance of the current object.
      */
     public static function create(string $id): self
     {
@@ -33,9 +33,6 @@ readonly class UserIdentity extends ValueObject implements EntityToStringInterfa
         return $this->id;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function equals(ValueObject $object): bool
     {
         if (!$object instanceof self) {

@@ -6,20 +6,49 @@
 parameters:
   app.open_ai.model: 'gtp-4-1106-preview'
 services:
-  Swaggest\JsonSchema\Schema: ~
-  Symfony\Component\Serializer\Encoder\JsonEncoder: ~
-
-  app.schema.validator:
-    class: App\Application\Services\SchemaValidatorService
-    arguments:
-      $validator: Swaggest\JsonSchema\Schema
-      $projectDir: '%kernel.project_dir%'
-  # default configuration for services in *this* file
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
     bind:
       $projectDir: '%kernel.project_dir%'
+
+  Symfony\Component\Serializer\Encoder\JsonEncoder: ~
+
+  App\Infrastructure\Persistence\Repository\AssessmentEntityRepository: ~
+  App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository: ~
+  App\Infrastructure\Persistence\Repository\CategoryEntityRepository: ~
+  App\Infrastructure\Persistence\Repository\LanguageEntityRepository: ~
+  App\Infrastructure\Persistence\Repository\UserEntityRepository: ~
+
+  App\Infrastructure\OpenAI\ApiClient: ~
+
+  App\Application\Services\AssessmentService: ~
+  App\Application\Services\AssessmentTypeService: ~
+  App\Application\Services\CategoryService: ~
+  App\Application\Services\LanguageService: ~
+  App\Application\Services\OpenAIService: ~
+  App\Application\Services\SchemaValidatorService: ~
+
+  App\Infrastructure\OpenAI\ApiClientInterface: '@App\Infrastructure\OpenAI\ApiClient'
+
+  App\Application\Services\AssessmentServiceInterface: '@App\Application\Services\AssessmentService'
+  App\Application\Services\AssessmentTypeServiceInterface: '@App\Application\Services\AssessmentTypeService'
+  App\Application\Services\CategoryServiceInterface: '@App\Application\Services\CategoryService'
+  App\Application\Services\LanguageServiceInterface: '@App\Application\Services\LanguageService'
+  App\Application\Services\OpenAIServiceInterface: '@App\Application\Services\OpenAIService'
+  App\Application\Services\SchemaValidatorServiceInterface: '@App\Application\Services\SchemaValidatorService'
+
+  App\Domain\Assessment\Repositories\AssessmentRepositoryInterface: '@App\Infrastructure\Persistence\Repository\AssessmentEntityRepository'
+  App\Domain\Assessment\Repositories\AssessmentTypeRepositoryInterface: '@App\Infrastructure\Persistence\Repository\AssessmentTypeEntityRepository'
+  App\Domain\Category\Repositories\CategoryRepositoryInterface: '@App\Infrastructure\Persistence\Repository\CategoryEntityRepository'
+  App\Domain\Language\Repositories\LanguageRepositoryInterface: '@App\Infrastructure\Persistence\Repository\LanguageEntityRepository'
+  App\Domain\User\Repositories\UserRepositoryInterface: '@App\Infrastructure\Persistence\Repository\UserEntityRepository'
+
+  app.schema.validator:
+    class: App\Application\Services\SchemaValidatorService
+    arguments:
+      $projectDir: '%kernel.project_dir%'
+  # default configuration for services in *this* file
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name

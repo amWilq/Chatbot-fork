@@ -3,12 +3,13 @@
 namespace App\Infrastructure\Persistence\Repository;
 
 use App\Domain\Assessment\Entities\AssessmentType;
+use App\Domain\Assessment\Repositories\AssessmentTypeRepositoryInterface;
 use App\Infrastructure\Persistence\Entities\AssessmentTypeEntity;
 use App\Infrastructure\Persistence\Entities\PersistenceEntityInterface;
 use App\Shared\Models\AggregateRoot;
 use Doctrine\Persistence\ManagerRegistry;
 
-class AssessmentTypeEntityRepository extends BaseEntityRepository
+class AssessmentTypeEntityRepository extends BaseEntityRepository implements AssessmentTypeRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -55,9 +56,6 @@ class AssessmentTypeEntityRepository extends BaseEntityRepository
         ) : null;
     }
 
-    /**
-     * @return AssessmentType[]|AssessmentTypeEntity[]
-     */
     public function findAll(bool $raw = false): array
     {
         return $this->findBy([], raw: $raw);

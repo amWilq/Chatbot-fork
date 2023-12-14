@@ -16,7 +16,7 @@ readonly class LanguageId extends ValueObject implements EntityToStringInterface
     }
 
     /**
-     * Create a new instance of the current object
+     * Create a new instance of the current object.
      */
     public static function create(string $languageId): self
     {
@@ -33,9 +33,6 @@ readonly class LanguageId extends ValueObject implements EntityToStringInterface
         return $this->id;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function equals(ValueObject $object): bool
     {
         if (!$object instanceof self) {

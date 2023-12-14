@@ -45,7 +45,7 @@ final class Assessment extends AggregateRoot
             $status
         ) : AssessmentStatusEnum::ASSESSMENT_START_SUCCESS;
         $this->startTime = $startTime ?? new \DateTime();
-        $this->endTime = $endTime ?: null;
+        $this->endTime = $endTime ?: new \DateTime();
         $this->currentDifficulty = $currentDifficulty ? DifficultiesEnum::tryFrom(
             $currentDifficulty
         ) : $this->getDifficultyAtStart();

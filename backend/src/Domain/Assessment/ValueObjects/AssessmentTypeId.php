@@ -23,9 +23,6 @@ readonly class AssessmentTypeId extends ValueObject implements EntityToStringInt
         return $this->id;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function equals(ValueObject $object): bool
     {
         if (!$object instanceof self) {
@@ -36,7 +33,7 @@ readonly class AssessmentTypeId extends ValueObject implements EntityToStringInt
     }
 
     /**
-     * Create a new instance of the current object
+     * Create a new instance of the current object.
      */
     public static function create($id): self
     {

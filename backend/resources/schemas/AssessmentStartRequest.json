@@ -41,7 +41,6 @@
     "userDeviceId",
     "categoryId",
     "languageId",
-    "difficulty",
-    "startTime"
+    "difficulty"
   ]
 }
