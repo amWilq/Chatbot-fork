@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "userDeviceId": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 255
+    },
+    "username": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 255
+    },
+    "categoryId": {
+      "type": "string",
+      "minLength": 8
+    },
+    "languageId": {
+      "type": "string",
+      "minLength": 8
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ]
+    },
+    "startTime": {
+      "type": "string",
+      "format": "datetime"
+    },
+    "duration": {
+      "type": "number",
+      "minimum": 300
+    }
+  },
+  "required": [
+    "userDeviceId",
+    "categoryId",
+    "languageId",
+    "difficulty"
+  ]
+}

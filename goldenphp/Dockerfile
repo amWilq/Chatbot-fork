@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libjpeg62-turbo-dev \
     libmagickwand-dev \
+    libmemcached-dev \
     libonig-dev \
     libpng-dev \
     libpq-dev \
@@ -41,6 +42,10 @@ RUN apt-get update && apt-get install -y \
 # Install XDebug extension
 RUN pecl install xdebug-$XDEBUG_VERSION \
     && docker-php-ext-enable xdebug
+
+RUN pecl install memcached \
+    && docker-php-ext-enable memcached
+
 
 # Install PHP extensions
 RUN docker-php-ext-install \
@@ -74,4 +79,3 @@ WORKDIR /var/www
 
 # Expose the necessary ports
 EXPOSE 80
-
