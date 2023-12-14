@@ -68,6 +68,21 @@ class AssessmentService implements AssessmentServiceInterface
      */
     public function startAssessment(object $postData, string $assessmentTypeName): array
     {
+        $this->initializeAssessment($postData, $assessmentTypeName);
+
+        $dto = AssessmentStartDTO::fromDomainEntity(self::$assessment)->toArray();
+        self::$assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+
+        $item = $this->cache->getItem(self::CACHE_NAME_PREFIX.self::$assessment->getId()->toString());
+        $item->set(self::$assessment);
+        $this->cache->save($item);
+
+        $this->assessmentEntityRepository->save(self::$assessment);
+
+        return $dto;
+    }
+    protected function initializeAssessment(object $postData, string $assessmentTypeName): void
+    {
         $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_START_SCHEMA);
 
         [
@@ -87,16 +102,6 @@ class AssessmentService implements AssessmentServiceInterface
                 startTime: $postData->startTime ?? null,
             )
         );
-        $dto = AssessmentStartDTO::fromDomainEntity(self::$assessment)->toArray();
-        self::$assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
-
-        $item = $this->cache->getItem(self::CACHE_NAME_PREFIX.self::$assessment->getId()->toString());
-        $item->set(self::$assessment);
-        $this->cache->save($item);
-
-        $this->assessmentEntityRepository->save(self::$assessment);
-
-        return $dto;
     }
 
     public function interactAssessment(object $data): array
@@ -127,10 +132,14 @@ class AssessmentService implements AssessmentServiceInterface
         return [];
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function completeAssessment(object $postData, array $pathParams): array
+    {
+        $this->finalizeAssessment($postData, $pathParams);
+
+        return AssessmentDTO::fromDomainEntity(self::$assessment)->toArray();
+    }
+
+    protected function finalizeAssessment(object $postData, array $pathParams): void
     {
         $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_COMPLETE_SCHEMA);
         [$assessmentTypeName, $assessmentId] = $pathParams;
@@ -157,8 +166,6 @@ class AssessmentService implements AssessmentServiceInterface
 
         $this->cache->deleteItem(self::CACHE_NAME_PREFIX.$assessmentId);
         $this->assessmentEntityRepository->update(self::$assessment);
-
-        return AssessmentDTO::fromDomainEntity(self::$assessment)->toArray();
     }
 
     protected function manageAssociations(object $postData, string $assessmentTypeName): array
