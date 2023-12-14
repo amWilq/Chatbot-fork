@@ -33,8 +33,11 @@
     "ionicons": "^7.0.0",
     "ngx-highlightjs": "^8.0.0",
     "rxjs": "~7.8.0",
+    "sockjs": "^0.3.24",
+    "sockjs-client": "^1.6.1",
     "tslib": "^2.3.0",
     "uuid": "^9.0.1",
+    "webstomp-client": "^1.2.6",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
@@ -51,6 +54,7 @@
     "@ionic/angular-toolkit": "^9.0.0",
     "@types/jasmine": "~4.3.0",
     "@types/node": "^12.11.1",
+    "@types/sockjs-client": "^1.5.4",
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
