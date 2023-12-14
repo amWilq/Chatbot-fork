@@ -1,10 +1,11 @@
-import { QuizService } from './../../services/quiz.service';
-import { Component, Input, ViewChild } from '@angular/core';
+
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
-import { QuizModel, QuizQuestion } from 'src/app/entities/quiz-question.model';
+import { QuizModel } from 'src/app/entities/quiz-question.model';
 import { AssessmentsService } from 'src/app/services/assessments.service';
+import { QuizService } from './../../services/quiz.service';
 
 @Component({
   selector: 'quiz-component',
@@ -13,6 +14,7 @@ import { AssessmentsService } from 'src/app/services/assessments.service';
 })
 export class QuizComponent {
   @ViewChild(PickAnswerQuizComponent) private pickAnswerQuizComponent!: PickAnswerQuizComponent;
+  @Output() botCommentAdded: EventEmitter<string> = new EventEmitter<string>();
   @Input() questions: any;
   loading = false;
   summaryData!: QuizModel;
@@ -32,8 +34,7 @@ export class QuizComponent {
     private activatedRoute: ActivatedRoute,
     private assessmentsService: AssessmentsService,
     private quizService: QuizService,
-  ) { }
-
+  ) {}
 
   ngOnInit(): void {
     this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe({
@@ -43,10 +44,8 @@ export class QuizComponent {
         this.assessmentName = params['assessmentName'];
         this.assessmentId = params['assessmentId'];
         this.assessmentTypeId = params['assessmentTypeId'];
-        if (this.type === 'code-snippet') {
-          this.questions = JSON.parse(params['questions'])
-        } else if (this.type === 'quiz') {
-          this.questions = JSON.parse(params['questions'])
+        if (this.type === 'code-snippet' || this.type === 'quiz') {
+          this.questions = JSON.parse(params['questions']);
         }
       }
     });
@@ -54,24 +53,36 @@ export class QuizComponent {
     this.loadQuizStatus();
   }
 
-  private subscribeToQuizCompletion() {
+  ngOnDestroy(): void {
+    if (this.queryParamsSubscription) {
+      this.queryParamsSubscription.unsubscribe();
+    }
+    if (this.quizCompletedSubscription) {
+      this.quizCompletedSubscription.unsubscribe();
+    }
+    if (this.completeAssessmentSubscription) {
+      this.completeAssessmentSubscription.unsubscribe();
+    }
+  }
+
+  private async subscribeToQuizCompletion() {
     if (this.pickAnswerQuizComponent && !this.quizCompleted) {
-      this.quizCompletedSubscription = this.pickAnswerQuizComponent.quizCompleted.subscribe(() => {
+      this.quizCompletedSubscription = this.pickAnswerQuizComponent.quizCompleted.subscribe(async () => {
         const requestBody = {
           "assessmentTypeId": this.assessmentTypeId,
           "endTime": new Date().toISOString(),
           "userId": localStorage.getItem('userId')
-        }
-        this.completeAssessmentSubscription = this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).subscribe(response => {
+        };
+
+        try {
+          const response = await this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).toPromise();
           this.quizService.setQuizsStatus(true);
           this.quizService.setTimeStatus('');
-          this.summaryData = response.body.quiz;
-        },
-          error => {
-            this.loading = false;
-            console.error(error);
-          }
-        );
+          this.summaryData = response!.body.quiz;
+        } catch (error) {
+          this.loading = false;
+          console.error(error);
+        }
       });
     } else {
       setTimeout(() => {
@@ -79,7 +90,6 @@ export class QuizComponent {
       }, 100);
     }
   }
-
 
   private loadQuizStatus() {
     this.quizService.getQuizsStatus().subscribe((e) => {
@@ -93,15 +103,25 @@ export class QuizComponent {
     window.location.reload();
   }
 
+  async onCodeSnippetAnswerSubmitted(answer: any): Promise<void> {
+    this.assessmentsService.sendUserAnswer(this.assessmentName, this.assessmentId, answer).subscribe(
+      response => {
+        const botComment = response?.body.data.explanation;
+        this.quizService.setBotComment(botComment);
+      },
+      error => {
+        console.error('Error sending data to server:', error);
+      }
+    );
+  }
+
   onReturnToMenu() {
     this.questions = [];
-    // Przejdź na stronę główną
     this.router.navigate(['/tabs/tab1']).then(() => {
       setTimeout(() => {
         window.location.reload();
       });
     });
-    // Zresetuj stan komponentu
     this.showSummary = false;
   }
 }

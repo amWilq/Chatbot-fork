@@ -9,6 +9,7 @@ export class QuizService {
   private questions: QuizQuestion[] = [];
   private quizsStatus: Subject<boolean> = new Subject<boolean>();
   private timeStatus: Subject<string> = new Subject<string>();
+  private comment: Subject<string> = new Subject<string>();
 
   setQuestions(questions: QuizQuestion[]) {
     this.questions = questions;
@@ -33,4 +34,13 @@ export class QuizService {
   getTimeStatus(): Observable<string> {
     return this.timeStatus.asObservable();
   }
+
+  setBotComment(comment: string): void {
+    this.comment.next(comment);
+  }
+
+  getBotComment(): Observable<string> {
+    return this.comment.asObservable();
+  }
+
 }

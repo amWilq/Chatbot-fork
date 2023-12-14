@@ -1,22 +1,40 @@
-<ion-content>
-  <!-- Question Card -->
-  <ion-card class="quiz-card gradient">
-    <ion-card-header>
-      <ion-title class="ion-text-center" style="color: white;">{{displayTime}}</ion-title>
-      <ion-progress-bar [value]="progress"></ion-progress-bar>
-    </ion-card-header>
-    <ion-card-content>
+<ion-card class="quiz-card">
+  <ion-card-header>
+    <ion-title *ngIf="displayProgressBar" class="ion-text-center" style="color: white;">{{displayTime}}</ion-title>
+    <ion-progress-bar [value]="progress"></ion-progress-bar>
+  </ion-card-header>
+  <ion-button *ngIf="displayProgressBar" (click)="endGame()" fill="clear">End game</ion-button>
+</ion-card>
 
+<ion-content [scrollEvents]="true" (ionScroll)="onScroll($event)">
+  <div class="chat-container">
 
-      <pre><code [highlight]="questions.content" ></code></pre>
+    <ion-card *ngFor="let message of messages" class="message" [ngClass]="{
+      'user-message': message.type === 'user',
+      'bot-question': message.type === 'bot',
+      'bot-message': message.type === 'question'
+    }">
 
-      <ion-textarea placeholder="Enter your answer here..."></ion-textarea>
-    </ion-card-content>
-  </ion-card>
+      <!-- User Input or BOT answer-->
+      <ion-card-content style="white-space: normal; padding: 0;"
+        *ngIf="message.type === 'user' || message.type === 'bot'">
+        {{ message.content }}
+      </ion-card-content>
 
+      <!-- BOT question-->
+      <div *ngIf="message.type === 'question'">
+        <pre><code>{{ message.content }}</code></pre>
+      </div>
 
+    </ion-card>
+
+  </div>
+</ion-content>
 <ion-footer>
-  <ion-button class="custom-button" [disabled]="!selectedAnswer" (click)="nextQuestion()">
-    Next Question
-  </ion-button>
+  <div style="display: flex; align-items: center;">
+    <ion-textarea [(ngModel)]="userAnswer" placeholder="Enter your answer here..."></ion-textarea>
+    <ion-button class="custom-button" (click)="nextQuestion()" [disabled]="userAnswer.length === 0" fill="clear">
+      <ion-icon name="arrow-up"></ion-icon>
+    </ion-button>
+  </div>
 </ion-footer>

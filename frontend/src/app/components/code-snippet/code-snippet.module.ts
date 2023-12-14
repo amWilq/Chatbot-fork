@@ -10,13 +10,13 @@ import { HIGHLIGHT_OPTIONS, HighlightModule } from 'ngx-highlightjs';
   imports: [ CommonModule, FormsModule, IonicModule,HighlightModule],
   declarations: [CodeSnippetComponent],
   exports: [CodeSnippetComponent],
-  providers: [
-    {
-      provide: HIGHLIGHT_OPTIONS,
-      useValue: {
-        fullLibraryLoader: () => import('highlight.js'),
-      }
-    }
-  ],
+  // providers: [
+  //   {
+  //     provide: HIGHLIGHT_OPTIONS,
+  //     useValue: {
+  //       fullLibraryLoader: () => import('highlight.js'),
+  //     }
+  //   }
+  // ],
 })
 export class CodeSnippetComponentModule {}

@@ -28,7 +28,7 @@ export class AssessmentsComponent {
   assessmentId = '';
   showSummary: boolean = false;
   summaryData!: QuizModel;
-  duration = 10;
+  duration = 2;
 
   constructor(
     private assessmentsService: AssessmentsService,

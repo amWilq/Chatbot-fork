@@ -38,4 +38,16 @@ export class AssessmentsService {
     return this.http.post<any>(startUrl, body, { observe: 'response' });
   }
 
+  sendUserAnswer(assessmentTypeName: string, assessmentId: string, userAnswer: string): Observable<HttpResponse<any>> {
+    const userAnswerUrl = `${SERVER_API_URL}/assessments/${assessmentTypeName}/${assessmentId}`;
+    const requestBody = {
+      requestType: 'userInput',
+      data: {
+        answer: userAnswer
+      }
+    };
+    return this.http.post<any>(userAnswerUrl, requestBody, { observe: 'response' });
+  }
+
+
 }

@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { IonContent } from '@ionic/angular';
 import { HIGHLIGHT_OPTIONS, HighlightLoader, HighlightOptions } from 'ngx-highlightjs';
+import { Subscription } from 'rxjs';
 import { QuizQuestion } from 'src/app/entities/quiz-question.model';
 import { QuizService } from 'src/app/services/quiz.service';
 
@@ -9,54 +11,78 @@ import { QuizService } from 'src/app/services/quiz.service';
   templateUrl: './code-snippet.component.html',
   styleUrls: ['./code-snippet.component.scss']
 })
+
 export class CodeSnippetComponent {
   @Input() questions: any
-  @Input() duration: number = 5;
-  // @Input() languages: string[] = ['C#', 'Java', 'JavaScript', 'Python', 'TypeScript'];
+  @Input() duration: number = 2;
   @Output() quizCompleted: EventEmitter<void> = new EventEmitter<void>();
-  selectedAnswer: string | null = null;
+  @Output() answerSubmitted: EventEmitter<any> = new EventEmitter<any>();
+  @ViewChild(IonContent, { static: false }) content: IonContent | undefined;
+  //czas
   progress: number = 0;
   displayTime: string | undefined;
   timer: any | null = null;
-code! : string;
+  displayProgressBar: boolean = true;
+
+  userAnswer: string = '';
+  messages: { content: string, type: 'question' | 'user' | 'bot' }[] = [];
+  private quizSubscription: Subscription | undefined;
   constructor(private quizService: QuizService) {
   }
 
   ngOnInit() {
-
-    this.code = `def find_average(numbers):
-      total_sum = sum(numbers)
-      count = len(numbers)
-      average = total_sum / count  # Potential error when count is zero
-      return average
-  numbers = []
-  print(find_average(numbers))`;
-    this.code = `  exports: [CodeSnippetComponent],
-    providers: [
-      {
-        provide: HIGHLIGHT_OPTIONS,
-        useValue: {
-          coreLibraryLoader: () => import('highlight.js/lib/core'),
-          lineNumbersLoader: () => import('ngx-highlightjs/line-numbers'), // Optional, only if you want the line numbers
-          languages: {
-            typescript: () => import('highlight.js/lib/languages/typescript'),
-            css: () => import('highlight.js/lib/languages/css'),
-            xml: () => import('highlight.js/lib/languages/xml'),
-            python: () => import('highlight.js/lib/languages/python') // Add this line for Python
-          },
-        }
-      }
-    ]`;
     this.startTimer();
+    this.addBotQuestion();
   }
 
-  nextQuestion() {
-    console.log('Next question');
-    this.quizCompleted.emit();
+  onScroll(event: any) {
+    this.displayProgressBar = event.detail.scrollTop < 50;
   }
 
-  onSelectedAnswer(answer: string) {
-    this.selectedAnswer = answer;
+  endGame() {
+    console.log('Game over!');
+  }
+
+  private addBotQuestion() {
+    const botQuestion = this.questions.content;
+    this.messages.push({ content: botQuestion, type: 'question' });
+  }
+
+  ngOnDestroy() {
+    if (this.quizSubscription) {
+      this.quizSubscription.unsubscribe();
+    }
+  }
+
+  async nextQuestion(): Promise<void> {
+    const userMessage = this.userAnswer.trim();
+    if (userMessage) {
+      this.answerSubmitted.emit(userMessage);
+      this.messages.push({ content: userMessage, type: 'user' });
+
+      // Unsubscribe before making a new subscription
+      if (this.quizSubscription) {
+        this.quizSubscription.unsubscribe();
+      }
+
+      this.quizSubscription = this.quizService.getBotComment().subscribe({
+        error: (err) => console.log(err),
+        next: (comment) => {
+          this.messages.push({ content: comment, type: 'bot' });
+          this.addBotQuestion();
+          setTimeout(() => this.scrollToBottom(), 50);
+          this.userAnswer = '';
+        }
+      });
+    }
+  }
+
+  private scrollToBottom() {
+    try {
+      this.content!.scrollToBottom(300);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private startTimer() {
@@ -79,8 +105,5 @@ code! : string;
     return `Time left ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   }
 
-  get currentQuestion(): QuizQuestion {
-    return this.questions;
-  }
 }
 
