@@ -15,7 +15,7 @@ readonly class QuestionAttemptDTO implements EntityToArrayInterface
         private string $content,
         private array $answers,
         private string $correctAnswer,
-        private string $explanation,
+        private ?string $explanation,
         private string $yourAnswer,
         private bool $isCorrect,
         private int $takenTime
@@ -37,7 +37,7 @@ readonly class QuestionAttemptDTO implements EntityToArrayInterface
         return $this->correctAnswer;
     }
 
-    protected function getExplanation(): string
+    protected function getExplanation(): ?string
     {
         return $this->explanation;
     }

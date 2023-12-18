@@ -15,7 +15,7 @@ class AssessmentDetailsEntity
     #[ORM\Column(name: 'assessment_details_id', type: 'integer')]
     private int $id;
     #[ORM\JoinColumn(name: 'assessment_id', referencedColumnName: 'assessment_id')]
-    #[ORM\OneToOne(targetEntity: AssessmentEntity::class)]
+    #[ORM\OneToOne(targetEntity: AssessmentEntity::class, inversedBy: 'assessmentDetails')]
     private AssessmentEntity $assessment;
     #[ORM\JoinColumn(name: 'assessment_type_id', referencedColumnName: 'assessment_type_id')]
     #[ORM\ManyToOne(targetEntity: AssessmentTypeEntity::class)]

@@ -69,14 +69,18 @@ final class QuizAssessment extends AssessmentType
         return $this->questionsAttempts;
     }
 
+    public function checkAndIncreaseCorrectAnswers(QuestionAttempt $questionAttempt): void
+    {
+        if ($questionAttempt->isCorrect()) {
+            ++$this->correctAnswerCount;
+        }
+    }
+
     public function setQuestionsAttempts(
         QuestionAttempt $questionAttempt
     ): void {
         $this->questionsAttempts[] = $questionAttempt;
         ++$this->questionCount;
-        if ($questionAttempt->isCorrect()) {
-            ++$this->correctAnswerCount;
-        }
     }
 
     public function getAssessmentType(): AssessmentType

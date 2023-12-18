@@ -54,7 +54,7 @@ class AssessmentEntity implements PersistenceEntityInterface
     #[ORM\Column(name: 'end_difficulty', type: Types::STRING, nullable: true)]
     private ?string $endDifficulty;
 
-    #[ORM\Column(name: 'feedback', type: Types::STRING, nullable: true)]
+    #[ORM\Column(name: 'feedback', type: Types::TEXT, nullable: true)]
     private ?string $feedback;
 
     public function getId(): string
@@ -219,28 +219,28 @@ class AssessmentEntity implements PersistenceEntityInterface
     public static function extractAssessmentDetailsArray(AssessmentType $assessmentType): array
     {
         return match ($assessmentType->getName()) {
-            FormatEnum::QUIZ->value => self::quizAssessmentToArray($assessmentType),
+            FormatEnum::QUIZ->value => self::quizAssessmentDetailsToArray($assessmentType),
             default => [],
         };
     }
 
-    protected static function quizAssessmentToArray(QuizAssessment $assessmentType): array
+    protected static function quizAssessmentDetailsToArray(QuizAssessment $assessmentType): array
     {
         $questions = [];
         foreach ($assessmentType->getQuestionsAttempts() as $question) {
             $questions[] = [
                 'content' => $question->getQuestion()->getContent(),
-                'answers' => $question->getQuestion()->getOptions(),
+                'options' => $question->getQuestion()->getOptions(),
                 'correctAnswer' => $question->getQuestion()->getCorrectAnswer(),
                 'explanation' => $question->getExplanation(),
-                'yourAnswer' => $question->getAnswer(),
+                'userAnswer' => $question->getAnswer(),
                 'isCorrect' => $question->isCorrect(),
                 'takenTime' => $question->getTakenTime(),
             ];
         }
 
         return [
-            'assessmentTypeId' => $assessmentType->getId(),
+            'assessmentTypeId' => $assessmentType->getId()->toString(),
             'assessmentTypeName' => $assessmentType->getName(),
             'answeredQuestions' => $assessmentType->getQuestionCount(),
             'correctAnswers' => $assessmentType->getCorrectAnswerCount(),
