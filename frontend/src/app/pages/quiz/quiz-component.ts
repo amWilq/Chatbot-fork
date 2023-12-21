@@ -17,7 +17,7 @@ export class QuizComponent {
   @Output() botCommentAdded: EventEmitter<string> = new EventEmitter<string>();
   @Input() questions: any;
   loading = false;
-  summaryData!: QuizModel;
+  summaryData: QuizModel[] = [];
   assessmentTypeId: any;
   assessmentId: any;
   assessmentName: any;
@@ -66,19 +66,18 @@ export class QuizComponent {
   }
 
   private async subscribeToQuizCompletion() {
-    if (this.pickAnswerQuizComponent && !this.quizCompleted) {
-      this.quizCompletedSubscription = this.pickAnswerQuizComponent.quizCompleted.subscribe(async () => {
+    if (!this.quizCompleted) {
+      this.quizCompletedSubscription = this.quizService.getQuizsStatus().subscribe(async () => {
         const requestBody = {
           "assessmentTypeId": this.assessmentTypeId,
           "endTime": new Date().toISOString(),
           "userId": localStorage.getItem('userId')
         };
-
         try {
           const response = await this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).toPromise();
           this.quizService.setQuizsStatus(true);
           this.quizService.setTimeStatus('');
-          this.summaryData = response!.body.quiz;
+          this.summaryData = Array.isArray(response!.body) ? response!.body : [response!.body];
         } catch (error) {
           this.loading = false;
           console.error(error);

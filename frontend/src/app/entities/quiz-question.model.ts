@@ -13,12 +13,25 @@ interface Question {
   takenTime: number;
 }
 
-export interface QuizModel {
+export interface AssessmentDetails {
+  assessmentTypeId: string;
+  assessmentTypeName: string;
   answeredQuestions: number;
   correctAnswers: number;
-  startDifficulty: string;
-  endDifficulty: string;
   duration: number;
   questions: Question[];
+}
+
+export interface QuizModel {
+  assessmentId: string;
+  assessmentState: string;
+  userDeviceId: string;
+  CategoryId: string;
+  LanguageId: string;
+  difficultyAtStart: string;
+  difficultyAtEnd: string;
+  startTime: string;
+  endTime: string;
   feedback: string;
+  assessmentDetails: AssessmentDetails;
 }
