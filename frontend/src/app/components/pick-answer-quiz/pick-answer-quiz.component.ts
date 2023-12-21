@@ -24,6 +24,7 @@ export class PickAnswerQuizComponent {
 
   nextQuestion() {
     console.log('Next question');
+    this.quizService.setQuizsStatus(true);
     this.quizCompleted.emit();
   }
 

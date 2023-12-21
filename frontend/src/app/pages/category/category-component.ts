@@ -57,7 +57,7 @@ export class CategoryComponent implements OnInit {
 
     this.languagesService.getAllLanguagesForCategory(this.selectedCategory).subscribe({
       next: (res: any) => {
-        this.originalItems = res.body.items ?? [];
+        this.originalItems = res.body ?? [];
         this.filteredItems = [...this.originalItems];
       },
       error: (err) => console.error('Error fetching languages:', err)

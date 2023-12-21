@@ -9,36 +9,24 @@
 </ion-header>
 
 <ion-content>
-  <ion-card *ngFor="let response of quizResponse">
-    <!-- Your existing content for each response -->
-    <ion-card-content>
-      <ion-item>
-        <ion-label><strong>Question:</strong> {{ response.questions[0].content }}</ion-label>
-      </ion-item>
-      <!-- Other items for each response -->
-    </ion-card-content>
-  </ion-card>
-
 
   <ion-card class="quiz-summary-footer">
     <ion-card-content>
       <ion-item>
-        <ion-label><strong>Total Questions Answered:</strong> {{ quizResponse.answeredQuestions }}</ion-label>
+        <ion-label><strong>Total Questions Answered:</strong> {{ quizResponse[0].assessmentDetails.answeredQuestions
+          }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label><strong>Correct Answers:</strong> {{ quizResponse.correctAnswers }}</ion-label>
+        <ion-label><strong>Correct Answers:</strong> {{ quizResponse[0].assessmentDetails.correctAnswers }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label><strong>Start Difficulty:</strong> {{ quizResponse.startDifficulty }}</ion-label>
+        <ion-label><strong>Start Difficulty:</strong> {{ quizResponse[0].difficultyAtStart }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label><strong>End Difficulty:</strong> {{ quizResponse.endDifficulty }}</ion-label>
+        <ion-label><strong>End Difficulty:</strong> {{ quizResponse[0].difficultyAtEnd }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label><strong>Duration:</strong> {{ quizResponse.duration }} seconds</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label>{{ quizResponse.feedback }}</ion-label>
+        <ion-label>{{ quizResponse[0].feedback }}</ion-label>
       </ion-item>
     </ion-card-content>
   </ion-card>
@@ -47,5 +35,6 @@
 </ion-content>
 <ion-footer>
   <ion-button class="custom-button" (click)="onReplayQuiz()" expand="full" color="primary">Replay Quiz</ion-button>
-  <ion-button class="custom-button" (click)="onReturnToMenu()" expand="full" color="secondary">Return to Menu</ion-button>
+  <ion-button class="custom-button" (click)="onReturnToMenu()" expand="full" color="secondary">Return to
+    Menu</ion-button>
 </ion-footer>

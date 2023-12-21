@@ -49,7 +49,7 @@ export class HomePageComponent implements OnInit {
   private loadAllCategories() {
     this.categoryService.getAllCategories().subscribe(
       (res: HttpResponse<any>) => {
-        this.categorys = res.body.items ?? [];
+        this.categorys = res.body ?? [];
       },
       error => {
         console.error('Error fetching categories:', error);
