@@ -3,7 +3,9 @@
     <ion-title *ngIf="displayProgressBar" class="ion-text-center" style="color: white;">{{displayTime}}</ion-title>
     <ion-progress-bar [value]="progress"></ion-progress-bar>
   </ion-card-header>
-  <ion-button *ngIf="displayProgressBar" (click)="endGame()" fill="clear">End game</ion-button>
+  <ion-button id="present-alert" *ngIf="displayProgressBar" fill="clear">End game</ion-button>
+  <ion-alert trigger="present-alert" header="Terminate?" [buttons]="alertButtons"
+    (didDismiss)="setResult($event)"></ion-alert>
 </ion-card>
 
 <ion-content [scrollEvents]="true" (ionScroll)="onScroll($event)">
