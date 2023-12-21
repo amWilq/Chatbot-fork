@@ -1,9 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { bootstrapApplication } from '@angular/platform-browser';
 import { IonContent } from '@ionic/angular';
-import { HIGHLIGHT_OPTIONS, HighlightLoader, HighlightOptions } from 'ngx-highlightjs';
 import { Subscription } from 'rxjs';
-import { QuizQuestion } from 'src/app/entities/quiz-question.model';
 import { QuizService } from 'src/app/services/quiz.service';
 
 @Component({
