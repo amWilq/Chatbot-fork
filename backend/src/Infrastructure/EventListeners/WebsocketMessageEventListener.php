@@ -3,6 +3,7 @@
 namespace App\Infrastructure\EventListeners;
 
 use App\Application\Services\AssessmentService;
+use App\Domain\Assessment\Enums\AssessmentStatusEnum;
 use App\Infrastructure\Events\WebsocketMessageEvent;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -27,8 +28,9 @@ class WebsocketMessageEventListener
 
     public function onWebsocketMessage(WebsocketMessageEvent $event): void
     {
+        $output = [];
         try {
-            $this->assessmentService->interactAssessment(
+            $output = $this->assessmentService->interactAssessment(
                 $this->jsonEncoder->decode(
                     $event->frame->data, JsonEncoder::FORMAT, ['json_decode_associative' => false]
                 )
@@ -42,5 +44,12 @@ class WebsocketMessageEventListener
                 'Something went wrong, all states has been saved!'
             );
         }
+        $event->server->push(
+            $event->frame->fd,
+            $this->jsonEncoder->encode(
+                $output,
+                JsonEncoder::FORMAT
+            ),
+        );
     }
 }

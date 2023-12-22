@@ -6,13 +6,13 @@ use App\Domain\Assessment\ValueObjects\Question;
 
 class QuestionAttempt
 {
-    private string $userAnswer;
+    private ?string $userAnswer;
 
-    private int $takenTime;
+    private ?int $takenTime;
 
-    private bool $isCorrect;
+    private ?bool $isCorrect;
 
-    private string $explanation;
+    private ?string $explanation;
 
     private function __construct(
         ?string $userAnswer,
@@ -43,30 +43,20 @@ class QuestionAttempt
         );
     }
 
-    public function setAnswer(int $answerIndex, int $takenTime): void
+    public function setAnswer(string $answer, int $takenTime): void
     {
-        $this->userAnswer = $answerIndex;
+        $this->userAnswer = $answer;
         $this->takenTime = $takenTime;
     }
 
-    public function getAnswer(): int
+    public function getAnswer(): ?string
     {
         return $this->userAnswer;
     }
 
-    public function setUserAnswer(string $userAnswer): void
-    {
-        $this->userAnswer = $userAnswer;
-    }
-
-    public function getTakenTime(): int
+    public function getTakenTime(): ?int
     {
         return $this->takenTime;
-    }
-
-    public function setTakenTime(int $takenTime): void
-    {
-        $this->takenTime = $takenTime;
     }
 
     public function getQuestion(): Question
@@ -74,12 +64,12 @@ class QuestionAttempt
         return $this->question;
     }
 
-    public function isCorrect(): bool
+    public function isCorrect(): ?bool
     {
         return $this->isCorrect;
     }
 
-    public function getExplanation(): string
+    public function getExplanation(): ?string
     {
         return $this->explanation;
     }

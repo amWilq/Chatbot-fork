@@ -71,10 +71,14 @@
                 }
               }
             }
+          },
+          {
+            "required": [
+              "data"
+            ]
           }
         ]
-      },
-      "required": ["data"]
+      }
     }
   ],
   "required": [

@@ -65,7 +65,6 @@ class WebsocketOpenEventListener
             return;
         }
 
-        $this->assessmentService::initAssessment($assessment);
         $this->consoleLogger->log(LogLevel::INFO, 'Success Open');
     }
 

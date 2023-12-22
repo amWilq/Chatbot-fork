@@ -10,6 +10,7 @@ use App\Domain\Assessment\Enums\AssessmentStatusEnum;
 use App\Domain\Assessment\Enums\FormatEnum;
 use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Domain\Assessment\Repositories\AssessmentTypeRepositoryInterface;
+use App\Domain\Assessment\Types\QuizAssessment\QuestionAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Domain\Category\Entities\Category;
 use App\Domain\Category\Repositories\CategoryRepositoryInterface;
@@ -32,18 +33,18 @@ class AssessmentService implements AssessmentServiceInterface
     private const ASSESSMENT_INTERACTION_SCHEMA = 'AssessmentInteractionRequest';
     private const CACHE_NAME_PREFIX = 'assessment_';
 
-    private static Assessment $assessment;
+    private Assessment $assessment;
     private ConsoleOutput $output;
     private ConsoleLogger $consoleLogger;
 
     public function getAssessment(): Assessment
     {
-        return self::$assessment;
+        return $this->assessment;
     }
 
     public function setAssessment(Assessment $assessment): void
     {
-        self::$assessment = $assessment;
+        $this->assessment = $assessment;
     }
 
     /**
@@ -70,17 +71,14 @@ class AssessmentService implements AssessmentServiceInterface
     {
         $this->initializeAssessment($postData, $assessmentTypeName);
 
-        $dto = AssessmentStartDTO::fromDomainEntity(self::$assessment)->toArray();
-        self::$assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+        $dto = AssessmentStartDTO::fromDomainEntity($this->assessment)->toArray();
+        $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
 
-        $item = $this->cache->getItem(self::CACHE_NAME_PREFIX.self::$assessment->getId()->toString());
-        $item->set(self::$assessment);
-        $this->cache->save($item);
-
-        $this->assessmentEntityRepository->save(self::$assessment);
+        $this->saveAssessment($this->assessment);
 
         return $dto;
     }
+
     protected function initializeAssessment(object $postData, string $assessmentTypeName): void
     {
         $this->schemaValidatorService->validateRequestSchema($postData, self::ASSESSMENT_START_SCHEMA);
@@ -106,27 +104,59 @@ class AssessmentService implements AssessmentServiceInterface
 
     public function interactAssessment(object $data): array
     {
-        $cacheItem = $this->cache->getItem(self::CACHE_NAME_PREFIX.$data->assessmentId);
+        $this->setAssessment(
+            $this->getAssessmentById($data->assessmentId)
+        );
 
         try {
             $this->schemaValidatorService->validateRequestSchema($data, self::ASSESSMENT_INTERACTION_SCHEMA);
         } catch (\Exception $e) {
             $this->consoleLogger->error($e->getMessage());
-            $cacheItem->set(self::$assessment);
-            $this->cache->save($cacheItem);
-            $this->assessmentEntityRepository->update(self::$assessment);
+            $this->saveAssessment($this->assessment);
             throw new \RuntimeException('Unexpected Error!', 5001, $e->getPrevious());
         }
 
         switch ($data->requestType) {
             case ApiOperationsEnum::USER_INPUT->value:
                 $this->handleUserInput($data);
-                break;
+                $array = $this->assessment->getAssessmentType()->getQuestionsAttempts();
+
+                /** @var QuestionAttempt $questionAttempt */
+                $questionAttempt = end($array);
+
+                $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_RECEIVE_USER_INPUT_SUCCESS);
+                $output = [
+                    'assessmentStatus' => $this->assessment->getStatus()->value,
+                    'data' => [
+                        'userAnswer' => $questionAttempt->getAnswer(),
+                        'isCorrect' => $questionAttempt->isCorrect(),
+                        'explanation' => $questionAttempt->getExplanation(),
+                    ],
+                ];
+                $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+                $this->saveAssessment($this->assessment);
+                return $output;
             case ApiOperationsEnum::GENERATE_OUTPUT->value:
                 $this->handleGenerateOutput($data);
-                break;
-            default:
-                break;
+                $array = $this->assessment->getAssessmentType()->getQuestionsAttempts();
+
+                /** @var QuestionAttempt $questionAttempt */
+                $questionAttempt = end($array);
+                $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_GENERATE_OUTPUT_SUCCESS);
+                $output = [
+                    'assessmentStatus' => $this->assessment->getStatus()->value,
+                    'data' => [
+                        'question' => [
+                            'content' => $questionAttempt->getQuestion()->getContent(),
+                            'options' => $questionAttempt->getQuestion()->getOptions(),
+                            'correctAnswer' => $questionAttempt->getQuestion()->getCorrectAnswer(),
+                        ],
+                    ],
+                ];
+                $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
+                $this->saveAssessment($this->assessment);
+
+                return $output;
         }
 
         return [];
@@ -136,7 +166,7 @@ class AssessmentService implements AssessmentServiceInterface
     {
         $this->finalizeAssessment($postData, $pathParams);
 
-        return AssessmentDTO::fromDomainEntity(self::$assessment)->toArray();
+        return AssessmentDTO::fromDomainEntity($this->assessment)->toArray();
     }
 
     protected function finalizeAssessment(object $postData, array $pathParams): void
@@ -149,23 +179,25 @@ class AssessmentService implements AssessmentServiceInterface
         );
 
         $this->isRequestedUserAssociated(
-            self::$assessment,
+            $this->assessment,
             $postData,
             AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR
         );
         $this->isRequestedAssessmentTypeAssociated(
-            self::$assessment,
+            $this->assessment,
             $postData,
             $assessmentTypeName,
             AssessmentStatusEnum::ASSESSMENT_COMPLETE_ERROR
         );
 
-        self::$assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
-        self::$assessment->setDifficultyAtEnd();
-        self::$assessment->setEndTime(new \DateTime());
+        $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_COMPLETE_SUCCESS);
+        $this->assessment->setDifficultyAtEnd();
+        $this->assessment->setEndTime(new \DateTime());
+
+        $this->openAIService->getGeneratedFeedback($this->assessment);
 
         $this->cache->deleteItem(self::CACHE_NAME_PREFIX.$assessmentId);
-        $this->assessmentEntityRepository->update(self::$assessment);
+        $this->assessmentEntityRepository->update($this->assessment);
     }
 
     protected function manageAssociations(object $postData, string $assessmentTypeName): array
@@ -250,6 +282,8 @@ class AssessmentService implements AssessmentServiceInterface
             throw new BadRequestException('Assessment was not found.');
         }
 
+        $this->saveAssessment($assessment);
+
         return $assessment;
     }
 
@@ -307,16 +341,20 @@ class AssessmentService implements AssessmentServiceInterface
 
     protected function handleUserInput(object $data): array
     {
-        return $this->openAIService->handleAnswer(self::$assessment, $data->data);
+        return $this->openAIService->handleAnswer($this->assessment, $data);
     }
 
     protected function handleGenerateOutput(object $data): array
     {
-        return $this->openAIService->generateProblem($data->assessmentTypeName, $data->data);
+        return $this->openAIService->generateProblem($this->assessment, $data);
     }
 
-    public static function initAssessment(Assessment $assessment): void
+    public function saveAssessment(Assessment $assessment): void
     {
-        self::$assessment = $assessment;
+        $item = $this->cache->getItem(self::CACHE_NAME_PREFIX.$assessment->getId()->toString());
+        $item->set($assessment);
+
+        $this->cache->save($item);
+        $this->assessmentEntityRepository->save($assessment);
     }
 }

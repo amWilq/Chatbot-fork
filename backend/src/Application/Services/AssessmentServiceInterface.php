@@ -16,6 +16,6 @@ interface AssessmentServiceInterface
 
     public function getAssessment(): Assessment;
 
-    public static function initAssessment(Assessment $assessment): void;
+    public function saveAssessment(Assessment $assessment): void;
 
 }
