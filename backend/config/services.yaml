@@ -4,8 +4,13 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-  app.open_ai.model: 'gpt-4-1106-preview'
+  app.open_ai.model: '%env(OPEN_AI_MODEL)%'
   app.open_ai.secret: '%env(OPEN_AI_SECRET)%'
+  app.db_name: '%env(DB_NAME)%'
+  app.db_user: '%env(DB_USER)%'
+  app.db_host: '%env(DB_HOST)%'
+  app.db_port: '%env(DB_PORT)%'
+  app.db_version: '%env(DB_VERSION)%'
 services:
   _defaults:
     autowire: true      # Automatically injects dependencies in your services.
