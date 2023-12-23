@@ -32,6 +32,7 @@ class AssessmentService implements AssessmentServiceInterface
     private const ASSESSMENT_COMPLETE_SCHEMA = 'AssessmentCompleteRequest';
     private const ASSESSMENT_INTERACTION_SCHEMA = 'AssessmentInteractionRequest';
     private const CACHE_NAME_PREFIX = 'assessment_';
+    private const THREAD_NAME_TEMPLATE = 'trd_%s_%s';
 
     private Assessment $assessment;
     private ConsoleOutput $output;
@@ -197,6 +198,12 @@ class AssessmentService implements AssessmentServiceInterface
         $this->openAIService->getGeneratedFeedback($this->assessment);
 
         $this->cache->deleteItem(self::CACHE_NAME_PREFIX.$assessmentId);
+        $this->cache->deleteItem(
+            sprintf(self::THREAD_NAME_TEMPLATE,
+                $this->assessment->getAssessmentType()->getName(),
+                $this->assessment->getId()->toString()
+            )
+        );
         $this->assessmentEntityRepository->update($this->assessment);
     }
 

@@ -1,4 +1,4 @@
 framework:
     cache:
-        default_memcached_provider: 'memcached://memcached'
+        default_memcached_provider: '%env(MEMCACHED_HOST)%'
         app: cache.adapter.memcached
