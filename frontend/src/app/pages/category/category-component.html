@@ -41,4 +41,4 @@
   </ion-footer>
 </ng-container>
 
-<assessment-component style="display: contents;" [languageId]="selectedItemId?.languageId || selectedFavCategory" *ngIf="showAssessmentComponent"></assessment-component>
+<assessment-component style="display: contents;"  [categoryId]="selectedCategory"   [languageId]="selectedItemId?.languageId || selectedFavCategory" *ngIf="showAssessmentComponent"></assessment-component>

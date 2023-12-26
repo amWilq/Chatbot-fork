@@ -1,23 +1,19 @@
-import { Component, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
 import { Assessment } from 'src/app/entities/assessments.model';
 import { QuizQuestion, QuizModel } from 'src/app/entities/quiz-question.model';
 import { AssessmentsService } from 'src/app/services/assessments.service';
-enum AssessmentType {
-  Quiz = 'quiz',
-  FreeText = 'free-text',
-  CodeSnippet = 'code-snippet',
-  MultipleChoice = 'multiple-choice',
-}
 
 @Component({
   selector: 'assessment-component',
   templateUrl: 'assessments-component.html',
   styleUrls: ['assessments-component.scss']
 })
-export class AssessmentsComponent {
+
+export class AssessmentsComponent implements OnInit {
   @Input() languageId!: any;
+  @Input() categoryId!: any;
+
   assessments: Assessment[] = [];
   selectedCard!: any;
   loading = false;
@@ -28,11 +24,10 @@ export class AssessmentsComponent {
   assessmentId = '';
   showSummary: boolean = false;
   summaryData!: QuizModel;
-  duration = 2;
+  duration: number = 3000; // 5 minutes
 
   constructor(
     private assessmentsService: AssessmentsService,
-    private cdr: ChangeDetectorRef,
     private router: Router
 
   ) { }
@@ -49,7 +44,7 @@ export class AssessmentsComponent {
   }
 
   private handleAssessmentResponse(res: any): void {
-    this.assessments = res.body.items ?? [];
+    this.assessments = res.body ?? [];
     this.selectedCard = this.assessments.length > 0 ? this.assessments[0] : null;
   }
 
@@ -85,75 +80,38 @@ export class AssessmentsComponent {
 
   private createStartAssessmentRequest(): any {
     return {
-      "assessmentTypeId": this.selectedCard.assessmentTypeId.toString(),
-      "duration": this.duration,
+      "userDeviceId": localStorage.getItem('userId'),
+      "categoryId": "2aeca473",
+      "languageId": this.languageId,
+      "difficulty": this.selectedDifficulty,
       "startTime": new Date().toISOString(),
-      "userId": localStorage.getItem('userId')
+      "duration": this.duration
     };
   }
 
   private handleStartAssessmentResponse(response: any): void {
     this.assessmentId = response.body.assessmentId;
-    const requestBody2 = this.createSecondAssessmentRequest(response.body.assessmentId);
-
-    // Add the new payload to the request body
-    const body = { "requestType": "generateOutput" };
-    Object.assign(requestBody2, body);
-
-    this.assessmentsService.startAssessmentGenerate(this.selectedCard.name, this.assessmentId, requestBody2).subscribe({
-      next: (response) => this.handleQuizQuestionsResponse(response),
-      error: (error) => this.logErrorAndStopLoading(error)
-    });
-  }
-
-  private handleQuizQuestionsResponse(response: any) {
-    console.log(response)
-
-    switch (this.selectedCard.name) {
-      case 'quiz':
-        this.questions = response.body.data.question; // For quiz
-        break;
-      case 'free-text':
-        this.questions = response.body.data.aiResponse.message; // For free-text
-        break;
-      case 'code-snippet':
-        this.questions = response.body.data.snippet; // For code-snippet
-        break;
-      case 'multiple-choice':
-        this.questions = response.body.data.multipleChoice; // For multiple-choice
-        break;
-      default:
-        console.error('Unknown question type:', this.selectedCard.name);
-        return;
-    }
-    this.loading = false;
-    this.cdr.detectChanges();
-    if (this.questions) {
-      this.router.navigate(['/tabs/tab3'], {
-        queryParams: {
-          type: this.selectedCard.name,
-          duration: this.duration,
-          assessmentName: this.selectedCard.name,
-          assessmentId: this.assessmentId,
-          assessmentTypeId: this.selectedCard.assessmentTypeId.toString(),
-          questions: JSON.stringify(this.questions)
-        }
-      });
+    if (this.assessmentId && this.selectedCard && this.duration != null) {
+      this.navigateWithParams();
+    } else {
+      console.error('Required data for navigation is missing');
     }
   }
 
-  private createSecondAssessmentRequest(assessmentId: string): any {
-    return {
-      "assessmentTypeId": this.selectedCard.assessmentTypeId.toString(),
-      "assessmentId": assessmentId,
-      "userId": localStorage.getItem('userId'),
-      "requestType": this.selectedCard.name,
-      "languageId": this.languageId,
-      "data": {
-        "format": this.selectedCard.format,
-        "difficulty": this.selectedDifficulty,
+  private navigateWithParams(): void {
+    this.router.navigate(['/tabs/tab3'], {
+      queryParams: {
+        type: this.selectedCard.name,
+        duration: this.duration.toString(),
+        assessmentName: this.selectedCard.name,
+        assessmentId: this.assessmentId,
+        assessmentTypeId: this.selectedCard.assessmentTypeId.toString(),
       }
-    };
+    }).then(() => {
+      console.log('Navigation successful');
+    }).catch(error => {
+      console.error('Navigation error:', error);
+    });
   }
 
   private logErrorAndStopLoading(error: any): void {

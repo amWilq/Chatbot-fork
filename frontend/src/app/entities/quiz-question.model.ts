@@ -1,6 +1,7 @@
 export interface QuizQuestion {
-  answers: string[];
   content: string;
+  options: string[];
+  correctAnswer: string;
 }
 
 interface Question {

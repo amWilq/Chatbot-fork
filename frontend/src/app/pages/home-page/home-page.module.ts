@@ -5,24 +5,19 @@ import { FormsModule } from '@angular/forms';
 import { HomePageComponent } from './home-page-component';
 
 import { HomePageRoutingModule } from './home-page-routing.module';
-import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
 import { StackedCardComponentModule } from 'src/app/components/stacked-card/stacked-card.module';
 import { CustomMatCardComponentModule } from 'src/app/components/custom-mat-card/custom-mat-card.module';
 import { PickAnswerQuizComponentModule } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.module';
-import { CodeSnippetComponent } from 'src/app/components/code-snippet/code-snippet.component';
-import { CodeSnippetComponentModule } from 'src/app/components/code-snippet/code-snippet.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    ExploreContainerComponentModule,
     StackedCardComponentModule,
     CustomMatCardComponentModule,
     HomePageRoutingModule,
     PickAnswerQuizComponentModule,
-    CodeSnippetComponentModule,
   ],
   declarations: [HomePageComponent]
 })

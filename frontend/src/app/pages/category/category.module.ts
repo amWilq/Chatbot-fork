@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { CategoryComponent } from './category-component';
 
 import { CategoryComponentRoutingModule } from './category-routing.module';
-import { ExploreContainerComponentModule } from 'src/app/components/explore-container/explore-container.module';
 import { AssessmentsModule } from '../assessments/assessments.module';
 
 @NgModule({
@@ -13,7 +12,6 @@ import { AssessmentsModule } from '../assessments/assessments.module';
     IonicModule,
     CommonModule,
     FormsModule,
-    ExploreContainerComponentModule,
     CategoryComponentRoutingModule,
     AssessmentsModule
   ],

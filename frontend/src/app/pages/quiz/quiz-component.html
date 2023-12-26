@@ -1,29 +1,33 @@
-<ng-container *ngIf="type === 'quiz'; else freeTextBlock">
-  <pick-answer-quiz *ngIf="!showSummary" style="display: contents;" [questions]="questions"
-    [duration]="duration"></pick-answer-quiz>
-</ng-container>
 
-<ng-template #freeTextBlock>
-  <ng-container *ngIf="type === 'free-text'; else codeSnippetBlock">
-    <h3>free-text</h3>
+  <ng-container *ngIf="type === 'quiz'; else freeTextBlock">
+    <pick-answer-quiz *ngIf="!showSummary" style="display: contents;"
+    [duration]="duration" [assessmentTypeName]="assessmentName"
+     [assessmentId]="assessmentId">
+   </pick-answer-quiz>
   </ng-container>
-</ng-template>
 
-<ng-template #codeSnippetBlock>
-  <ng-container *ngIf="type === 'code-snippet'; else multipleChoiceBlock">
+  <ng-template #freeTextBlock>
+    <ng-container *ngIf="type === 'free-text'; else codeSnippetBlock">
+      <h3>free-text</h3>
+    </ng-container>
+  </ng-template>
 
-    <!-- Include the CodeSnippetComponent and listen for the answerSubmitted event -->
-    <code-snippet *ngIf="!showSummary" style="display: contents;" [questions]="questions" [duration]="duration"
-      (answerSubmitted)="onCodeSnippetAnswerSubmitted($event)"></code-snippet>
+  <ng-template #codeSnippetBlock>
+    <ng-container *ngIf="type === 'code-snippet'; else multipleChoiceBlock">
 
-  </ng-container>
-</ng-template>
+      <!-- Include the CodeSnippetComponent and listen for the answerSubmitted event -->
+      <code-snippet *ngIf="!showSummary" style="display: contents;" [questions]="questions" [duration]="duration"
+        (answerSubmitted)="onCodeSnippetAnswerSubmitted($event)"></code-snippet>
 
-<ng-template #multipleChoiceBlock>
-  <ng-container *ngIf="type === 'multiple-choice'">
-    <h3>multiple-choice</h3>
-  </ng-container>
-</ng-template>
+    </ng-container>
+  </ng-template>
 
-<app-quiz-summary style="display: contents;" *ngIf="showSummary" (replayQuiz)="onReplayQuiz()"
-  (returnToMenu)="onReturnToMenu()" [quizResponse]="summaryData"></app-quiz-summary>
+  <ng-template #multipleChoiceBlock>
+    <ng-container *ngIf="type === 'multiple-choice'">
+      <h3>multiple-choice</h3>
+    </ng-container>
+  </ng-template>
+
+  <app-quiz-summary style="display: contents;" *ngIf="showSummary" (replayQuiz)="onReplayQuiz()"
+    (returnToMenu)="onReturnToMenu()" [quizResponse]="summaryData"></app-quiz-summary>
+

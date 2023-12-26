@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Category } from 'src/app/entities/category.model';
 import { Language } from 'src/app/entities/languages.model';
@@ -19,7 +19,7 @@ interface SelectedFavCard {
   templateUrl: 'home-page-component.html',
   styleUrls: ['home-page-component.scss']
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements OnInit, AfterViewChecked {
   @Output() newItemEvent = new EventEmitter<string>();
 
   isClicked = false;
@@ -34,15 +34,22 @@ export class HomePageComponent implements OnInit {
   showAssessmentComponent: boolean = false;
   selectedFavCardLanguageId: number | null = null;
   savedState: { [languageId: string]: { categoryId: string, item: Language } } = {};
+  progress: number = 0;
+  displayTime: string | undefined;
+  timer: any | null = null;
 
-  constructor(private router: Router, private categoryService: CategoryService) { }
+  constructor(
+    private router: Router,
+    private categoryService: CategoryService,
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   ngOnInit() {
     this.loadAllCategories();
     this.loadFavDataFromLocalStorage();
   }
 
-  ngAfterViewChecked(){
+  ngAfterViewChecked() {
     this.loadFavDataFromLocalStorage();
   }
 
@@ -110,12 +117,13 @@ export class HomePageComponent implements OnInit {
   }
 
   goToCategoryView() {
-    if (this.selectedFavCardLanguageId ) {
+    if (this.selectedFavCardLanguageId) {
       this.router.navigate(['/tabs/tab2'], {
         queryParams: {
           selectedFavCategory: this.selectedFavCardLanguageId
         }
       });
+      this.cdr.detectChanges();
     }
   }
 }

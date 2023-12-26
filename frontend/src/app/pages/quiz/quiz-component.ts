@@ -1,11 +1,12 @@
 
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, catchError, throwError } from 'rxjs';
 import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
 import { QuizModel } from 'src/app/entities/quiz-question.model';
 import { AssessmentsService } from 'src/app/services/assessments.service';
 import { QuizService } from './../../services/quiz.service';
+import { TimerService } from 'src/app/services/time.service';
 
 @Component({
   selector: 'quiz-component',
@@ -23,35 +24,46 @@ export class QuizComponent {
   assessmentName: any;
   showSummary: boolean = false;
   duration: any;
-  type: any;
+  type: string = '';
   private queryParamsSubscription!: Subscription;
   private quizCompletedSubscription!: Subscription;
   private completeAssessmentSubscription!: Subscription;
   quizCompleted: boolean = false;
 
   constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
+    public router: Router,
+    public activatedRoute: ActivatedRoute,
     private assessmentsService: AssessmentsService,
     private quizService: QuizService,
-  ) {}
+    private timerService: TimerService
+  ) { }
 
   ngOnInit(): void {
-    this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe({
-      next: (params) => {
-        this.type = params['type'];
-        this.duration = params['duration'];
-        this.assessmentName = params['assessmentName'];
-        this.assessmentId = params['assessmentId'];
-        this.assessmentTypeId = params['assessmentTypeId'];
-        if (this.type === 'code-snippet' || this.type === 'quiz') {
-          this.questions = JSON.parse(params['questions']);
-        }
-      }
-    });
-    this.subscribeToQuizCompletion();
+    this.loading = true;
+    this.subscribeToQueryParams();
     this.loadQuizStatus();
   }
+
+  private subscribeToQueryParams() {
+    this.loading = true;
+    this.queryParamsSubscription = this.activatedRoute.queryParams.pipe(
+      catchError(err => {
+        console.error('Error fetching query params:', err);
+        this.loading = false;
+        return throwError(err);
+      })
+    ).subscribe(params => {
+      console.error('params', params);
+      this.assessmentId = params['assessmentId'];
+      this.assessmentName = params['assessmentName'];
+      this.assessmentTypeId = params['assessmentTypeId'];
+      this.duration = params['duration'];
+      this.type = params['type'];
+      this.loading = false;
+      this.loadQuizStatus();
+    });
+  }
+
 
   ngOnDestroy(): void {
     if (this.queryParamsSubscription) {
@@ -65,36 +77,27 @@ export class QuizComponent {
     }
   }
 
-  private async subscribeToQuizCompletion() {
-    if (!this.quizCompleted) {
-      this.quizCompletedSubscription = this.quizService.getQuizsStatus().subscribe(async () => {
-        const requestBody = {
-          "assessmentTypeId": this.assessmentTypeId,
-          "endTime": new Date().toISOString(),
-          "userId": localStorage.getItem('userId')
-        };
-        try {
-          const response = await this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId, requestBody).toPromise();
-          this.quizService.setQuizsStatus(true);
-          this.quizService.setTimeStatus('');
-          this.summaryData = Array.isArray(response!.body) ? response!.body : [response!.body];
-        } catch (error) {
-          this.loading = false;
-          console.error(error);
-        }
-      });
-    } else {
-      setTimeout(() => {
-        this.subscribeToQuizCompletion();
-      }, 100);
-    }
+  async completeQuiz(): Promise<void> {
+    this.loading = true;
+    await this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId).subscribe({
+      next: (response) => {
+        console.error('response', response);
+        this.loading = false;
+      },
+      error: (error) => console.log(error)
+    });
   }
 
   private loadQuizStatus() {
-    this.quizService.getQuizsStatus().subscribe((e) => {
-      this.quizCompleted = e;
-      this.showSummary = e;
+    this.timerService.timeUp$.subscribe(() => {
+      console.log('Time is up!');
+      this.completeQuiz();
+      this.showSummary = true;
     });
+    // this.quizService.getQuizsStatus().subscribe((e) => {
+    //   this.quizCompleted = e;
+    //   this.showSummary = e;
+    // });
   }
 
   onReplayQuiz() {
@@ -103,15 +106,15 @@ export class QuizComponent {
   }
 
   async onCodeSnippetAnswerSubmitted(answer: any): Promise<void> {
-    this.assessmentsService.sendUserAnswer(this.assessmentName, this.assessmentId, answer).subscribe(
-      response => {
-        const botComment = response?.body.data.explanation;
-        this.quizService.setBotComment(botComment);
-      },
-      error => {
-        console.error('Error sending data to server:', error);
-      }
-    );
+    // this.assessmentsService.sendUserAnswer(this.assessmentName, this.assessmentId, answer).subscribe(
+    //   response => {
+    //     const botComment = response?.body.data.explanation;
+    //     this.quizService.setBotComment(botComment);
+    //   },
+    //   error => {
+    //     console.error('Error sending data to server:', error);
+    //   }
+    // );
   }
 
   onReturnToMenu() {
