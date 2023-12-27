@@ -122,7 +122,7 @@ export class CodeSnippetComponent {
   private formatTime(time: number): string {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    this.quizService.setTimeStatus(`${minutes}:${seconds < 10 ? '0' + seconds : seconds}`);
+    // this.quizService.setTimeStatus(`${minutes}:${seconds < 10 ? '0' + seconds : seconds}`);
     return `Time left ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   }
 

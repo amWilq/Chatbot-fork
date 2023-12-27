@@ -82,9 +82,9 @@ export class PickAnswerQuizComponent {
   }
 
   async presentAlert(response: any) {
-    const headerClass = response.data.isCorrect === true ? 'alert-head-correct ' : 'alert-head-incorrect';
+    const headerClass = response.data.isCorrect === true ? 'alert-head-correct' : 'alert-head-incorrect';
     const alert = await this.alertController.create({
-      header: response.data.isCorrect,
+      header: String(response.data.isCorrect),
       cssClass: headerClass,
       message: `${response.data.explanation}`,
       buttons: [{

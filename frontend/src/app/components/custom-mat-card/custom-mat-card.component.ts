@@ -21,7 +21,8 @@ export class CustomMatCardComponent {
   }
 
   handleCardClick() {
-    this.selectedCard = this.selectedCard === this.placeholder ? null : this.placeholder;
+    this.isClicked = !this.isClicked;
+    this.selectedCard = this.isClicked ? this.placeholder : null;
     this.newItemEvent.emit(this.selectedCard);
   }
 

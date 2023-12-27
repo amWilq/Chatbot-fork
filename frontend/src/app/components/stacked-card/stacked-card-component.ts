@@ -18,9 +18,7 @@ export class StackedCardComponent {
   selectedOption!: string;
   isClicked: boolean = false;
 
-  constructor( private toastController: ToastController) {
-
-  }
+  constructor(public toastController: ToastController) { }
 
 
   toggleCardVisibility() {
@@ -45,7 +43,7 @@ export class StackedCardComponent {
   }
 
 
-  async presentToast(text: string ) {
+  async presentToast(text: string) {
     const toast = await this.toastController.create({
       message: text,
       duration: 1500,
