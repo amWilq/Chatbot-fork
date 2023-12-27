@@ -33,8 +33,8 @@ export class PickAnswerQuizComponent {
   }
 
   async ngOnInit() {
-    await this.getQuestion();
     this.timerService.startCountdown(this.duration / 600); // zamiana na minuty
+    await this.getQuestion();
     this.timerService.getTime().subscribe(time => {
       const minutes = Math.floor(time / 60000);
       const seconds = Math.floor((time % 60000) / 1000);
@@ -47,9 +47,11 @@ export class PickAnswerQuizComponent {
 
   async getQuestion(): Promise<void> {
     this.loading = true;
+    this.timerService.pauseCountdown();
     this.assessmentsService.getGenerateOutput(this.assessmentTypeName, this.assessmentId).subscribe({
       next: (response) => {
-        this.question = response.data.question; // For quiz
+        this.question = response.data.question;
+        this.timerService.resumeCountdown();
         this.loading = false;
       },
       error: (error) => console.log(error)
@@ -58,7 +60,6 @@ export class PickAnswerQuizComponent {
 
 
   async setUserAnswer(): Promise<void> {
-    // this.loading = true;
     this.loadingNextQuestion = true;
     this.timerService.pauseCountdown();
     const timeSpent = this.timerService.getTimeSpent();
@@ -66,7 +67,6 @@ export class PickAnswerQuizComponent {
     if (timeSpent) {
       await this.assessmentsService.sendUserAnswer(this.assessmentTypeName, this.assessmentId, this.selectedAnswer, timeSpent).subscribe({
         next: (response) => {
-          // this.loading = false;
           this.loadingNextQuestion = false;
           console.log(response);
           if (response) {
@@ -82,20 +82,20 @@ export class PickAnswerQuizComponent {
   }
 
   async presentAlert(response: any) {
+    const headerClass = response.data.isCorrect === true ? 'alert-head-correct ' : 'alert-head-incorrect';
     const alert = await this.alertController.create({
       header: response.data.isCorrect,
-      message: `${response.data.isCorrect} ${response.data.explanation}`,
+      cssClass: headerClass,
+      message: `${response.data.explanation}`,
       buttons: [{
         text: 'OK',
         handler: async () => {
           console.log('OK clicked');
           this.selectedAnswer = null;
           await this.getQuestion();
-          this.timerService.resumeCountdown();
         }
       }]
     });
-
     await alert.present();
   }
 }

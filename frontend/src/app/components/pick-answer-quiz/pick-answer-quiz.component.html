@@ -6,7 +6,7 @@
       <ion-progress-bar [value]="progress"></ion-progress-bar>
     </ion-card-header>
     <ion-card-content class="ion-text-center">
-      <ion-img src="/assets/images/angular.png" style="display: block; margin: auto;"></ion-img>
+      <!-- <ion-img src="/assets/images/angular.png" style="display: block; margin: auto;"></ion-img> -->
       <p>
         {{ question?.content }}
         <span *ngIf="selectedAnswer" class="highlight">{{ selectedAnswer }}</span>
@@ -20,7 +20,7 @@
       <ion-grid>
         <ion-row *ngFor="let answer of question?.options">
           <ion-col>
-            <ion-button (click)="onSelectedAnswer(answer)" [disabled]="loading"
+            <ion-button (click)="onSelectedAnswer(answer)" [disabled]="loading || loadingNextQuestion"
               [ngClass]="{'highlight-card': selectedAnswer === answer, 'disabled': selectedAnswer !== null && selectedAnswer !== answer}"
               class="ion-text-wrap">
               {{ answer }}

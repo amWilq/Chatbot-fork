@@ -46,3 +46,15 @@
   justify-content: center;
   flex-direction: column;
 }
+
+ion-alert.custom-alert {
+  --backdrop-opacity: 0.7;
+}
+
+.alert-head-incorrect .alert-title {
+  color: red;
+}
+
+.alert-head-correct .alert-title {
+  color: green;
+}

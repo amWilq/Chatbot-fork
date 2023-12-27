@@ -34,7 +34,6 @@ export class QuizComponent {
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private assessmentsService: AssessmentsService,
-    private quizService: QuizService,
     private timerService: TimerService
   ) { }
 

@@ -34,10 +34,6 @@ export class TimerService {
     if (this.intervalId) {
       clearInterval(this.intervalId);
       this.intervalId = null;
-      if (this.startTime) {
-        this.totalSpentTime += Date.now() - this.startTime;
-        this.startTime = null;
-      }
     }
   }
 

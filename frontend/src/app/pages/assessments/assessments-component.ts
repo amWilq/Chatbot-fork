@@ -24,7 +24,7 @@ export class AssessmentsComponent implements OnInit {
   assessmentId = '';
   showSummary: boolean = false;
   summaryData!: QuizModel;
-  duration: number = 3000; // 5 minutes
+  duration: number = 600; // 1 minuta
 
   constructor(
     private assessmentsService: AssessmentsService,
