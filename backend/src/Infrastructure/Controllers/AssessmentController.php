@@ -38,7 +38,7 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('/{assessmentTypeName}/start', name: 'start', methods: ['POST'])]
+    #[Route('/{assessmentTypeName}/start', name: 'start', methods: ['POST', 'OPTIONS'])]
     public function startAssessment(Request $request, string $assessmentTypeName): JsonResponse
     {
         $output = $this->assessmentService->startAssessment(
@@ -51,7 +51,7 @@ class AssessmentController extends AbstractBaseController
         return $this->prettyJsonResponse($output);
     }
 
-    #[Route('/{assessmentTypeName}/{assessmentId}/complete', name: 'complete', methods: ['POST'])]
+    #[Route('/{assessmentTypeName}/{assessmentId}/complete', name: 'complete', methods: ['POST', 'OPTIONS'])]
     public function completeAssessment(Request $request, string $assessmentTypeName, string $assessmentId): JsonResponse
     {
         $output = $this->assessmentService->completeAssessment(
