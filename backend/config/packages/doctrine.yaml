@@ -9,6 +9,7 @@ doctrine:
         host: '%app.db_host%'
         server_version: '%app.db_version%'
         port: '%app.db_port%'
+        unix_socket: /tmp/mysql.sock
   orm:
     mappings:
       App:

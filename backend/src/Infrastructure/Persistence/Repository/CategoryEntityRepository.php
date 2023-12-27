@@ -82,7 +82,7 @@ class CategoryEntityRepository extends BaseEntityRepository implements CategoryR
         $this->getEntityManager()->flush();
     }
 
-    protected function mapToDomainEntity(CategoryEntity|PersistenceEntityInterface $entity
+    public function mapToDomainEntity(CategoryEntity|PersistenceEntityInterface $entity
     ): Category {
         return Category::create(
             id: $entity->getId(),
