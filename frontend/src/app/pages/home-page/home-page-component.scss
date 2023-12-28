@@ -1,5 +1,5 @@
 .container-button {
-    display: flex;
+  display: flex;
   justify-content: center;
 }
 
@@ -109,4 +109,32 @@ span {
 
 .chevron-forward {
   transform: scale(5);
+}
+
+.accordion-border {
+  border-radius: 20px;
+}
+
+.header-background {
+  background-color: var(--ion-card-background);
+}
+
+.label-color {
+  color: var(--ion-card-color, var(--ion-item-color, var(--ion-color-step-550, #737373)));
+}
+
+.content-flex {
+  display: flex;
+  background-color: var(--ion-card-background);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.image-max-width {
+  max-width: 10vw;
+}
+
+.flex-center {
+  display: flex;
+  align-self: center;
 }

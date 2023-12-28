@@ -37,6 +37,7 @@ export class HomePageComponent implements OnInit, AfterViewChecked {
   progress: number = 0;
   displayTime: string | undefined;
   timer: any | null = null;
+  currentAccordion = 'first';
 
   constructor(
     private router: Router,

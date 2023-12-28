@@ -1,35 +1,26 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="container">
-    <ion-header [translucent]="true">
-      <ion-toolbar>
-        <ion-title class="card-title">Favorite</ion-title>
-        <ion-buttons slot="end">
-          <ion-button expand="block" (click)="onToggleCardVisibility()">
-            <ion-icon [name]="isCardVisible ? 'chevron-up-outline' : 'chevron-down-outline'" size="large"
-              fill="clear"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+  <ion-accordion-group [value]="currentAccordion">
+    <ion-accordion value="first" class="accordion-border">
+      <ion-item slot="header" class="header-background">
+        <ion-label class="label-color">Favorite</ion-label>
+      </ion-item>
+      <div class="ion-padding content-flex" slot="content">
+        <ion-card *ngFor="let card of savedState | keyvalue; let i = index"
+          [ngClass]="{'highlight-card': selectedFavCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
+          (click)="onFavoriteCardClick(card.value, i, true)" class="card">
+          <ion-icon (click)="onDeleteCard(card)" *ngIf="selectedFavCardIndex === i" name="close-outline" size="large"
+            fill="clear" class="close-icon"></ion-icon>
 
-    <div class="card-container">
-      <ion-card *ngFor="let card of savedState | keyvalue; let i = index"
-        [ngClass]="{'highlight-card': selectedFavCardIndex === i && isCardVisible, 'card-animating': !isCardVisible, 'card-hidden': !isCardVisible}"
-        (click)="onFavoriteCardClick(card.value, i, true)" class="card">
-        <ion-icon (click)="onDeleteCard(card)" *ngIf="selectedFavCardIndex === i" name="close-outline" size="large"
-          fill="clear" class="close-icon"></ion-icon>
-
-        <div class="card-image-container">
-          <ion-img class="card-image" src="{{ card.value.item.icon }}"></ion-img>
-        </div>
-        <ion-card-content>
-          <div class="card-description">{{ card.value.item.name }}</div>
-        </ion-card-content>
-      </ion-card>
-    </div>
-
-  </div>
-
+          <div class="card-image-container">
+            <ion-img class="card-image" src="{{ card.value.item.icon }}"></ion-img>
+          </div>
+          <ion-card-content>
+            <div class="card-description">{{ card.value.item.name }}</div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
 
 
   <ion-card *ngFor="let card of categorys; let i = index"
