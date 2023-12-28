@@ -1,3 +1,4 @@
+import { QuizService } from 'src/app/services/quiz.service';
 
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -5,9 +6,6 @@ import { Subscription, catchError, throwError } from 'rxjs';
 import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
 import { QuizModel } from 'src/app/entities/quiz-question.model';
 import { AssessmentsService } from 'src/app/services/assessments.service';
-import { QuizService } from './../../services/quiz.service';
-import { TimerService } from 'src/app/services/time.service';
-
 @Component({
   selector: 'quiz-component',
   templateUrl: 'quiz-component.html',
@@ -34,7 +32,7 @@ export class QuizComponent {
     public router: Router,
     public activatedRoute: ActivatedRoute,
     private assessmentsService: AssessmentsService,
-    private timerService: TimerService
+    private quizService: QuizService
   ) { }
 
   ngOnInit(): void {
@@ -82,17 +80,22 @@ export class QuizComponent {
       next: (response) => {
         console.error('response', response);
         this.loading = false;
+        this.showSummary = true;
       },
       error: (error) => console.log(error)
     });
   }
 
-  private loadQuizStatus() {
-    this.timerService.timeUp$.subscribe(() => {
-      console.log('Time is up!');
-      this.completeQuiz();
-      this.showSummary = true;
+  private async loadQuizStatus() {
+    this.quizService.getQuizsStatus().subscribe(status => {
+      if (status) {
+        console.log('Quiz is completed');
+        this.completeQuiz();
+      } else {
+        console.log('Quiz is in progress');
+      }
     });
+
     // this.quizService.getQuizsStatus().subscribe((e) => {
     //   this.quizCompleted = e;
     //   this.showSummary = e;

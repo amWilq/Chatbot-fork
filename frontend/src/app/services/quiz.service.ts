@@ -23,10 +23,6 @@ export class QuizService {
     this.quizsStatus.next(status);
   }
 
-  getQuizsStatus(): Observable<boolean> {
-    return this.quizsStatus.asObservable();
-  }
-
   setTimeStatus(status: string): void {
     this.timeStatus.next(status);
   }
@@ -43,4 +39,15 @@ export class QuizService {
     return this.comment.asObservable();
   }
 
+  setQuizInProgress(): void {
+    this.quizsStatus.next(false);
+  }
+
+  setQuizCompleted(): void {
+    this.quizsStatus.next(true);
+  }
+
+  getQuizsStatus(): Observable<boolean> {
+    return this.quizsStatus.asObservable();
+  }
 }
