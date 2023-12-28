@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpResponse } from "@angular/common/http";
 import { SERVER_API_URL, WW_SERVER_API_URL } from "../app.constants";
-import { webSocket } from "rxjs/webSocket";
+import { WebSocketSubject, webSocket } from "rxjs/webSocket";
 import { Observable } from "rxjs";
 import { Assessment } from "../entities/assessments.model";
 export type EntityArrayResponseType = HttpResponse<Assessment[]>;
@@ -12,10 +12,16 @@ export type EntityArrayResponseType = HttpResponse<Assessment[]>;
 export class AssessmentsService {
 
   private ASSESSMENTS_LIST_URL = SERVER_API_URL + '/assessments/types';
+  private userAnswerSocket$: WebSocketSubject<any> | null = null;
 
   constructor(
     private http: HttpClient
   ) { }
+
+  initWebSocket(assessmentTypeName: string, assessmentId: string,) {
+    const userAnswerUrl = `${WW_SERVER_API_URL}/assessments/?assessmentTypeName=${assessmentTypeName}&assessmentId=${assessmentId}`;
+    this.userAnswerSocket$ = webSocket(userAnswerUrl);
+  }
 
   getAllAssessments(): Observable<EntityArrayResponseType> {
     return this.http.get<Assessment[]>(`${this.ASSESSMENTS_LIST_URL}`, { observe: 'response' });
@@ -42,34 +48,59 @@ export class AssessmentsService {
   }
 
   getGenerateOutput(assessmentTypeName: string, assessmentId: string): Observable<any> {
-    const userAnswerUrl = `${WW_SERVER_API_URL}/assessments/?assessmentTypeName=${assessmentTypeName}&assessmentId=${assessmentId}`;
-    const body =
-    {
-      "assessmentTypeName": assessmentTypeName,
-      "assessmentId": assessmentId,
-      "requestType": "generateOutput"
-    }
-    const userAnswerSocket$ = webSocket(userAnswerUrl);
-    userAnswerSocket$.next(body);
-    return userAnswerSocket$.asObservable();
+    return new Observable<any>((observer) => {
+      if (this.userAnswerSocket$) {
+        const body = {
+          "assessmentTypeName": assessmentTypeName,
+          "assessmentId": assessmentId,
+          "requestType": "generateOutput"
+        };
+
+        this.userAnswerSocket$.next(body);
+        this.userAnswerSocket$.subscribe(
+          (response) => {
+            observer.next(response);
+            observer.complete();
+          },
+          (error) => {
+            observer.error(error);
+          }
+        );
+      } else {
+        observer.error("WebSocket is not initialized");
+      }
+    });
   }
+
 
 
   sendUserAnswer(assessmentTypeName: string, assessmentId: string, answer: any, takenTime: number): Observable<any> {
-    const userAnswerUrl = `${WW_SERVER_API_URL}/assessments/?assessmentTypeName=${assessmentTypeName}&assessmentId=${assessmentId}`;
-    const bodyUserAnswer =
-    {
-      "assessmentTypeName": assessmentTypeName,
-      "assessmentId": assessmentId,
-      "requestType": "userInput",
-      "data": {
-        "answer": answer,
-        "takenTime": takenTime
+    return new Observable<any>((observer) => {
+      if (this.userAnswerSocket$) {
+        const bodyUserAnswer = {
+          "assessmentTypeName": assessmentTypeName,
+          "assessmentId": assessmentId,
+          "requestType": "userInput",
+          "data": {
+            "answer": answer,
+            "takenTime": takenTime
+          }
+        };
+        this.userAnswerSocket$.next(bodyUserAnswer);
+        this.userAnswerSocket$.subscribe(
+          (response) => {
+            observer.next(response);
+            observer.complete();
+          },
+          (error) => {
+            observer.error(error);
+          }
+        );
+      } else {
+        observer.error("WebSocket is not initialized");
       }
-    }
-    const userAnswerSocket$ = webSocket(userAnswerUrl);
-    userAnswerSocket$.next(bodyUserAnswer);
-    return userAnswerSocket$.asObservable();
+    });
   }
+
 
 }

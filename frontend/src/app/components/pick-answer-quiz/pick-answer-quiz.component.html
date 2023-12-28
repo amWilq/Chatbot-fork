@@ -3,6 +3,9 @@
   <ion-card class="quiz-card gradient">
     <ion-card-header>
       <ion-title class="ion-text-center" style="color: white;">{{displayTime}}</ion-title>
+      <ion-button fill="clear" class="close-button" size="large" (click)="setEndQuiz()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
       <ion-progress-bar [value]="progress"></ion-progress-bar>
     </ion-card-header>
     <ion-card-content class="ion-text-center">
