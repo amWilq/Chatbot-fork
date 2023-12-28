@@ -1,5 +1,3 @@
-<!-- quiz-summary.component.html -->
-
 <ion-header>
   <ion-toolbar>
     <ion-title>
@@ -13,28 +11,78 @@
   <ion-card class="quiz-summary-footer">
     <ion-card-content>
       <ion-item>
-        <ion-label><strong>Total Questions Answered:</strong> {{ quizResponse[0].assessmentDetails.answeredQuestions
-          }}</ion-label>
+        <ion-label><strong>Total Questions Answered:</strong> {{ data.assessmentDetails.answeredQuestions }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label><strong>Correct Answers:</strong> {{ quizResponse[0].assessmentDetails.correctAnswers }}</ion-label>
+        <ion-label><strong>Correct Answers:</strong> {{ data.assessmentDetails.correctAnswers }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label><strong>Start Difficulty:</strong> {{ quizResponse[0].difficultyAtStart }}</ion-label>
+        <ion-label><strong>Start Difficulty:</strong> {{ data.difficultyAtStart }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label><strong>End Difficulty:</strong> {{ quizResponse[0].difficultyAtEnd }}</ion-label>
+        <ion-label><strong>End Difficulty:</strong> {{ data.difficultyAtEnd }}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-label>{{ quizResponse[0].feedback }}</ion-label>
+        <ion-label>{{ data.feedback }}</ion-label>
       </ion-item>
     </ion-card-content>
   </ion-card>
 
+  <ion-accordion-group>
+    <ion-accordion *ngFor="let question of data.assessmentDetails.questions; let i = index">
+      <ion-item slot="header">
+
+          <strong style="color: var(--ion-color-primary);">{{ i + 1 }}.</strong> {{ question.content }}
+
+      </ion-item>
+
+      <ion-card-content slot="content">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle style="border-bottom: 2px solid var(--ion-color-dark-tint); padding-bottom: 5px;">
+              <strong [ngStyle]="{'color': question.isCorrect ? 'green' : 'red'}" >Your Answer:</strong> {{ question.yourAnswer }}
+
+            </ion-card-subtitle>
+
+          </ion-card-header>
+
+          <ion-card-content>
+            <strong>Correct Answer:</strong> {{ question.correctAnswer }}
+            <br>
+            <strong>Explanation:</strong> {{ question.explanation }}
+            <br>
+            <strong>You answered in:</strong> {{ question.timeToAnswer }} seconds
+            <br>
+          </ion-card-content>
+        </ion-card>
+      </ion-card-content>
+    </ion-accordion>
+  </ion-accordion-group>
+
+<!--
+  <ion-card *ngFor="let question of data.assessmentDetails.questions">
+    <ion-card-content>
+      <ion-item>
+        <ion-label><strong>Question:</strong> {{ question.content }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>Your Answer:</strong> {{ question.yourAnswer }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>Correct Answer:</strong> {{ question.correctAnswer }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>Explanation:</strong> {{ question.explanation }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label><strong>Time to Answer:</strong> {{ question.timeToAnswer }} seconds</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card> -->
 
 </ion-content>
+
 <ion-footer>
   <ion-button class="custom-button" (click)="onReplayQuiz()" expand="full" color="primary">Replay Quiz</ion-button>
-  <ion-button class="custom-button" (click)="onReturnToMenu()" expand="full" color="secondary">Return to
-    Menu</ion-button>
+  <ion-button class="custom-button" (click)="onReturnToMenu()" expand="full" color="secondary">Return to Menu</ion-button>
 </ion-footer>
