@@ -106,13 +106,9 @@
         "message": {
           "type": "string",
           "minLength": 1
-        },
-        "currentStatus": {
-          "type": "string",
-          "minLength": 1
         }
       },
-      "required": ["message", "currentStatus"]
+      "required": ["message"]
     },
     "CodeSnippetAnswer": {
       "type": "object",
