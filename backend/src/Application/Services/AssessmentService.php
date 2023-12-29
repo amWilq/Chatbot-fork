@@ -10,6 +10,8 @@ use App\Domain\Assessment\Enums\AssessmentStatusEnum;
 use App\Domain\Assessment\Enums\FormatEnum;
 use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Domain\Assessment\Repositories\AssessmentTypeRepositoryInterface;
+use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAssessment;
+use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuestionAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Domain\Category\Entities\Category;
@@ -120,40 +122,73 @@ class AssessmentService implements AssessmentServiceInterface
         switch ($data->requestType) {
             case ApiOperationsEnum::USER_INPUT->value:
                 $this->handleUserInput($data);
-                $array = $this->assessment->getAssessmentType()->getQuestionsAttempts();
-
-                /** @var QuestionAttempt $questionAttempt */
-                $questionAttempt = end($array);
-
                 $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_RECEIVE_USER_INPUT_SUCCESS);
                 $output = [
                     'assessmentStatus' => $this->assessment->getStatus()->value,
-                    'data' => [
-                        'userAnswer' => $questionAttempt->getAnswer(),
-                        'isCorrect' => $questionAttempt->isCorrect(),
-                        'explanation' => $questionAttempt->getExplanation(),
-                    ],
+                    'data' => [],
                 ];
+                switch ($this->assessment->getAssessmentType()->getName()) {
+                    case FormatEnum::QUIZ->value:
+                        $array = $this->assessment->getAssessmentType()->getQuestionsAttempts();
+                        /** @var QuestionAttempt $questionAttempt */
+                        $questionAttempt = end($array);
+
+                        $output['data'] = [
+                            'userAnswer' => $questionAttempt->getAnswer(),
+                            'isCorrect' => $questionAttempt->isCorrect(),
+                            'explanation' => $questionAttempt->getExplanation(),
+                        ];
+                        break;
+                    case FormatEnum::CODE_SNIPPET->value:
+                        $array = $this->assessment->getAssessmentType()->getSnippetAttempts();
+                        /** @var CodeSnippetAttempt $snippetAttempt */
+                        $snippetAttempt = end($array);
+
+                        $output['data'] = [
+                            'userAnswer' => $snippetAttempt->getAnswer(),
+                            'isCorrect' => $snippetAttempt->isCorrect(),
+                            'explanation' => $snippetAttempt->getExplanation(),
+                        ];
+                        break;
+                }
+
                 $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
                 $this->saveAssessment($this->assessment);
                 return $output;
             case ApiOperationsEnum::GENERATE_OUTPUT->value:
                 $this->handleGenerateOutput($data);
-                $array = $this->assessment->getAssessmentType()->getQuestionsAttempts();
-
-                /** @var QuestionAttempt $questionAttempt */
-                $questionAttempt = end($array);
                 $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_GENERATE_OUTPUT_SUCCESS);
                 $output = [
                     'assessmentStatus' => $this->assessment->getStatus()->value,
-                    'data' => [
-                        'question' => [
-                            'content' => $questionAttempt->getQuestion()->getContent(),
-                            'options' => $questionAttempt->getQuestion()->getOptions(),
-                            'correctAnswer' => $questionAttempt->getQuestion()->getCorrectAnswer(),
-                        ],
-                    ],
+                    'data' => [],
                 ];
+                switch ($this->assessment->getAssessmentType()->getName()) {
+                    case FormatEnum::QUIZ->value:
+                        $array = $this->assessment->getAssessmentType()->getQuestionsAttempts();
+
+                        /** @var QuestionAttempt $questionAttempt */
+                        $questionAttempt = end($array);
+                        $output['data'] = [
+                            'question' => [
+                                'content' => $questionAttempt->getQuestion()->getContent(),
+                                'options' => $questionAttempt->getQuestion()->getOptions(),
+                                'correctAnswer' => $questionAttempt->getQuestion()->getCorrectAnswer(),
+                            ],
+                        ];
+                        break;
+                    case FormatEnum::CODE_SNIPPET->value:
+                        $array = $this->assessment->getAssessmentType()->getSnippetAttempts();
+
+                        /** @var CodeSnippetAttempt $snippetAttempt */
+                        $snippetAttempt = end($array);
+                        $output['data'] = [
+                            'snippet' => [
+                                'code' => $snippetAttempt->getCodeSnippet()->getCode(),
+                                'correctSolution' => $snippetAttempt->getCodeSnippet()->getCorrectSolution()
+                            ]
+                        ];
+                        break;
+                }
                 $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
                 $this->saveAssessment($this->assessment);
 
@@ -341,6 +376,9 @@ class AssessmentService implements AssessmentServiceInterface
             FormatEnum::QUIZ->value => QuizAssessment::create(
                 id: $assessmentType->getId()->toString(),
                 durationInSeconds: $postData->duration ?? '300',
+            ),
+            FormatEnum::CODE_SNIPPET->value => CodeSnippetAssessment::create(
+                id: $assessmentType->getId()->toString()
             ),
             default => throw new BadRequestException('Given AssessmentType not supported on server.'),
         };

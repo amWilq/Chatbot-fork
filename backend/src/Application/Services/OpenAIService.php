@@ -4,12 +4,14 @@ namespace App\Application\Services;
 
 use App\Application\Dtos\AssessmentDTO;
 use App\Domain\Assessment\Entities\Assessment;
-use App\Domain\Assessment\Enums\DifficultiesEnum;
 use App\Domain\Assessment\Enums\FormatEnum;
 use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Domain\Assessment\Types\QuizAssessment\QuestionAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
+use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAttempt;
+use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAssessment;
 use App\Domain\Assessment\ValueObjects\Question;
+use App\Domain\Assessment\ValueObjects\CodeSnippet;
 use App\Infrastructure\OpenAI\ApiClientInterface;
 use App\Shared\Enums\AssistantPromptsEnum;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -40,6 +42,10 @@ class OpenAIService implements OpenAIServiceInterface
                 $jsonSchema = AssistantPromptsEnum::QUIZ_PROBLEM_SCHEMA->value;
                 $this->generateQuizQuestion($assessment, $thread['id'], $jsonSchema);
                 break;
+            case FormatEnum::CODE_SNIPPET->value:
+                $jsonSchema = AssistantPromptsEnum::CODE_SNIPPET_PROBLEM_SCHEMA->value;
+                $this->generateCodeSnippetProblem($assessment, $thread['id'], $jsonSchema);
+                break;
             default:
                 break;
         }
@@ -51,14 +57,12 @@ class OpenAIService implements OpenAIServiceInterface
     {
         $thread = $this->getThread($data);
 
-        switch ($assessment->getAssessmentType()->getName()) {
-            case FormatEnum::QUIZ->value:
-                $jsonSchema = AssistantPromptsEnum::QUIZ_ANSWER_SCHEMA->value;
-                $this->handleQuizAnswer($assessment, $thread['id'], $jsonSchema, $data);
-                break;
-            default:
-                break;
-        }
+        $jsonSchema = AssistantPromptsEnum::ANSWER_SCHEMA->value;
+
+        match ($assessment->getAssessmentType()->getName()) {
+            FormatEnum::QUIZ->value => $this->handleQuizAnswer($assessment, $thread['id'], $jsonSchema, $data),
+            FormatEnum::CODE_SNIPPET->value => $this->handleCodeSnippetAnswer($assessment, $thread['id'], $jsonSchema, $data),
+        };
 
         return $this->apiClient->getMessages($thread['id']);
     }
@@ -212,6 +216,69 @@ class OpenAIService implements OpenAIServiceInterface
         $currentAttempt->checkAnswerCorrectness();
 
         $quiz->checkAndIncreaseCorrectAnswers($currentAttempt);
+        $this->getAdjustedDifficulty($assessment, $threadId);
+    }
+
+    protected function generateCodeSnippetProblem(Assessment $assessment, string $threadId, string $jsonSchema): void
+    {
+        $message = sprintf(
+            AssistantPromptsEnum::GENERATE_QUESTION_PROMPT->value,
+            $assessment->getAssessmentType()->getName(),
+            $assessment->getLanguage()->getName(),
+            $assessment->getCurrentDifficulty()?->value,
+            $jsonSchema
+        );
+        $this->apiClient->addMessage($threadId, $message);
+
+        $snippets = $this->run($threadId);
+
+        if (isset($snippets['status'])) {
+            return;
+        }
+        $snippet = end($snippets);
+
+        $s = CodeSnippet::create(
+            code: $snippet->content,
+            correctSolution: $snippet->correctAnswer
+        );
+
+        $sa = CodeSnippetAttempt::create(
+            codeSnippet: $s
+        );
+
+        /** @var CodeSnippetAssessment $codeSnippet */
+        $codeSnippet = $assessment->getAssessmentType();
+        $codeSnippet->setSnippetAttempts($sa);
+    }
+
+    protected function handleCodeSnippetAnswer(Assessment $assessment, string $threadId, string $jsonSchema, object $data): void
+    {
+        $message = sprintf(
+            AssistantPromptsEnum::HANDLE_ANSWER_PROMPT->value,
+            $data->data->answer,
+            $jsonSchema
+        );
+        $this->apiClient->addMessage($threadId, $message);
+
+        $answer = $this->run($threadId);
+
+        if (isset($answer['status'])) {
+            return;
+        }
+        $answer = end($answer);
+
+        /** @var CodeSnippetAssessment $snippet */
+        $snippet = $assessment->getAssessmentType();
+        $snippetAttempts = $snippet->getSnippetAttempts();
+
+        /** @var CodeSnippetAttempt $currentAttempt */
+        $currentAttempt = end($snippetAttempts);
+
+        $currentAttempt->setAttempt($data->data->answer, (int) $data->data->takenTime);
+        $currentAttempt->setExplanation($answer->explanation);
+        $currentAttempt->setCorrectness($answer->isCorrect);
+
+        $snippet->checkAndIncreaseCorrectSnippets($currentAttempt);
         $this->getAdjustedDifficulty($assessment, $threadId);
     }
 
