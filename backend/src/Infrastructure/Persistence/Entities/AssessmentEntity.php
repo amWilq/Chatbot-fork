@@ -5,6 +5,7 @@ namespace App\Infrastructure\Persistence\Entities;
 use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Entities\AssessmentType;
 use App\Domain\Assessment\Enums\FormatEnum;
+use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAssessment;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
 use Doctrine\DBAL\Types\Types;
@@ -220,6 +221,7 @@ class AssessmentEntity implements PersistenceEntityInterface
     {
         return match ($assessmentType->getName()) {
             FormatEnum::QUIZ->value => self::quizAssessmentDetailsToArray($assessmentType),
+            FormatEnum::CODE_SNIPPET->value => self::codeSnippetAssessmentDetailsToArray($assessmentType),
             default => [],
         };
     }
@@ -246,6 +248,29 @@ class AssessmentEntity implements PersistenceEntityInterface
             'correctAnswers' => $assessmentType->getCorrectAnswerCount(),
             'duration' => $assessmentType->getDuration(),
             'questions' => $questions,
+        ];
+    }
+
+    protected static function codeSnippetAssessmentDetailsToArray(CodeSnippetAssessment $assessmentType): array
+    {
+        $snippets = [];
+        foreach ($assessmentType->getSnippetAttempts() as $snippet)
+        {
+            $snippets[] = [
+                'code' => $snippet->getCodeSnippet()->getCode(),
+                'correctSolution' => $snippet->getCodeSnippet()->getCorrectSolution(),
+                'explanation' => $snippet->getExplanation(),
+                'userAnswer' => $snippet->getAnswer(),
+                'isCorrect' => $snippet->isCorrect(),
+                'takenTime' => $snippet->getTakenTime(),
+            ];
+        }
+        return [
+            'assessmentTypeId' => $assessmentType->getId()->toString(),
+            'assessmentTypeName' => $assessmentType->getName(),
+            'answeredQuestions' => $assessmentType->getSnippetCount(),
+            'correctAnswers' => $assessmentType->getCorrectSnippetCount(),
+            'snippets' => $snippets,
         ];
     }
 }

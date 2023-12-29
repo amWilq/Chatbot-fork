@@ -139,7 +139,22 @@ enum AssistantPromptsEnum: string
           "required": ["content", "options", "correctAnswer"]
         }
         JSON;
-    case QUIZ_ANSWER_SCHEMA = <<<'JSON'
+    case CODE_SNIPPET_PROBLEM_SCHEMA = <<<'JSON'
+        {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "correctSolution": {
+              "type": "string"
+            }
+          },
+          "required": ["code", "correctSolution"]
+        }
+        JSON;
+
+    case ANSWER_SCHEMA = <<<'JSON'
         {
           "type": "object",
           "properties": {

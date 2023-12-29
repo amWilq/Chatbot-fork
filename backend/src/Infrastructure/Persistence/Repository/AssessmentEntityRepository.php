@@ -6,8 +6,11 @@ use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Entities\AssessmentType;
 use App\Domain\Assessment\Enums\FormatEnum;
 use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
+use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAssessment;
+use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuestionAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
+use App\Domain\Assessment\ValueObjects\CodeSnippet;
 use App\Domain\Assessment\ValueObjects\Question;
 use App\Domain\Category\Repositories\CategoryRepositoryInterface;
 use App\Domain\Language\Repositories\LanguageRepositoryInterface;
@@ -183,6 +186,38 @@ class AssessmentEntityRepository extends BaseEntityRepository implements Assessm
                     correctAnswerCount: $correctAnswerCount,
                     questionsAttempts: $attempts,
                     durationInSeconds: $durationInSeconds,
+                );
+            case FormatEnum::CODE_SNIPPET->value:
+                if (empty($assessmentDetails->getAssessmentDetails())) {
+                    return CodeSnippetAssessment::create(
+                        id: $assessmentDetails->getId()
+                    );
+                }
+
+                [
+                    'answeredQuestions' => $snippetCount,
+                    'correctAnswers' => $correctSnippetCount,
+                    'snippets' => $snippets,
+                ] = $assessmentDetails->getAssessmentDetails();
+                $attempts = [];
+                foreach ($snippets as $snippet) {
+                    $s = CodeSnippet::create(
+                        code: $snippet['code'],
+                        correctSolution: $snippet['correctSolution'],
+                    );
+                    $attempts[] = CodeSnippetAttempt::create(
+                        userAnswer: $snippet['userAnswer'],
+                        takenTime: $snippet['takenTime'],
+                        isCorrect: $snippet['isCorrect'],
+                        explanation: $snippet['explanation'],
+                        codeSnippet: $s
+                    );
+                }
+                return CodeSnippetAssessment::create(
+                    id: $assessmentDetails->getAssessmentType()->getId(),
+                    snippetCount: $snippetCount,
+                    correctSnippetCount: $correctSnippetCount,
+                    snippetAttempts: $attempts,
                 );
             default:
                 return null;

@@ -120,9 +120,12 @@
         "answer": {
           "type": "string",
           "minLength": 1
+        },
+        "takenTime": {
+          "type": "number"
         }
       },
-      "required": ["answer"]
+      "required": ["answer", "takenTime"]
     }
   }
 }
