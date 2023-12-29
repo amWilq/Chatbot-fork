@@ -63,6 +63,12 @@ enum AssistantPromptsEnum: string
             if everything goes fine it will return bool true, otherwise bool false. When received bool false rerun function with new argument.
             If bool true returned complete run without additional messages.
             
+            ### Function: GenerateFreeTextInteraction
+            Arguments: string message
+            Description: Establish a free-text based interaction with the user,
+            if everything goes fine it will return bool true, otherwise bool false. When received bool false rerun function with new argument.
+            If bool true returned complete run without additional messages.
+            
             ### Function: Adjust Difficulty
             Arguments: enum Difficulty["beginner", "intermediate", "advanced"]
             Description: Modify the complexity level of upcoming questions, function will update current difficulty in user's assessment, 
@@ -89,6 +95,17 @@ enum AssistantPromptsEnum: string
         I expect from you clear response, without additional sentences unrelated to task, in following json schema:
         %s
         INS;
+
+    /**
+     * Order of parameters: Language, Difficulty, Json Schema.
+     */
+    case GENERATE_FREE_TEXT_INTERACTION = <<<'INS'
+        Assistant, trigger GenerateFreeTextInteraction function ready to interact with on a mobile device. 
+        This Free Text assessment is related to %s programming at a %s level. 
+        I expect a clear response from you, without additional sentences unrelated to the task, in the following JSON schema:
+        %s
+        INS;
+
     /**
      * Order of parameters: UserAnswer, Json schema.
      */
@@ -151,6 +168,20 @@ enum AssistantPromptsEnum: string
             }
           },
           "required": ["code", "correctSolution"]
+        }
+        JSON;
+    case FREE_TEXT_SCHEMA = <<< 'JSON'
+        {
+          "type": "object",
+          "properties": {
+            "sender": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": ["sender", "message"]
         }
         JSON;
 

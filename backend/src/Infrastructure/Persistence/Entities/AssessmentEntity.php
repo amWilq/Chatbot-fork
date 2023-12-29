@@ -6,6 +6,7 @@ use App\Domain\Assessment\Entities\Assessment;
 use App\Domain\Assessment\Entities\AssessmentType;
 use App\Domain\Assessment\Enums\FormatEnum;
 use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAssessment;
+use App\Domain\Assessment\Types\FreeTextAssessment\FreeTextAssessment;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Infrastructure\Persistence\Repository\AssessmentEntityRepository;
 use Doctrine\DBAL\Types\Types;
@@ -222,6 +223,7 @@ class AssessmentEntity implements PersistenceEntityInterface
         return match ($assessmentType->getName()) {
             FormatEnum::QUIZ->value => self::quizAssessmentDetailsToArray($assessmentType),
             FormatEnum::CODE_SNIPPET->value => self::codeSnippetAssessmentDetailsToArray($assessmentType),
+            FormatEnum::FREE_TEXT->value => self::freeTextAssessmentDetailsToArray($assessmentType),
             default => [],
         };
     }
@@ -271,6 +273,23 @@ class AssessmentEntity implements PersistenceEntityInterface
             'answeredQuestions' => $assessmentType->getSnippetCount(),
             'correctAnswers' => $assessmentType->getCorrectSnippetCount(),
             'snippets' => $snippets,
+        ];
+    }
+
+    protected static function freeTextAssessmentDetailsToArray(FreeTextAssessment $assessmentType): array
+    {
+        $messages = [];
+        foreach ($assessmentType->getMessages() as $message) {
+            $messages[] = [
+              'sender' => $message->getSender(),
+              'message' => $message->getMessage(),
+            ];
+        }
+
+        return [
+            'assessmentTypeId' => $assessmentType->getId()->toString(),
+            'assessmentTypeName' => $assessmentType->getName(),
+            'messages' => $messages,
         ];
     }
 }

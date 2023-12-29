@@ -12,8 +12,10 @@ use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Domain\Assessment\Repositories\AssessmentTypeRepositoryInterface;
 use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAssessment;
 use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAttempt;
+use App\Domain\Assessment\Types\FreeTextAssessment\FreeTextAssessment;
 use App\Domain\Assessment\Types\QuizAssessment\QuestionAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
+use App\Domain\Assessment\ValueObjects\Message;
 use App\Domain\Category\Entities\Category;
 use App\Domain\Category\Repositories\CategoryRepositoryInterface;
 use App\Domain\Language\Entities\Language;
@@ -152,6 +154,16 @@ class AssessmentService implements AssessmentServiceInterface
                             'explanation' => $snippetAttempt->getExplanation(),
                         ];
                         break;
+                    case FormatEnum::FREE_TEXT->value:
+                        $array = $this->assessment->getAssessmentType()->getMessages();
+                        /** @var Message $message */
+                        $message = end($array);
+
+                        $output['data'] = [
+                            'sender' => $message->getSender(),
+                            'message' => $message->getMessage(),
+                        ];
+                        break;
                 }
 
                 $this->assessment->setStatus(AssessmentStatusEnum::ASSESSMENT_IN_PROGRESS);
@@ -188,6 +200,18 @@ class AssessmentService implements AssessmentServiceInterface
                                 'code' => $snippetAttempt->getCodeSnippet()->getCode(),
                                 'correctSolution' => $snippetAttempt->getCodeSnippet()->getCorrectSolution()
                             ]
+                        ];
+                        break;
+                    case FormatEnum::FREE_TEXT->value:
+                        $array = $this->assessment->getAssessmentType()->getMessages();
+                        /** @var Message $message */
+                        $message = end($array);
+
+                        $output['data'] = [
+                            'modelResponse' => [
+                                'sender' => $message->getSender(),
+                                'message' => $message->getMessage(),
+                            ],
                         ];
                         break;
                 }
@@ -381,6 +405,9 @@ class AssessmentService implements AssessmentServiceInterface
                 durationInSeconds: $postData->duration ?? '300',
             ),
             FormatEnum::CODE_SNIPPET->value => CodeSnippetAssessment::create(
+                id: $assessmentType->getId()->toString()
+            ),
+            FormatEnum::FREE_TEXT->value => FreeTextAssessment::create(
                 id: $assessmentType->getId()->toString()
             ),
             default => throw new BadRequestException('Given AssessmentType not supported on server.'),

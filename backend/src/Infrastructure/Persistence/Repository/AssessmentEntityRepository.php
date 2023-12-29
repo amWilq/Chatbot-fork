@@ -8,9 +8,11 @@ use App\Domain\Assessment\Enums\FormatEnum;
 use App\Domain\Assessment\Repositories\AssessmentRepositoryInterface;
 use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAssessment;
 use App\Domain\Assessment\Types\CodeSnippetAssessment\CodeSnippetAttempt;
+use App\Domain\Assessment\Types\FreeTextAssessment\FreeTextAssessment;
 use App\Domain\Assessment\Types\QuizAssessment\QuestionAttempt;
 use App\Domain\Assessment\Types\QuizAssessment\QuizAssessment;
 use App\Domain\Assessment\ValueObjects\CodeSnippet;
+use App\Domain\Assessment\ValueObjects\Message;
 use App\Domain\Assessment\ValueObjects\Question;
 use App\Domain\Category\Repositories\CategoryRepositoryInterface;
 use App\Domain\Language\Repositories\LanguageRepositoryInterface;
@@ -218,6 +220,24 @@ class AssessmentEntityRepository extends BaseEntityRepository implements Assessm
                     snippetCount: $snippetCount,
                     correctSnippetCount: $correctSnippetCount,
                     snippetAttempts: $attempts,
+                );
+            case FormatEnum::FREE_TEXT->value:
+                if (empty($assessmentDetails->getAssessmentDetails())) {
+                    return FreeTextAssessment::create(
+                        id: $assessmentDetails->getId()
+                    );
+                }
+                ['messages' => $messages] = $assessmentDetails->getAssessmentDetails();
+                $messagesVO = [];
+                foreach ($messages as $message) {
+                    $m = Message::create(
+                        sender: $message['sender'],
+                        message: $message['message']
+                    );
+                    $messagesVO[] = $m;
+                }
+                return FreeTextAssessment::create(
+                    messages: $messagesVO
                 );
             default:
                 return null;
