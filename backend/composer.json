@@ -10,6 +10,7 @@
         "ext-memcached": "*",
         "doctrine/doctrine-bundle": "*",
         "doctrine/orm": "^2.17",
+        "nelmio/cors-bundle": "^2.4",
         "runtime/swoole": "^0.3.1",
         "swaggest/json-schema": "^0.12.42",
         "symfony/console": "6.3.*",
