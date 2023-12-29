@@ -94,6 +94,8 @@ class AssessmentService implements AssessmentServiceInterface
             $language,
             $assessmentType,
         ] = $this->manageAssociations($postData, $assessmentTypeName);
+        
+        $startTime = isset($postData->startTime) ? new \DateTime($postData->startTime) : null;
 
         $this->setAssessment(
             Assessment::create(
@@ -102,8 +104,8 @@ class AssessmentService implements AssessmentServiceInterface
                 language: $language,
                 assessmentType: $assessmentType,
                 difficulty: $postData->difficulty,
-                startTime: $postData->startTime ?? null,
-            )
+                startTime: $startTime,
+                )
         );
     }
 
@@ -268,8 +270,9 @@ class AssessmentService implements AssessmentServiceInterface
 
     protected function manageAssociations(object $postData, string $assessmentTypeName): array
     {
-        $user = $this->getUser($postData->userDeviceId, $postData->username);
-        $category = $this->getCategory($postData->categoryId);
+        $username = isset($postData->username) ? $postData->username : null;
+        $user = $this->getUser($postData->userDeviceId, $username);
+                $category = $this->getCategory($postData->categoryId);
         $language = $this->getLanguage($postData->languageId);
         $assessmentType = $this->getAssessmentType($postData, $assessmentTypeName);
 
