@@ -2,7 +2,7 @@ import { QuizService } from 'src/app/services/quiz.service';
 
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, catchError, throwError } from 'rxjs';
+import { Subscription, catchError, take, throwError } from 'rxjs';
 import { PickAnswerQuizComponent } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.component';
 import { QuizModel } from 'src/app/entities/quiz-question.model';
 import { AssessmentsService } from 'src/app/services/assessments.service';
@@ -16,7 +16,8 @@ export class QuizComponent {
   @Output() botCommentAdded: EventEmitter<string> = new EventEmitter<string>();
   @Input() questions: any;
   loading = false;
-  summaryData: QuizModel[] = [];
+  loadingCompleteQuiz = false;
+  summaryData: QuizModel | null = null;
   assessmentTypeId: any;
   assessmentId: any;
   assessmentName: any;
@@ -75,19 +76,20 @@ export class QuizComponent {
   }
 
   async completeQuiz(): Promise<void> {
-    this.loading = true;
+    this.loadingCompleteQuiz = true;
     await this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId).subscribe({
       next: (response) => {
         console.error('response', response);
-        this.loading = false;
+        this.loadingCompleteQuiz = false;
         this.showSummary = true;
+        this.summaryData = response.body;
       },
       error: (error) => console.log(error)
     });
   }
 
   private async loadQuizStatus() {
-    this.quizService.getQuizsStatus().subscribe(status => {
+    this.quizService.getQuizsStatus().pipe(take(1)).subscribe(status => {
       if (status) {
         console.log('Quiz is completed');
         this.completeQuiz();
@@ -95,11 +97,6 @@ export class QuizComponent {
         console.log('Quiz is in progress');
       }
     });
-
-    // this.quizService.getQuizsStatus().subscribe((e) => {
-    //   this.quizCompleted = e;
-    //   this.showSummary = e;
-    // });
   }
 
   onReplayQuiz() {

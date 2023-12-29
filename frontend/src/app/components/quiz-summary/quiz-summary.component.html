@@ -1,88 +1,54 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>
-      Quiz Summary
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-
   <ion-card class="quiz-summary-footer">
     <ion-card-content>
-      <ion-item>
-        <ion-label><strong>Total Questions Answered:</strong> {{ data.assessmentDetails.answeredQuestions }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label><strong>Correct Answers:</strong> {{ data.assessmentDetails.correctAnswers }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label><strong>Start Difficulty:</strong> {{ data.difficultyAtStart }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label><strong>End Difficulty:</strong> {{ data.difficultyAtEnd }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label>{{ data.feedback }}</ion-label>
-      </ion-item>
+
+      <ion-card-content>
+        <strong>Total Questions Answered:</strong> {{ quizResponse?.assessmentDetails?.answeredQuestions }}
+      </ion-card-content>
+
+      <ion-card-content>
+        <strong>Correct Answers:</strong> {{ quizResponse?.assessmentDetails?.correctAnswers }}
+      </ion-card-content>
+
+      <ion-card-content>
+       <strong>Start Difficulty:</strong> {{ quizResponse?.difficultyAtStart }}
+      </ion-card-content>
+
+      <ion-card-content>
+       <strong>End Difficulty:</strong> {{ quizResponse?.difficultyAtEnd }}
+      </ion-card-content>
+
+      <ion-card-content>
+        <strong>Feedback:</strong>{{ quizResponse?.feedback }}
+      </ion-card-content>
+
     </ion-card-content>
   </ion-card>
 
   <ion-accordion-group>
-    <ion-accordion *ngFor="let question of data.assessmentDetails.questions; let i = index">
+    <ion-accordion *ngFor="let quiz of quizResponse?.assessmentDetails?.questions; let i = index">
       <ion-item slot="header">
-
-          <strong style="color: var(--ion-color-primary);">{{ i + 1 }}.</strong> {{ question.content }}
-
+        <strong style="color: var(--ion-color-primary);">{{ i + 1 }}.</strong> {{ quiz.content }}
       </ion-item>
 
       <ion-card-content slot="content">
         <ion-card>
           <ion-card-header>
             <ion-card-subtitle style="border-bottom: 2px solid var(--ion-color-dark-tint); padding-bottom: 5px;">
-              <strong [ngStyle]="{'color': question.isCorrect ? 'green' : 'red'}" >Your Answer:</strong> {{ question.yourAnswer }}
-
+              <strong [ngStyle]="{'color': quiz.isCorrect ? 'green' : 'red'}">Your Answer:</strong> {{ quiz.yourAnswer }}
             </ion-card-subtitle>
-
           </ion-card-header>
 
           <ion-card-content>
-            <strong>Correct Answer:</strong> {{ question.correctAnswer }}
+            <strong>Question:</strong> {{ quiz.content }}
             <br>
-            <strong>Explanation:</strong> {{ question.explanation }}
+            <strong>Correct Answer:</strong> {{ quiz.correctAnswer }}
             <br>
-            <strong>You answered in:</strong> {{ question.timeToAnswer }} seconds
+            <strong>Explanation:</strong> {{ quiz.explanation }}
             <br>
           </ion-card-content>
         </ion-card>
       </ion-card-content>
     </ion-accordion>
   </ion-accordion-group>
-
-<!--
-  <ion-card *ngFor="let question of data.assessmentDetails.questions">
-    <ion-card-content>
-      <ion-item>
-        <ion-label><strong>Question:</strong> {{ question.content }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label><strong>Your Answer:</strong> {{ question.yourAnswer }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label><strong>Correct Answer:</strong> {{ question.correctAnswer }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label><strong>Explanation:</strong> {{ question.explanation }}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label><strong>Time to Answer:</strong> {{ question.timeToAnswer }} seconds</ion-label>
-      </ion-item>
-    </ion-card-content>
-  </ion-card> -->
-
 </ion-content>
-
-<ion-footer>
-  <ion-button class="custom-button" (click)="onReplayQuiz()" expand="full" color="primary">Replay Quiz</ion-button>
-  <ion-button class="custom-button" (click)="onReturnToMenu()" expand="full" color="secondary">Return to Menu</ion-button>
-</ion-footer>

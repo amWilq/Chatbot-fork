@@ -4,7 +4,7 @@ export interface QuizQuestion {
   correctAnswer: string;
 }
 
-interface Question {
+export interface Question {
   content: string;
   answers: string[];
   correctAnswer: string;

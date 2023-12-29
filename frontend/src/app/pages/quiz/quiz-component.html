@@ -31,3 +31,4 @@
   <app-quiz-summary style="display: contents;" *ngIf="showSummary" (replayQuiz)="onReplayQuiz()"
     (returnToMenu)="onReturnToMenu()" [quizResponse]="summaryData"></app-quiz-summary>
 
+<ion-loading class="custom-loading" [isOpen]="loadingCompleteQuiz" message="AI generates a summary, please wait..."></ion-loading>

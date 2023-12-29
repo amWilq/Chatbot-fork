@@ -73,17 +73,6 @@ export class PickAnswerQuizComponent {
 
   }
 
-  async completeQuiz(): Promise<void> {
-    this.loading = true;
-    this.subscriptions.push(
-      this.assessmentsService.completeAssessment(this.assessmentTypeName, this.assessmentId).subscribe({
-        next: (response) => {
-          console.error('response', response);
-          this.loading = false;
-        },
-        error: (error) => console.log(error)
-      }));
-  }
 
   async setEndQuiz() {
     this.quizOver = true;
