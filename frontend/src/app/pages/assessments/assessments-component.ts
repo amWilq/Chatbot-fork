@@ -44,10 +44,9 @@ export class AssessmentsComponent implements OnInit {
   }
 
   private handleAssessmentResponse(res: any): void {
-    this.assessments = res.body ?? [];
+    this.assessments = (res.body ?? []).filter((assessment: { name: string; }) => assessment.name !== 'multiple-choice');
     this.selectedCard = this.assessments.length > 0 ? this.assessments[0] : null;
   }
-
   onDifficultyChange(event: any): void {
     this.selectedDifficulty = event.detail.value;
   }
