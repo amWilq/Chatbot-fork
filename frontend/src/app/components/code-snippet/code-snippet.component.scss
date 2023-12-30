@@ -21,6 +21,10 @@ ion-content {
   }
 }
 
+.loading {
+  max-width: 12vw !important;
+}
+
 .user-message {
   align-self: flex-end;
   background-color: #007bff;
@@ -34,9 +38,9 @@ ion-content {
 }
 
 .bot-message {
-  color: white;
-  align-self: flex-start;
-  background-color: rgb(0, 47, 255);
+  // color: white;
+  // align-self: flex-start;
+  // background-color: rgb(0, 47, 255);
 
 }
 

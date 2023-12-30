@@ -51,7 +51,6 @@ export class QuizComponent {
         return throwError(err);
       })
     ).subscribe(params => {
-      console.error('params', params);
       this.assessmentId = params['assessmentId'];
       this.assessmentName = params['assessmentName'];
       this.assessmentTypeId = params['assessmentTypeId'];
@@ -79,7 +78,6 @@ export class QuizComponent {
     this.loadingCompleteQuiz = true;
     await this.assessmentsService.completeAssessment(this.assessmentName, this.assessmentId).subscribe({
       next: (response) => {
-        console.error('response', response);
         this.loadingCompleteQuiz = false;
         this.showSummary = true;
         this.summaryData = response.body;
@@ -90,9 +88,9 @@ export class QuizComponent {
 
   private async loadQuizStatus() {
     this.quizService.getQuizsStatus().pipe(take(1)).subscribe(status => {
-      if (status) {
-        console.log('Quiz is completed');
+      if (status && !this.quizCompleted) {
         this.completeQuiz();
+        this.quizCompleted = true;
       } else {
         console.log('Quiz is in progress');
       }
@@ -102,18 +100,6 @@ export class QuizComponent {
   onReplayQuiz() {
     this.showSummary = false;
     window.location.reload();
-  }
-
-  async onCodeSnippetAnswerSubmitted(answer: any): Promise<void> {
-    // this.assessmentsService.sendUserAnswer(this.assessmentName, this.assessmentId, answer).subscribe(
-    //   response => {
-    //     const botComment = response?.body.data.explanation;
-    //     this.quizService.setBotComment(botComment);
-    //   },
-    //   error => {
-    //     console.error('Error sending data to server:', error);
-    //   }
-    // );
   }
 
   onReturnToMenu() {

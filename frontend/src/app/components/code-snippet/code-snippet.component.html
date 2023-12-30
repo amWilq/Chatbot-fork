@@ -1,56 +1,54 @@
 <ion-card class="quiz-card">
+
   <ion-card-header>
-    <ion-title *ngIf="displayProgressBar" class="ion-text-center" style="color: white;">{{displayTime}}</ion-title>
+    <ion-toolbar *ngIf="displayProgressBar">
+      <ion-title *ngIf="displayProgressBar"  style="color: white;">{{displayTime}}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button *ngIf="displayProgressBar" id="present-alert" fill="clear" class="close-button" size="large">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+
     <ion-progress-bar [value]="progress"></ion-progress-bar>
   </ion-card-header>
-  <ion-button id="present-alert" *ngIf="displayProgressBar" fill="clear">End game</ion-button>
+
 </ion-card>
 
 <ion-content [scrollEvents]="true" (ionScroll)="onScroll($event)">
   <div class="chat-container">
-
-    <!-- Karta wyświetlana, gdy question jest załadowane -->
-    <ion-card *ngIf="question; else loading" class="message">
-      <div>
-        <pre><code>{{ question.code }}</code></pre>
-      </div>
+    <!-- Wyświetlanie wiadomości -->
+    <ion-card *ngFor="let message of messages" class="message" [ngClass]="{
+      'user-message': message.type === 'user',
+      'bot-message': message.type === 'bot',
+      'question-message': message.type === 'question'
+    }" [ngStyle]="{
+      'border': message.type === 'bot' ? (message.isCorrect ? '2px solid green' : '2px solid red') : ''
+    }">
       <ion-card-content style="white-space: normal; padding: 0;">
+
+        <div *ngIf="message.type === 'question'">
+          <pre><code>{{ message.content }}</code></pre>
+        </div>
+
+        <p *ngIf="message.type !== 'question'">{{ message.content }}</p>
       </ion-card-content>
     </ion-card>
 
     <!-- Karta wyświetlana, gdy question jest null lub undefined -->
-    <ng-template #loading>
-      <ion-card class="message">
+    <ion-card *ngIf="!question" class="message loading">
+      <ion-card-content style="white-space: normal; padding: 0;">
+        <ion-spinner></ion-spinner>
+      </ion-card-content>
+    </ion-card>
+
+    <ng-template #loadingNextQuestion >
+      <ion-card *ngIf="loadingNextQuestion" class="message loading">
         <ion-card-content style="white-space: normal; padding: 0;">
           <ion-spinner></ion-spinner>
         </ion-card-content>
       </ion-card>
     </ng-template>
-
-
-
-    <ion-card *ngFor="let message of messages" class="message" [ngClass]="{
-      'user-message': message.type === 'user',
-      'bot-question': message.type === 'bot',
-      'bot-message': message.type === 'question'
-    }">
-
-      <!-- User Input or BOT answer-->
-      <ion-card-content style="white-space: normal; padding: 0;">
-        {{ message.content }}
-      </ion-card-content>
-    </ion-card>
-    <ion-card *ngIf="botAnswer && userAnswer.length > 0" class="message">
-      <div>
-        <pre><code>{{ botAnswer.explanation }}</code></pre>
-      </div>
-      <div>
-        <pre><code>{{ botAnswer.isCorrect }}</code></pre>
-      </div>
-
-      <ion-card-content style="white-space: normal; padding: 0;">
-      </ion-card-content>
-    </ion-card>
 
   </div>
 </ion-content>
