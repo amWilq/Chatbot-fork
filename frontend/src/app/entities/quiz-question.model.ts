@@ -36,3 +36,8 @@ export interface QuizModel {
   feedback: string;
   assessmentDetails: AssessmentDetails;
 }
+
+export interface CodeSnippet {
+  code: string;
+  correctSolution: string;
+}

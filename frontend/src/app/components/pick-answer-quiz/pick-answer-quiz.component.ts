@@ -51,9 +51,11 @@ export class PickAnswerQuizComponent {
         }
       }));
   }
+
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
+
   async getQuestion(): Promise<void> {
     if (this.quizOver) {
       this.quizService.setQuizCompleted();

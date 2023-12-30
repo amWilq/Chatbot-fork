@@ -4,12 +4,30 @@
     <ion-progress-bar [value]="progress"></ion-progress-bar>
   </ion-card-header>
   <ion-button id="present-alert" *ngIf="displayProgressBar" fill="clear">End game</ion-button>
-  <ion-alert trigger="present-alert" header="Terminate?" [buttons]="alertButtons"
-    (didDismiss)="setResult($event)"></ion-alert>
 </ion-card>
 
 <ion-content [scrollEvents]="true" (ionScroll)="onScroll($event)">
   <div class="chat-container">
+
+    <!-- Karta wyświetlana, gdy question jest załadowane -->
+    <ion-card *ngIf="question; else loading" class="message">
+      <div>
+        <pre><code>{{ question.code }}</code></pre>
+      </div>
+      <ion-card-content style="white-space: normal; padding: 0;">
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Karta wyświetlana, gdy question jest null lub undefined -->
+    <ng-template #loading>
+      <ion-card class="message">
+        <ion-card-content style="white-space: normal; padding: 0;">
+          <ion-spinner></ion-spinner>
+        </ion-card-content>
+      </ion-card>
+    </ng-template>
+
+
 
     <ion-card *ngFor="let message of messages" class="message" [ngClass]="{
       'user-message': message.type === 'user',
@@ -18,16 +36,20 @@
     }">
 
       <!-- User Input or BOT answer-->
-      <ion-card-content style="white-space: normal; padding: 0;"
-        *ngIf="message.type === 'user' || message.type === 'bot'">
+      <ion-card-content style="white-space: normal; padding: 0;">
         {{ message.content }}
       </ion-card-content>
-
-      <!-- BOT question-->
-      <div *ngIf="message.type === 'question'">
-        <pre><code>{{ message.content }}</code></pre>
+    </ion-card>
+    <ion-card *ngIf="botAnswer && userAnswer.length > 0" class="message">
+      <div>
+        <pre><code>{{ botAnswer.explanation }}</code></pre>
+      </div>
+      <div>
+        <pre><code>{{ botAnswer.isCorrect }}</code></pre>
       </div>
 
+      <ion-card-content style="white-space: normal; padding: 0;">
+      </ion-card-content>
     </ion-card>
 
   </div>
@@ -35,7 +57,7 @@
 <ion-footer>
   <div style="display: flex; align-items: center;">
     <ion-textarea [(ngModel)]="userAnswer" placeholder="Enter your answer here..."></ion-textarea>
-    <ion-button class="custom-button" (click)="nextQuestion()" [disabled]="userAnswer.length === 0" fill="clear">
+    <ion-button class="custom-button" (click)="setUserAnswer()" [disabled]="userAnswer.length === 0" fill="clear">
       <ion-icon name="arrow-up"></ion-icon>
     </ion-button>
   </div>

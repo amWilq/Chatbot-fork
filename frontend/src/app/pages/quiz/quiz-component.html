@@ -14,10 +14,13 @@
 
   <ng-template #codeSnippetBlock>
     <ng-container *ngIf="type === 'code-snippet'; else multipleChoiceBlock">
-
       <!-- Include the CodeSnippetComponent and listen for the answerSubmitted event -->
-      <code-snippet *ngIf="!showSummary" style="display: contents;" [questions]="questions" [duration]="duration"
-        (answerSubmitted)="onCodeSnippetAnswerSubmitted($event)"></code-snippet>
+    <code-snippet *ngIf="!showSummary" style="display: contents;"
+      [duration]="duration"
+      [assessmentTypeName]="assessmentName"
+      [assessmentId]="assessmentId"
+      (answerSubmitted)="onCodeSnippetAnswerSubmitted($event)">
+    </code-snippet>
 
     </ng-container>
   </ng-template>

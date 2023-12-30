@@ -81,7 +81,7 @@ export class AssessmentsComponent implements OnInit {
   private createStartAssessmentRequest(): any {
     return {
       "userDeviceId": localStorage.getItem('userId'),
-      "categoryId": "2aeca473",
+      "categoryId": this.categoryId,
       "languageId": this.languageId,
       "difficulty": this.selectedDifficulty,
       "startTime": new Date().toISOString(),
