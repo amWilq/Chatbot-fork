@@ -17,6 +17,7 @@ export class CategoryComponent implements OnInit {
   showAssessmentComponent: boolean = false;
   savedState: { [languageId: string]: { categoryId: string, item: Language } } = {};
   selectedFavCategory: any;
+  loading: boolean = true;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -54,11 +55,12 @@ export class CategoryComponent implements OnInit {
 
   private loadLanguages(): void {
     if (!this.selectedCategory) return;
-
+    this.loading = true;
     this.languagesService.getAllLanguagesForCategory(this.selectedCategory).subscribe({
       next: (res: any) => {
         this.originalItems = res.body ?? [];
         this.filteredItems = [...this.originalItems];
+        this.loading = false;
       },
       error: (err) => console.error('Error fetching languages:', err)
     });

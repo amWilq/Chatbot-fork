@@ -38,6 +38,7 @@ export class HomePageComponent implements OnInit, AfterViewChecked {
   displayTime: string | undefined;
   timer: any | null = null;
   currentAccordion = 'first';
+  loading: boolean = true;
 
   constructor(
     private router: Router,
@@ -55,9 +56,11 @@ export class HomePageComponent implements OnInit, AfterViewChecked {
   }
 
   private loadAllCategories() {
+    this.loading = true;
     this.categoryService.getAllCategories().subscribe(
       (res: HttpResponse<any>) => {
         this.categorys = res.body ?? [];
+        this.loading = false;
       },
       error => {
         console.error('Error fetching categories:', error);

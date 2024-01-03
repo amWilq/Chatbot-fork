@@ -23,9 +23,8 @@
   </ion-accordion-group>
 
 
-  <ion-card *ngFor="let card of categorys; let i = index"
-    [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }" class="rounded-card ion-card-spacing">
-    <ion-card-content class="ion-card-content-spacing">
+  <ion-card *ngFor="let card of categorys; let i = index" [ngClass]="{'highlight-card': selectedCategoryCardIndex === i }" class="rounded-card ion-card-spacing">
+    <ion-card-content class="ion-card-content-spacing" *ngIf="!loading; else loadingTemplate">
       <ion-img style="max-width: 10vw;" src="{{card.icon}}"></ion-img>
       <span class="span-test">{{ card.name }}</span>
       <div style="display: flex; align-self: center;">
@@ -34,6 +33,17 @@
       </div>
     </ion-card-content>
   </ion-card>
+
+  <ng-template #loadingTemplate>
+      <ion-card-content class="ion-card-content-spacing">
+        <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+        <div style="display: flex; align-self: center;">
+        <ion-skeleton-text [animated]="true" style="width: 32px; height: 32px"></ion-skeleton-text>
+      </div>
+      </ion-card-content>
+  </ng-template>
+
+
 
 </ion-content>
 

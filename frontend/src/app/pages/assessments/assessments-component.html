@@ -11,21 +11,41 @@
 
     <!-- Card Content for Displaying Assessment Options -->
     <ion-card-content>
-      <ng-container *ngFor="let format of assessments">
-        <ion-card class="square-card" [ngClass]="{'highlight-card': selectedCard === format}" (click)="onCardClick(format)">
+      <ng-container *ngIf="!loading; else loadingTemplate">
+        <ng-container *ngFor="let format of assessments">
+          <ion-card class="square-card" [ngClass]="{'highlight-card': selectedCard === format}" (click)="onCardClick(format)">
+            <ion-card-header>
+              <ion-card-title>{{ format.name }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{ format.format }}
+              <ion-segment [disabled]="selectedCard !== format" (ionChange)="onDifficultyChange($event)">
+                <ion-segment-button *ngFor="let difficulty of format.difficulties" [value]="difficulty">
+                  <ion-icon [name]="getIconForDifficulty(difficulty)"></ion-icon>
+                </ion-segment-button>
+              </ion-segment>
+            </ion-card-content>
+          </ion-card>
+        </ng-container>
+      </ng-container>
+
+      <ng-template #loadingTemplate>
+        <ion-card class="square-card">
           <ion-card-header>
-            <ion-card-title>{{ format.name }}</ion-card-title>
+            <ion-card-title>
+              <ion-skeleton-text [animated]="true" style="width: 80%;"></ion-skeleton-text>
+            </ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            {{ format.format }}
-            <ion-segment [disabled]="selectedCard !== format" (ionChange)="onDifficultyChange($event)">
-              <ion-segment-button *ngFor="let difficulty of format.difficulties" [value]="difficulty">
-                <ion-icon [name]="getIconForDifficulty(difficulty)"></ion-icon>
+            <ion-skeleton-text [animated]="true" style="width: 100%;"></ion-skeleton-text>
+            <ion-segment>
+              <ion-segment-button>
+                <ion-skeleton-text [animated]="true" style="width: 30px; height: 30px;"></ion-skeleton-text>
               </ion-segment-button>
             </ion-segment>
           </ion-card-content>
         </ion-card>
-      </ng-container>
+      </ng-template>
     </ion-card-content>
   </ion-card>
 

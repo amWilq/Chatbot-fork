@@ -36,10 +36,18 @@ export class AssessmentsComponent implements OnInit {
     this.loadAssessments();
   }
 
+
   private loadAssessments(): void {
+    this.loading = true;
     this.assessmentsService.getAllAssessments().subscribe({
-      next: (res) => this.handleAssessmentResponse(res),
-      error: (err) => this.logError('Error fetching assessments:', err)
+      next: (res) => {
+        this.handleAssessmentResponse(res);
+        this.loading = false;
+      },
+      error: (err) => {
+        this.logError('Error fetching assessments:', err);
+        this.loading = false;
+      }
     });
   }
 

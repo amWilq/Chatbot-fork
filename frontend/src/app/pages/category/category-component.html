@@ -5,12 +5,12 @@
         <ion-buttons slot="start">
           <ion-back-button defaultHref="/tabs/tab1"></ion-back-button>
         </ion-buttons>
-        <ion-title>Wybierz podkategorię</ion-title>
+        <ion-title>Choose a subcategory</ion-title>
       </ion-toolbar>
 
       <ion-card-content>
-        <ion-searchbar (ionInput)="onSearch($event)" placeholder="Wyszukaj"></ion-searchbar>
-        <ion-list>
+        <ion-searchbar (ionInput)="onSearch($event)" placeholder="Search"></ion-searchbar>
+        <ion-list *ngIf="!loading; else loadingTemplate">
           <ion-item *ngFor="let item of filteredItems" (click)="onItemSelect(item)"
             [class.selected]="selectedItemId === item">
             <ion-thumbnail slot="start">
@@ -31,8 +31,30 @@
           </ion-item>
         </ion-list>
 
+
       </ion-card-content>
     </ion-card>
+
+      <ng-template #loadingTemplate>
+        <ion-card class="container" style="box-shadow: none;">
+          <ion-card-content>
+            <ion-list>
+              <ion-item>
+                <ion-thumbnail slot="start">
+                    <ion-skeleton-text [animated]="true" style="width: 36px; height: 36px"></ion-skeleton-text>
+                </ion-thumbnail>
+                <ion-thumbnail slot="end">
+                  <ion-skeleton-text [animated]="true" style="width: 36px; height: 36px"></ion-skeleton-text>
+                </ion-thumbnail>
+                <ion-label>
+                  <ion-skeleton-text [animated]="true" style="width: 100%; height: 40px;"></ion-skeleton-text>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+
+    </ng-template>
   </ion-content>
 
   <ion-footer>
