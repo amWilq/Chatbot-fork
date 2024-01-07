@@ -3,7 +3,13 @@
   <ion-card class="quiz-card gradient">
     <ion-card-header>
       <ion-title class="ion-text-center" style="color: white;">{{displayTime}}</ion-title>
-      <ion-button fill="clear" class="close-button" size="large" (click)="setEndQuiz()">
+      <ion-button fill="clear" id="present-alert" class="close-button" size="large">
+        <ion-alert
+        trigger="present-alert"
+        header="If you want to finish early, click OK and answer the final question."
+        [buttons]="alertButtons"
+        (didDismiss)="setResult($event)"
+      ></ion-alert>
         <ion-icon name="close"></ion-icon>
       </ion-button>
       <ion-progress-bar [value]="progress"></ion-progress-bar>

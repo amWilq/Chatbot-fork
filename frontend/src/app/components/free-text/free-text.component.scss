@@ -1,0 +1,51 @@
+ion-content {
+  background-color: #f0f0f0;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.message {
+  max-width: 75%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  pre {
+    margin: 0;
+  }
+}
+
+.loading {
+  max-width: 12vw !important;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+}
+
+.bot-question {
+  color: white;
+  align-self: flex-start;
+  background-color: rgb(0, 174, 255);
+}
+
+.bot-message {
+  // color: white;
+  // align-self: flex-start;
+  // background-color: rgb(0, 47, 255);
+
+}
+
+.quiz-card {
+  &.hide-progress-bar .ion-card-header {
+    display: none;
+  }
+}

@@ -1,33 +1,32 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { AlertController, IonContent } from '@ionic/angular';
+import { IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
-import { CodeSnippet, QuizQuestion } from 'src/app/entities/quiz-question.model';
+import { FreeText } from 'src/app/entities/quiz-question.model';
 import { AssessmentsService } from 'src/app/services/assessments.service';
 import { QuizService } from 'src/app/services/quiz.service';
 import { TimerService } from 'src/app/services/time.service';
 
 @Component({
-  selector: 'code-snippet',
-  templateUrl: './code-snippet.component.html',
-  styleUrls: ['./code-snippet.component.scss']
+  selector: 'free-text',
+  templateUrl: './free-text.component.html',
+  styleUrls: ['./free-text.component.scss']
 })
 
-export class CodeSnippetComponent {
+export class FreeTextComponent {
 
   @Input() assessmentTypeName: any
   @Input() assessmentId: any
   quizOver: boolean = false;
   private subscriptions: Subscription[] = [];
-  question: CodeSnippet | undefined = undefined;
+  question: FreeText | undefined = undefined;
   botAnswer: any;
   loadingNextQuestion: boolean = false;
   loadingUserAnswer: boolean = false;
+
   @Input() duration: number = 2;
   @Output() quizCompleted: EventEmitter<void> = new EventEmitter<void>();
   @Output() answerSubmitted: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild(IonContent, { static: false }) content: IonContent | undefined;
-
-  //czas
   progress: number = 0;
   displayTime: string | undefined;
   timer: any | null = null;
@@ -41,23 +40,17 @@ export class CodeSnippetComponent {
   public alertButtons = [
     {
       text: 'Cancel',
-      role: 'cancel',
-      handler: () => {
-        console.log('Alert canceled');
-      },
+      role: 'cancel'
     },
     {
       text: 'OK',
-      role: 'confirm',
-      handler: () => {
-        console.log('Alert confirmed');
-      },
+      role: 'confirm'
     },
   ];
+
   constructor(
     private quizService: QuizService,
     private assessmentsService: AssessmentsService,
-    private alertController: AlertController,
     private timerService: TimerService
   ) {
   }
@@ -78,7 +71,6 @@ export class CodeSnippetComponent {
           this.quizOver = true;
         }
       }));
-    // this.addBotQuestion();
   }
 
   async getQuestion(): Promise<void> {
@@ -92,8 +84,8 @@ export class CodeSnippetComponent {
     this.subscriptions.push(
       this.assessmentsService.getGenerateOutput(this.assessmentTypeName, this.assessmentId).subscribe({
         next: (response) => {
-          this.question = response.data.snippet;
-          this.messages.push({ content: this.question!.code, type: 'question' });
+          this.question = response.data.modelResponse;
+          this.messages.push({ content: this.question!.message, type: 'question' });
           this.timerService.resumeCountdown();
           this.loading = false;
           this.loadingNextQuestion = false;
@@ -105,7 +97,7 @@ export class CodeSnippetComponent {
   }
 
   onScroll(event: any) {
-    this.displayProgressBar = event.detail.scrollTop <= 50;
+    this.displayProgressBar = event.detail.scrollTop < 50;
   }
 
   ngOnDestroy() {
@@ -126,15 +118,9 @@ export class CodeSnippetComponent {
       if (timeSpent) {
         this.userAnswer = '';
         this.subscriptions.push(
-          await this.assessmentsService.sendCodeSnippetUserAnswer(this.assessmentTypeName, this.assessmentId, userMessage, timeSpent).subscribe({
-            next: (response) => {
+          await this.assessmentsService.sendFreeTextUserAnswer(this.assessmentTypeName, this.assessmentId, userMessage, timeSpent).subscribe({
+            next: () => {
               this.loadingUserAnswer = false;
-              this.botAnswer = response.data;
-              this.messages.push({
-                content: this.botAnswer.explanation,
-                type: 'bot',
-                isCorrect: this.botAnswer.isCorrect
-              });
               this.scrollToBottom();
               this.getQuestion();
             }
@@ -145,17 +131,17 @@ export class CodeSnippetComponent {
 
   private scrollToBottom() {
     try {
-      this.content?.scrollToPoint(0,10000,30000);
+      this.content?.scrollToPoint(0, 10000, 30000);
     } catch (err) {
       console.error(err);
     }
   }
 
   setResult(ev: any) {
-    console.log(`Dismissed with role: ${ev.detail.role}`);
     if (ev.detail.role === 'confirm') {
       this.quizOver = true;
     }
   }
+
 }
 

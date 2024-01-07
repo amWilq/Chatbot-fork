@@ -8,6 +8,7 @@ import { QuizComponentPageRoutingModule } from './quiz-routing.module';
 import { PickAnswerQuizComponentModule } from 'src/app/components/pick-answer-quiz/pick-answer-quiz.module';
 import { QuizSummaryComponentModule } from 'src/app/components/quiz-summary/quiz-summary.module';
 import { CodeSnippetComponentModule } from 'src/app/components/code-snippet/code-snippet.module';
+import { FreeTextComponentModule } from 'src/app/components/free-text/free-text.module';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { CodeSnippetComponentModule } from 'src/app/components/code-snippet/code
     PickAnswerQuizComponentModule,
     QuizSummaryComponentModule,
     CodeSnippetComponentModule,
+    FreeTextComponentModule
   ],
   declarations: [QuizComponent]
 })

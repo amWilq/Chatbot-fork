@@ -31,13 +31,8 @@
     }" [ngStyle]="{
       'border': message.type === 'bot' ? (message.isCorrect ? '2px solid green' : '2px solid red') : ''
     }">
-      <ion-card-content style="white-space: normal; padding: 0;">
-
-        <div *ngIf="message.type === 'question'">
-          <pre><code>{{ message.content }}</code></pre>
-        </div>
-
-        <p *ngIf="message.type !== 'question'">{{ message.content }}</p>
+      <ion-card-content style="white-space: normal; padding: 0;" *ngIf="message.content">
+          {{ message.content }}
       </ion-card-content>
     </ion-card>
 
@@ -47,14 +42,6 @@
         <ion-spinner></ion-spinner>
       </ion-card-content>
     </ion-card>
-
-    <!-- <ng-template #loadingNextQuestion >
-      <ion-card *ngIf="loadingNextQuestion" class="message loading">
-        <ion-card-content style="white-space: normal; padding: 0;">
-          <ion-spinner></ion-spinner>
-        </ion-card-content>
-      </ion-card>
-    </ng-template> -->
 
   </div>
 </ion-content>

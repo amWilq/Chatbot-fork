@@ -41,3 +41,8 @@ export interface CodeSnippet {
   code: string;
   correctSolution: string;
 }
+
+export interface FreeText {
+  message: string;
+  sender: string;
+}

@@ -34,6 +34,17 @@ export class PickAnswerQuizComponent {
   ) {
   }
 
+  public alertButtons = [
+    {
+      text: 'Cancel',
+      role: 'cancel'
+    },
+    {
+      text: 'OK',
+      role: 'confirm'
+    },
+  ];
+
   async ngOnInit() {
     this.assessmentsService.initWebSocket(this.assessmentTypeName, this.assessmentId);
     this.timerService.startCountdown(this.duration / 600); // zamiana na minuty
@@ -76,20 +87,6 @@ export class PickAnswerQuizComponent {
   }
 
 
-  async setEndQuiz() {
-    this.quizOver = true;
-    this.quizService.setQuizCompleted();
-    this.subscriptions.push(
-      await this.assessmentsService.completeAssessment(this.assessmentTypeName, this.assessmentId).subscribe({
-        next: (response) => {
-          console.error('response', response);
-          this.loading = false;
-          // this.showSummary = true;
-        },
-        error: (error) => console.log(error)
-      }));
-  }
-
   async setUserAnswer(): Promise<void> {
     this.loadingNextQuestion = true;
     this.timerService.pauseCountdown();
@@ -129,5 +126,11 @@ export class PickAnswerQuizComponent {
       }]
     });
     await alert.present();
+  }
+
+  setResult(ev: any) {
+    if (ev.detail.role === 'confirm') {
+      this.quizOver = true;
+    }
   }
 }

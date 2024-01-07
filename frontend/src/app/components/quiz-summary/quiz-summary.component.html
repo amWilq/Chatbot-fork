@@ -2,11 +2,11 @@
   <ion-card class="quiz-summary-footer">
     <ion-card-content>
 
-      <ion-card-content>
+      <ion-card-content *ngIf="quizResponse?.assessmentDetails?.answeredQuestions">
         <strong>Total Questions Answered:</strong> {{ quizResponse?.assessmentDetails?.answeredQuestions }}
       </ion-card-content>
 
-      <ion-card-content>
+      <ion-card-content *ngIf="quizResponse?.assessmentDetails?.correctAnswers">
         <strong>Correct Answers:</strong> {{ quizResponse?.assessmentDetails?.correctAnswers }}
       </ion-card-content>
 
@@ -51,4 +51,9 @@
       </ion-card-content>
     </ion-accordion>
   </ion-accordion-group>
+
+  <ion-footer>
+    <ion-button class="custom-button" (click)="onReplayQuiz()" expand="full" color="primary">Replay Quiz</ion-button>
+    <ion-button class="custom-button" (click)="onReturnToMenu()" expand="full" color="secondary">Return to Menu</ion-button>
+  </ion-footer>
 </ion-content>

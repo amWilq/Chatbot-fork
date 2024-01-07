@@ -72,8 +72,6 @@ export class AssessmentsService {
     });
   }
 
-
-
   sendUserAnswer(assessmentTypeName: string, assessmentId: string, answer: any, takenTime: number): Observable<any> {
     return new Observable<any>((observer) => {
       if (this.userAnswerSocket$) {
@@ -102,8 +100,6 @@ export class AssessmentsService {
     });
   }
 
-
-
   sendCodeSnippetUserAnswer(assessmentTypeName: string, assessmentId: string, answer: any, takenTime: number): Observable<any> {
     return new Observable<any>((observer) => {
       if (this.userAnswerSocket$) {
@@ -115,6 +111,37 @@ export class AssessmentsService {
             "data": {
               "answer": answer,
               "takenTime": takenTime
+            }
+        };
+        this.userAnswerSocket$.next(bodyUserAnswer);
+        this.userAnswerSocket$.subscribe(
+          (response) => {
+            observer.next(response);
+            observer.complete();
+          },
+          (error) => {
+            observer.error(error);
+          }
+        );
+      } else {
+        observer.error("WebSocket is not initialized");
+      }
+    });
+  }
+
+  sendFreeTextUserAnswer(assessmentTypeName: string, assessmentId: string, answer: any, takenTime: number): Observable<any> {
+    return new Observable<any>((observer) => {
+      if (this.userAnswerSocket$) {
+
+        const bodyUserAnswer =
+          {
+            "assessmentTypeName": assessmentTypeName,
+            "assessmentId": assessmentId,
+            "requestType": "userInput",
+            "data": {
+              "answer": answer,
+              "message": answer,
+              "currentStatus": "active"
             }
         };
         this.userAnswerSocket$.next(bodyUserAnswer);
