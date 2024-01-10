@@ -97,7 +97,11 @@ export class FreeTextComponent {
   }
 
   onScroll(event: any) {
-    this.displayProgressBar = event.detail.scrollTop < 50;
+    if (event.detail.scrollTop < 40) {
+      this.displayProgressBar = true;
+    } else if (event.detail.scrollTop > 60) {
+      this.displayProgressBar = false;
+    }
   }
 
   ngOnDestroy() {
